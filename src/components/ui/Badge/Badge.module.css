@@ -1,0 +1,16 @@
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.teal {
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+}
+.amber {
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
+}

@@ -1,0 +1,18 @@
+.box {
+  padding: var(--space-8) var(--space-4);
+  text-align: center;
+}
+.title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.description {
+  margin-top: var(--space-1);
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.action {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-4);
+}

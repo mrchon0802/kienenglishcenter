@@ -1,0 +1,1 @@
+export { ClassScoreBars } from "./ClassScoreBars";

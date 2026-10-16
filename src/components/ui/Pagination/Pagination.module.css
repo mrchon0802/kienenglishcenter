@@ -1,0 +1,10 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+.status {
+  font-size: 13px;
+  color: var(--color-muted);
+}

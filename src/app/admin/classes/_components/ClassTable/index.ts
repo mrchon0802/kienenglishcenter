@@ -1,0 +1,1 @@
+export { ClassTable } from "./ClassTable";

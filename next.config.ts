@@ -1,3 +1,4 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -7,13 +8,17 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
+  
+
+  // Chuyển trang chủ "/" sang "/admin"
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/admin",
+        permanent: false,
       },
-    },
+    ];
   },
 };
 

@@ -1,0 +1,14 @@
+.label,
+.hint {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.value {
+  margin: var(--space-1) 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.warning {
+  color: var(--color-debt);
+}

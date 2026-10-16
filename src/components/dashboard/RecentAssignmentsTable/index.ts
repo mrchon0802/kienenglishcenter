@@ -1,0 +1,1 @@
+export { RecentAssignmentsTable } from "./RecentAssignmentsTable";
