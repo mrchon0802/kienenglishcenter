@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
+import { Suspense } from "react";
 import { AttentionList } from "@/components/dashboard/AttentionList";
 import { ClassScoreBars } from "@/components/dashboard/ClassScoreBars";
 import { RecentAssignmentsTable } from "@/components/dashboard/RecentAssignmentsTable";
@@ -11,14 +13,14 @@ import { Button } from "@/components/ui/Button";
 import { formatLongDate } from "@/lib/format";
 import { getDashboardData } from "@/mocks/dashboard";
 import styles from "./page.module.css";
-import { connection } from "next/server";
 
 export const metadata: Metadata = { title: "Tổng quan | Quản trị" };
 
-export default async function AdminHomePage() {
-    await connection();
-  const data = await getDashboardData();
-  const subtitle = `${formatLongDate(new Date())}${data.isMock ? " · Dữ liệu mẫu" : ""}`;
+async function DashboardContent() {
+  await connection(); // số liệu phụ thuộc thời điểm hiện tại và dữ liệu vừa thay đổi
+  const now = new Date();
+  const data = await getDashboardData(now);
+  const subtitle = `${formatLongDate(now)}${data.isMock ? " · Dữ liệu mẫu" : ""}`;
 
   return (
     <>
@@ -31,7 +33,7 @@ export default async function AdminHomePage() {
             <Button href="/admin/question-bank/new">+ Tạo câu hỏi</Button>
             <Button href="/admin/tuition">Ghi nhận thanh toán</Button>
             <Button href="/admin/assignments/new" variant="primary">
-              + Tạo bài kiểm tra
+              + Tạo bài tập
             </Button>
           </>
         }
@@ -50,5 +52,13 @@ export default async function AdminHomePage() {
         <RevenueChart data={data.revenue} />
       </div>
     </>
+  );
+}
+
+export default function AdminHomePage() {
+  return (
+    <Suspense fallback={<p>Đang tải tổng quan...</p>}>
+      <DashboardContent />
+    </Suspense>
   );
 }

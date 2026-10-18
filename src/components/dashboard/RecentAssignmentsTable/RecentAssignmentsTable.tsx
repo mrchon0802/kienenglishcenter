@@ -32,7 +32,7 @@ export function RecentAssignmentsTable({ rows }: { rows: AssignmentRow[] }) {
               <td>
                 {row.submitted} / {row.total}
               </td>
-              <td>{formatScore(row.averageScore)}</td>
+              <td>{row.averageScore === null ? "-" : formatScore(row.averageScore)}</td>
             </tr>
           ))}
         </tbody>

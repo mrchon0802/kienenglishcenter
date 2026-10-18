@@ -37,7 +37,7 @@ export interface AssignmentRow {
   dueDate: string;
   submitted: number;
   total: number;
-  averageScore: number;
+  averageScore: number | null; // null = chưa có bài nộp
 }
 
 export interface ClassScore {
