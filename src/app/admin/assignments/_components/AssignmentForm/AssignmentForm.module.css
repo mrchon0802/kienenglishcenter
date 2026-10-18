@@ -1,0 +1,125 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.fields,
+.filters {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+}
+.hint {
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.error {
+  margin-bottom: var(--space-3);
+  font-size: 13px;
+  color: #b42318;
+}
+.errorBox {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: #fde8e6;
+  color: #8a1c12;
+  font-size: 14px;
+}
+.modes {
+  display: inline-flex;
+  align-self: flex-start;
+  gap: 6px;
+}
+.mode {
+  min-height: var(--touch-target);
+  padding: 0 var(--space-5);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.modeOn {
+  background: var(--color-primary);
+  color: #fff;
+}
+.pickerHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.pickList,
+.selectedList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 420px;
+  overflow-y: auto;
+}
+.selectedList {
+  max-height: none;
+}
+.pickRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-divider);
+  font-size: 14px;
+  cursor: pointer;
+}
+.pickRow input {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--color-primary);
+}
+.pickText {
+  flex: 1;
+  min-width: 0;
+}
+.pickMeta {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--color-muted);
+}
+.selectedRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-divider);
+  font-size: 14px;
+}
+.selectedRow:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+.selectedText {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+.rowActions {
+  display: flex;
+  gap: 6px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}

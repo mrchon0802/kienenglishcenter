@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card } from "@/components/ui/Card";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Button } from "@/components/ui/Button";
+import { getQuestions } from "@/mocks/questions";
+import { QuestionBankView } from "./_components/QuestionBankView";
 
 export const metadata: Metadata = { title: "Ngân hàng câu hỏi | Quản trị" };
 
-export default function Page() {
+export default async function QuestionBankPage() {
+  const questions = await getQuestions();
+
   return (
     <>
-      <PageHeader title="Ngân hàng câu hỏi" />
-      <Card>
-        <EmptyState
-          title="Trang này đang được xây dựng"
-          description="Chức năng sẽ có trong các giai đoạn tiếp theo."
-        />
-      </Card>
+      <PageHeader
+        title="Ngân hàng câu hỏi"
+        subtitle={`${questions.length} câu hỏi · Dữ liệu mẫu`}
+        actions={
+          <Button href="/admin/question-bank/new" variant="primary">
+            + Tạo câu hỏi
+          </Button>
+        }
+      />
+      <QuestionBankView questions={questions} />
     </>
   );
 }

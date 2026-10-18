@@ -1,0 +1,73 @@
+/* Giao diện học sinh dùng tông xanh dương: ghi đè biến màu cho cả nhánh /student. */
+.shell {
+  --color-primary: #1d4ed8;
+  --color-primary-dark: #1e3a8a;
+  --color-primary-soft: #eaf1fd;
+  --color-primary-faded: #9dbdf5;
+  --color-bg: #f1f6fd;
+  --color-border: #dce7f5;
+
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-8);
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+}
+.brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.navFallback {
+  width: 320px;
+  max-width: 100%;
+  height: var(--touch-target);
+}
+.user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 14px;
+  font-weight: 600;
+}
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border-radius: 50%;
+  background: #ffc93c;
+  color: var(--color-ink);
+  font-weight: 700;
+}
+.userClass {
+  font-weight: 400;
+  color: var(--color-muted);
+}
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 28px var(--space-8) 48px;
+}
+
+@media (max-width: 700px) {
+  .header,
+  .main {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+  .userText {
+    display: none;
+  }
+}

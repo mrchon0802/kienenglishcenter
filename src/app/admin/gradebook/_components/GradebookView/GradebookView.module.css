@@ -1,0 +1,73 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-5);
+}
+.toolbar > div {
+  width: 200px;
+}
+.summary {
+  font-size: 14px;
+}
+.note {
+  margin-top: var(--space-3);
+  font-size: 13px;
+  color: var(--color-muted);
+}
+.scroll {
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.table th,
+.table td {
+  padding: var(--space-3) 10px;
+  border-top: 1px solid var(--color-divider);
+  font-size: 14px;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+.table thead th {
+  border-top: 0;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--color-surface);
+}
+.table tbody th {
+  font-weight: 600;
+}
+.sticky {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: var(--color-surface);
+  box-shadow: 1px 0 0 var(--color-divider);
+}
+.sub {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--color-muted);
+}
+.none {
+  color: var(--color-muted);
+}
+.pending {
+  font-size: 12px;
+  color: var(--color-warning-text);
+}
+.score {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}

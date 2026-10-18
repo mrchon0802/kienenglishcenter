@@ -1,0 +1,100 @@
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.facts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding-left: var(--space-5);
+  font-size: 16px;
+}
+.startButton {
+  align-self: flex-start;
+  min-height: 52px;
+  padding: 0 var(--space-6);
+  font-size: 16px;
+}
+.blocked {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-warning-soft);
+  color: var(--color-warning-text);
+  font-size: 15px;
+}
+.player {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+.progress {
+  font-size: 16px;
+  font-weight: 700;
+}
+.timer {
+  padding: 6px var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-dark);
+  font-size: 16px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.timerLow {
+  background: #fde8e6;
+  color: #8a1c12;
+}
+.navigator {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dot {
+  width: var(--touch-target);
+  height: var(--touch-target);
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.dotDone {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+.dotCurrent {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: var(--space-2);
+}
+.submitEarly {
+  margin-left: auto;
+}
+.confirmText {
+  font-size: 16px;
+  font-weight: 700;
+}
+.error {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: #fde8e6;
+  color: #8a1c12;
+  font-size: 14px;
+}

@@ -1,0 +1,1 @@
+export { TuitionTabs } from "./TuitionTabs";
