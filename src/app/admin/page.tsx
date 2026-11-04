@@ -25,7 +25,7 @@ async function DashboardContent() {
   return (
     <>
       <PageHeader
-        title="Xin chào, Giáo viên"
+        title="Xin chào, Kiến"
         subtitle={subtitle}
         actions={
           <>

@@ -1,0 +1,27 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+}
+.row > div {
+  flex: 1 1 280px;
+}
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.ok {
+  font-size: 13px;
+  color: var(--color-primary-dark);
+}
+.error {
+  font-size: 13px;
+  color: #b42318;
+}

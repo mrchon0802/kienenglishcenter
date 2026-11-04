@@ -31,7 +31,10 @@ export function ClassTable({ classes }: { classes: ClassWithCount[] }) {
             <td>{formatVND(c.monthlyFee)}</td>
             <td>Unit {c.currentUnit}</td>
             <td>
-              <Button href={`/admin/classes/${c.id}`}>Xem lớp</Button>
+              <span style={{ display: "inline-flex", gap: 8 }}>
+                <Button href={`/admin/classes/${c.id}`}>Xem lớp</Button>
+                <Button href={`/admin/classes/${c.id}/edit`}>Sửa</Button>
+              </span>
             </td>
           </tr>
         ))}

@@ -14,10 +14,21 @@
   flex-wrap: wrap;
   gap: 10px;
 }
-.notice {
+.notice,
+.failure {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-control);
+  font-size: 14px;
+}
+.notice {
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
-  font-size: 14px;
+}
+.failure {
+  background: #fde8e6;
+  color: #8a1c12;
+}
+.hint {
+  font-size: 13px;
+  color: var(--color-muted);
 }

@@ -7,6 +7,7 @@ import styles from "./AdminSidebar.module.css";
 const NAV_ITEMS = [
   { href: "/admin", label: "Tổng quan" },
   { href: "/admin/students", label: "Học sinh" },
+  { href: "/admin/teachers", label: "Giáo viên" },
   { href: "/admin/classes", label: "Lớp học & điểm danh" },
   { href: "/admin/question-bank", label: "Ngân hàng câu hỏi" },
   { href: "/admin/assignments", label: "Bài tập & kiểm tra" },
@@ -47,6 +48,9 @@ export function AdminSidebar() {
           })}
         </ul>
       </nav>
+      <div className={styles.modeSwitch}>
+        <Link href="/teacher" className={styles.modeLink}>Chuyển sang Teacher ↗</Link>
+      </div>
     </aside>
   );
 }

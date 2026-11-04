@@ -1,0 +1,1 @@
+.actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.actions button{border:1px solid var(--color-border);background:white;border-radius:9px;padding:10px 14px;color:var(--color-ink);font:inherit;cursor:pointer}.actions button:disabled{opacity:.5;cursor:not-allowed}.actions span{font-size:13px;color:var(--color-muted)}.actions p{width:100%;color:#a22}

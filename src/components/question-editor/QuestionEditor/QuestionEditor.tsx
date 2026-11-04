@@ -1,6 +1,8 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition, type FormEvent } from "react";
+import { createQuestionAction, updateQuestionAction } from "@/app/admin/question-bank/actions";
 import { AnswerEditor } from "@/components/question-editor/editors";
 import { MediaFields } from "@/components/question-editor/MediaFields";
 import { QuestionPreview } from "@/components/question-editor/QuestionPreview";
@@ -32,6 +34,9 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
   const [errors, setErrors] = useState<QuestionErrors>({});
   const [notice, setNotice] = useState<"" | "saved" | "invalid">("");
   const [showAnswer, setShowAnswer] = useState(true);
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [serverError, setServerError] = useState("");
 
   function update(patch: Partial<Question>) {
     setDraft((prev) => ({ ...prev, ...patch }));
@@ -48,25 +53,34 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
     event.preventDefault();
     const nextErrors = validateQuestion(draft);
     setErrors(nextErrors);
+    setServerError("");
     if (Object.keys(nextErrors).length > 0) {
       setNotice("invalid");
       return;
     }
 
-    // TODO (khi có backend): gọi API tạo/cập nhật câu hỏi tại đây.
-    setNotice("saved");
-    if (mode === "new") {
-      // Làm trống nội dung để nhập câu tiếp, giữ nguyên phần phân loại (lớp, unit, kỹ năng...).
-      setDraft((prev) => ({
-        ...createEmptyQuestion(prev.type),
-        grade: prev.grade,
-        book: prev.book,
-        unit: prev.unit,
-        skill: prev.skill,
-        difficulty: prev.difficulty,
-        points: prev.points,
-      }));
-    }
+    startTransition(async () => {
+      const res = mode === "edit" ? await updateQuestionAction(draft.id, draft) : await createQuestionAction(draft);
+      if (!res.ok) {
+        setServerError(res.error);
+        return;
+      }
+      setNotice("saved");
+      if (mode === "new") {
+        // Làm trống nội dung để nhập câu tiếp, giữ nguyên phần phân loại (lớp, unit, kỹ năng...).
+        setDraft((prev) => ({
+          ...createEmptyQuestion(prev.type),
+          grade: prev.grade,
+          book: prev.book,
+          unit: prev.unit,
+          skill: prev.skill,
+          difficulty: prev.difficulty,
+          points: prev.points,
+        }));
+      } else {
+        router.refresh();
+      }
+    });
   }
 
   return (
@@ -74,10 +88,15 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
       <div className={styles.main}>
         {notice === "saved" ? (
           <p className={styles.success} role="status">
-            Câu hỏi hợp lệ. Hiện đang dùng dữ liệu mẫu nên chưa lưu thật.
+            Đã lưu câu hỏi vào ngân hàng.
             {mode === "new"
               ? " Form đã được làm trống để bạn nhập câu tiếp, phần phân loại được giữ nguyên."
               : ""}
+          </p>
+        ) : null}
+        {serverError ? (
+          <p className={styles.failure} role="alert">
+            {serverError}
           </p>
         ) : null}
         {notice === "invalid" ? (
@@ -182,8 +201,8 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
 
         <div className={styles.actions}>
           <Button href="/admin/question-bank">Hủy</Button>
-          <Button type="submit" variant="primary">
-            Lưu câu hỏi
+          <Button type="submit" variant="primary" disabled={pending}>
+            {pending ? "Đang lưu..." : "Lưu câu hỏi"}
           </Button>
         </div>
       </div>

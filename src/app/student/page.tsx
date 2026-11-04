@@ -35,7 +35,7 @@ async function StudentHome() {
       </div>
 
       <div className={styles.stats}>
-        <StatCard label="Điểm trung bình" value={formatScore(student.averageScore)} hint="Tất cả bài đã chấm" />
+        <StatCard label="Điểm trung bình" value={student.averageScore > 0 ? formatScore(student.averageScore) : "Chưa có"} hint="Tất cả bài đã chấm" />
         <StatCard label="Đi học đầy đủ" value={`${student.attendanceRate}%`} hint="Tính từ đầu khóa" />
         <StatCard
           label="Học phí tháng này"

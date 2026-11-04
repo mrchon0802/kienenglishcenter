@@ -19,6 +19,7 @@ import {
   typeLabel,
 } from "@/lib/question-types";
 import { normalizeText } from "@/lib/text";
+import { setQuestionStatusAction } from "../../actions";
 import type { Question } from "@/types/question";
 import styles from "./QuestionBankView.module.css";
 
@@ -77,12 +78,11 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
   }
 
   function toggleArchive(id: string) {
-    // TODO (khi có backend): gọi API lưu trữ / khôi phục câu hỏi.
-    setItems((prev) =>
-      prev.map((q) =>
-        q.id === id ? { ...q, status: q.status === "archived" ? "active" : "archived" } : q,
-      ),
-    );
+    const target = items.find((q) => q.id === id);
+    if (!target) return;
+    const next = target.status === "archived" ? "active" : "archived";
+    setItems((prev) => prev.map((q) => (q.id === id ? { ...q, status: next } : q))); // cập nhật ngay trên màn hình
+    void setQuestionStatusAction(id, next);
   }
 
   return (

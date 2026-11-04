@@ -25,11 +25,17 @@ async function StudentProfile({ params }: { params: Promise<{ id: string }> }) {
       <PageHeader
         title={student.fullName}
         subtitle={`Mã ${student.code} · Lớp ${student.className}`}
-        actions={<Button href="/admin/students">Về danh sách</Button>}
+        actions={
+          <>
+            <Button href={`/admin/students/${student.id}/edit`}>Sửa thông tin</Button>
+            <Button href={`/admin/reports/students/${student.id}`}>Báo cáo học sinh</Button>
+            <Button href="/admin/students">Về danh sách</Button>
+          </>
+        }
       />
 
       <div className={styles.stats}>
-        <StatCard label="Điểm trung bình" value={formatScore(student.averageScore)} hint="Tất cả bài đã chấm" />
+        <StatCard label="Điểm trung bình" value={student.averageScore > 0 ? formatScore(student.averageScore) : "Chưa có"} hint="Tất cả bài đã chấm" />
         <StatCard label="Chuyên cần" value={`${student.attendanceRate}%`} hint="Tính từ đầu khóa" />
         <StatCard
           label="Học phí tháng này"

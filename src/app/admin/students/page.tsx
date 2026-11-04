@@ -15,9 +15,12 @@ export default async function StudentsPage() {
         title="Học sinh"
         subtitle={`${students.length} học sinh · Dữ liệu mẫu`}
         actions={
-          <Button href="/admin/students/new" variant="primary">
-            + Thêm học sinh
-          </Button>
+          <>
+            <Button href="/admin/students/import">Nhập từ Excel</Button>
+            <Button href="/admin/students/new" variant="primary">
+              + Thêm học sinh
+            </Button>
+          </>
         }
       />
       <StudentsView students={students} classes={classes} />

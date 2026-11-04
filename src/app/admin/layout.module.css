@@ -18,6 +18,7 @@
     padding: var(--space-5) var(--space-4);
   }
 }
+
 .sidebarFallback {
   background: var(--color-sidebar);
   min-height: 100vh;

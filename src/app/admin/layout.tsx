@@ -8,9 +8,7 @@ export default function AdminLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <div className={styles.shell}>
-      <Suspense
-        fallback={<div className={styles.sidebarFallback} aria-hidden="true" />}
-      >
+      <Suspense fallback={<div className={styles.sidebarFallback} aria-hidden="true" />}>
         <AdminSidebar />
       </Suspense>
       <main className={styles.main}>{children}</main>

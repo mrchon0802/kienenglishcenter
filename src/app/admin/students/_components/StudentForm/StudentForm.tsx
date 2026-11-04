@@ -1,91 +1,103 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useTransition, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
-import type { ClassOption } from "@/types/student";
+import { validateStudentInput, type StudentErrors, type StudentInput } from "@/lib/student-validation";
+import type { ClassOption, Student } from "@/types/student";
+import { createStudentAction, updateStudentAction } from "../../actions";
 import styles from "./StudentForm.module.css";
 
-interface FormValues {
-  fullName: string;
-  dateOfBirth: string;
-  className: string;
-  parentName: string;
-  parentPhone: string;
+interface StudentFormProps {
+  classes: ClassOption[];
+  mode?: "new" | "edit";
+  student?: Student;
 }
 
-type FormErrors = Partial<Record<keyof FormValues, string>>;
-
-const EMPTY: FormValues = {
+const EMPTY: StudentInput = {
   fullName: "",
-  dateOfBirth: "",
   className: "",
   parentName: "",
   parentPhone: "",
+  dateOfBirth: "",
+  enrolledDate: "",
 };
 
-const PHONE_PATTERN = /^(0|\+84)\d{9}$/;
+const STATUS_OPTIONS = [
+  { value: "active", label: "Đang học" },
+  { value: "inactive", label: "Nghỉ học" },
+];
 
-function validate(values: FormValues): FormErrors {
-  const errors: FormErrors = {};
-  if (!values.fullName.trim()) errors.fullName = "Nhập họ và tên học sinh.";
-  if (!values.className) errors.className = "Chọn lớp cho học sinh.";
-  if (!values.parentName.trim()) errors.parentName = "Nhập tên phụ huynh.";
-  if (!values.parentPhone.trim()) {
-    errors.parentPhone = "Nhập số điện thoại phụ huynh.";
-  } else if (!PHONE_PATTERN.test(values.parentPhone.replace(/\s+/g, ""))) {
-    errors.parentPhone = "Số điện thoại gồm 10 chữ số, bắt đầu bằng 0.";
-  }
-  return errors;
-}
+export function StudentForm({ classes, mode = "new", student }: StudentFormProps) {
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [values, setValues] = useState<StudentInput>(
+    student
+      ? {
+          fullName: student.fullName,
+          className: student.className,
+          parentName: student.parentName,
+          parentPhone: student.parentPhone,
+          dateOfBirth: student.dateOfBirth,
+          enrolledDate: student.enrolledDate,
+        }
+      : EMPTY,
+  );
+  const [status, setStatus] = useState<"active" | "inactive">(student?.status ?? "active");
+  const [errors, setErrors] = useState<StudentErrors>({});
+  const [message, setMessage] = useState("");
+  const [serverError, setServerError] = useState("");
 
-export function StudentForm({ classes }: { classes: ClassOption[] }) {
-  const [values, setValues] = useState<FormValues>(EMPTY);
-  const [errors, setErrors] = useState<FormErrors>({});
-  const [submitted, setSubmitted] = useState(false);
-
-  function setField<K extends keyof FormValues>(key: K, value: FormValues[K]) {
+  function setField<K extends keyof StudentInput>(key: K, value: StudentInput[K]) {
     setValues((prev) => ({ ...prev, [key]: value }));
-    setSubmitted(false);
+    setMessage("");
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const nextErrors = validate(values);
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    const found = validateStudentInput(values, classes.map((c) => c.name));
+    setErrors(found);
+    setServerError("");
+    if (Object.keys(found).length > 0) return;
 
-    // TODO (khi có backend): gọi API tạo học sinh tại đây, thành công thì chuyển về /admin/students.
-    setSubmitted(true);
-    setValues(EMPTY);
+    startTransition(async () => {
+      if (mode === "edit" && student) {
+        const res = await updateStudentAction(student.id, { ...values, status });
+        if (res.ok) {
+          setMessage("Đã lưu thông tin học sinh.");
+          router.refresh();
+        } else setServerError(res.error);
+        return;
+      }
+      const res = await createStudentAction(values);
+      if (res.ok) {
+        setMessage(`Đã thêm ${values.fullName.trim()} (mã ${res.code}). Bạn có thể nhập tiếp học sinh khác, lớp được giữ nguyên.`);
+        setValues({ ...EMPTY, className: values.className }); // giữ lớp để nhập liên tiếp
+      } else setServerError(res.error);
+    });
   }
 
   return (
     <Card>
       <form className={styles.form} onSubmit={handleSubmit} noValidate>
-        {submitted ? (
+        {message ? (
           <p className={styles.notice} role="status">
-            Thông tin hợp lệ. Hiện đang dùng dữ liệu mẫu nên chưa lưu thật; khi có backend, học
-            sinh sẽ được tạo tại bước này.
+            {message} <Link href="/admin/students">Về danh sách</Link>
+          </p>
+        ) : null}
+        {serverError ? (
+          <p className={styles.failure} role="alert">
+            {serverError}
           </p>
         ) : null}
 
         <div className={styles.grid}>
-          <Input
-            label="Họ và tên học sinh"
-            value={values.fullName}
-            error={errors.fullName}
-            onChange={(e) => setField("fullName", e.target.value)}
-            autoComplete="off"
-          />
-          <Input
-            label="Ngày sinh"
-            type="date"
-            value={values.dateOfBirth}
-            onChange={(e) => setField("dateOfBirth", e.target.value)}
-          />
+          <Input label="Họ và tên học sinh" value={values.fullName} error={errors.fullName} onChange={(e) => setField("fullName", e.target.value)} autoComplete="off" />
+          <Input label="Ngày sinh" type="date" value={values.dateOfBirth} error={errors.dateOfBirth} onChange={(e) => setField("dateOfBirth", e.target.value)} />
           <Select
             label="Lớp"
             placeholder="Chọn lớp"
@@ -94,28 +106,32 @@ export function StudentForm({ classes }: { classes: ClassOption[] }) {
             error={errors.className}
             onChange={(e) => setField("className", e.target.value)}
           />
-          <Input
-            label="Tên phụ huynh"
-            value={values.parentName}
-            error={errors.parentName}
-            onChange={(e) => setField("parentName", e.target.value)}
-            autoComplete="off"
-          />
-          <Input
-            label="Số điện thoại phụ huynh"
-            type="tel"
-            inputMode="tel"
-            value={values.parentPhone}
-            error={errors.parentPhone}
-            hint="Ví dụ: 0912 345 678"
-            onChange={(e) => setField("parentPhone", e.target.value)}
-          />
+          <Input label="Tên phụ huynh" value={values.parentName} error={errors.parentName} onChange={(e) => setField("parentName", e.target.value)} autoComplete="off" />
+          <Input label="Số điện thoại phụ huynh" type="tel" inputMode="tel" value={values.parentPhone} error={errors.parentPhone} hint="Ví dụ: 0912 345 678" onChange={(e) => setField("parentPhone", e.target.value)} />
+          {mode === "edit" ? (
+            <Select
+              label="Trạng thái"
+              value={status}
+              options={STATUS_OPTIONS}
+              onChange={(e) => {
+                setStatus(e.target.value as "active" | "inactive");
+                setMessage("");
+              }}
+            />
+          ) : null}
         </div>
 
+        {mode === "edit" ? (
+          <p className={styles.hint}>
+            Đổi lớp tại đây tương đương chuyển lớp: từ giờ học sinh nhận bài tập của lớp mới, hóa đơn cũ giữ nguyên.
+            Học sinh nghỉ học không được tạo hóa đơn mới.
+          </p>
+        ) : null}
+
         <div className={styles.actions}>
-          <Button href="/admin/students">Hủy</Button>
-          <Button type="submit" variant="primary">
-            Lưu học sinh
+          <Button href={mode === "edit" && student ? `/admin/students/${student.id}` : "/admin/students"}>Hủy</Button>
+          <Button type="submit" variant="primary" disabled={pending}>
+            {pending ? "Đang lưu..." : "Lưu học sinh"}
           </Button>
         </div>
       </form>

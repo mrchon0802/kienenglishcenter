@@ -15,9 +15,12 @@ export default async function QuestionBankPage() {
         title="Ngân hàng câu hỏi"
         subtitle={`${questions.length} câu hỏi · Dữ liệu mẫu`}
         actions={
-          <Button href="/admin/question-bank/new" variant="primary">
-            + Tạo câu hỏi
-          </Button>
+          <>
+            <Button href="/admin/question-bank/import">Nhập từ Excel</Button>
+            <Button href="/admin/question-bank/new" variant="primary">
+              + Tạo câu hỏi
+            </Button>
+          </>
         }
       />
       <QuestionBankView questions={questions} />

@@ -11,7 +11,7 @@ function opts(...texts: string[]) {
   return texts.map((text, i) => ({ id: `${i + 1}`, text }));
 }
 
-const questions: Question[] = [
+const SEED_QUESTIONS: Question[] = [
   make({ id: "q-001", type: "mcq", prompt: "She ___ to school every day.", grade: 4, unit: 3, skill: "grammar", options: opts("go", "goes", "going", "gone"), correctOptionIds: ["2"], explanation: "Chủ ngữ ngôi thứ ba số ít (she) thì động từ thêm -es." }),
   make({ id: "q-002", type: "mcq", prompt: "Từ nào có nghĩa là \"con mèo\"?", grade: 1, unit: 2, options: opts("cat", "dog", "bird", "fish"), correctOptionIds: ["1"] }),
   make({ id: "q-003", type: "multi", prompt: "Chọn TẤT CẢ các loại quả.", grade: 3, unit: 4, options: opts("apple", "carrot", "banana", "potato"), correctOptionIds: ["1", "3"], points: 2 }),
@@ -30,11 +30,49 @@ const questions: Question[] = [
   make({ id: "q-012", type: "truefalse", prompt: "\"Children\" is the plural of \"child\".", grade: 6, unit: 2, skill: "grammar", status: "archived", trueFalseAnswer: true }),
 ];
 
+// Kho câu hỏi trong bộ nhớ server (globalThis), mất khi khởi động lại. Backend thật sẽ thay thế.
+const g = globalThis as unknown as { __ecQuestions?: Question[] };
+function list(): Question[] {
+  if (!g.__ecQuestions) g.__ecQuestions = structuredClone(SEED_QUESTIONS);
+  return g.__ecQuestions;
+}
+
 // Giữ chữ ký async để sau này thay bằng gọi API thật.
 export async function getQuestions(): Promise<Question[]> {
-  return questions;
+  return list();
 }
 
 export async function getQuestionById(id: string): Promise<Question | undefined> {
-  return questions.find((q) => q.id === id);
+  return list().find((q) => q.id === id);
+}
+
+// ---------- thêm / sửa / lưu trữ ----------
+/** Gán mã `q-NNN` mới cho từng câu rồi thêm vào ngân hàng. */
+export async function addQuestions(items: Question[], today: string): Promise<Question[]> {
+  const all = list();
+  let next = Math.max(0, ...all.map((q) => Number.parseInt(q.id.replace(/\D/g, ""), 10))) + 1;
+  const created = items.map((item) => {
+    const q: Question = { ...structuredClone(item), id: `q-${String(next).padStart(3, "0")}`, status: "active", createdAt: today };
+    next += 1;
+    return q;
+  });
+  all.push(...created);
+  return created;
+}
+
+/** Sửa câu hỏi giữ nguyên mã, dạng câu, ngày tạo và trạng thái. */
+export async function updateQuestion(id: string, data: Question): Promise<Question | null> {
+  const all = list();
+  const index = all.findIndex((q) => q.id === id);
+  if (index === -1) return null;
+  const old = all[index];
+  all[index] = { ...structuredClone(data), id: old.id, type: old.type, createdAt: old.createdAt, status: old.status };
+  return all[index];
+}
+
+export async function setQuestionStatus(id: string, status: Question["status"]): Promise<boolean> {
+  const q = list().find((x) => x.id === id);
+  if (!q) return false;
+  q.status = status;
+  return true;
 }
