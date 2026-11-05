@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/Select";
 import { validateClassInput, type ClassErrors, type ClassInput } from "@/lib/class-validation";
 import { GRADE_OPTIONS } from "@/lib/question-types";
 import type { ClassInfo } from "@/types/class";
+import type { Course } from "@/types/course";
 import { createClassAction, updateClassAction } from "../../actions";
 import styles from "./ClassForm.module.css";
 
@@ -25,9 +26,10 @@ const DAYS = [
 interface ClassFormProps {
   mode: "new" | "edit";
   cls?: ClassInfo;
+  courses?: Course[];
 }
 
-export function ClassForm({ mode, cls }: ClassFormProps) {
+export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState(cls?.name ?? "");
@@ -37,6 +39,7 @@ export function ClassForm({ mode, cls }: ClassFormProps) {
   const [endTime, setEndTime] = useState(cls?.endTime ?? "18:30");
   const [fee, setFee] = useState(String(cls?.monthlyFee ?? 600000));
   const [unit, setUnit] = useState(String(cls?.currentUnit ?? 1));
+  const [courseId, setCourseId] = useState(cls?.courseId ?? "");
   const [errors, setErrors] = useState<ClassErrors>({});
   const [serverError, setServerError] = useState("");
 
@@ -54,6 +57,7 @@ export function ClassForm({ mode, cls }: ClassFormProps) {
       endTime,
       monthlyFee: Number(fee),
       currentUnit: Number(unit),
+      courseId: courseId || undefined,
     };
     const found = validateClassInput(input, mode);
     setErrors(found);
@@ -100,6 +104,16 @@ export function ClassForm({ mode, cls }: ClassFormProps) {
             onChange={(e) => setFee(e.target.value)}
           />
           <Input label="Đang học Unit" type="number" min={1} max={30} value={unit} error={errors.currentUnit} onChange={(e) => setUnit(e.target.value)} />
+          <label className={styles.courseField}>
+            <span>Khóa học</span>
+            <select value={courseId} onChange={(e) => setCourseId(e.target.value)}>
+              <option value="">Chưa gắn khóa học</option>
+              {(courses ?? []).filter((course) => course.status === "active").map((course) => (
+                <option key={course.id} value={course.id}>{course.name} · {course.level}</option>
+              ))}
+            </select>
+            <small>Chọn chương trình học áp dụng cho lớp này.</small>
+          </label>
         </div>
 
         <fieldset className={styles.days}>

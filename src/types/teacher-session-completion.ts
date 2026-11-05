@@ -12,6 +12,12 @@ export interface TeacherSessionCompletion {
   actualDuration: number;
   completedAt: string;
   updatedAt: string;
+  autoAssignmentId?: string;
+  curriculumId?: string;
+  curriculumUnitId?: string;
+  curriculumLessonId?: string;
+  curriculumLessonTitle?: string;
+  curriculumLessonCompleted?: boolean;
 }
 
 export type TeacherSessionCompletionInput = Omit<TeacherSessionCompletion, "id" | "teacherId" | "completedAt" | "updatedAt">;

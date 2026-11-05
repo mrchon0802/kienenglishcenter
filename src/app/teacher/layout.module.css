@@ -11,3 +11,10 @@
 .switch { color: var(--color-primary); font-weight: 700; text-decoration: none; padding: 9px 11px; border: 1px solid var(--color-border); border-radius: 9px; }
 .main { max-width: 1180px; margin: 0 auto; padding: 28px; display: flex; flex-direction: column; gap: 22px; }
 @media (max-width: 760px) { .header { padding: 14px 16px; } .main { padding: 20px 16px; } .account { width: 100%; flex-wrap: wrap; } .nav { order: 3; width: 100%; } }
+
+@media (max-width: 600px) {
+  .nav { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+  .navLink { white-space: nowrap; min-height: 44px; }
+  .account { align-items: flex-start; }
+  .switch { min-height: 44px; display: inline-flex; align-items: center; }
+}

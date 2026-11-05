@@ -1,0 +1,28 @@
+.form { display: grid; gap: 18px; }
+.panel { padding: 20px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+.panel h2 { margin: 0 0 16px; color: var(--color-ink); font-size: 17px; }
+.fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.fields label { display: grid; gap: 6px; color: var(--color-ink); font-size: 12px; font-weight: 700; }
+.fields input, .fields select, .fields textarea { width: 100%; min-width: 0; min-height: 42px; padding: 9px 11px; border: 1px solid var(--color-border); border-radius: 9px; background: #fff; color: var(--color-ink); font: inherit; font-size: 13px; }
+.fields textarea { resize: vertical; }
+.fields input:focus, .fields select:focus, .fields textarea:focus { outline: 2px solid var(--color-primary-faded); outline-offset: 1px; }
+.full { grid-column: 1 / -1; }
+.sectionHead, .unitHead, .lessonHead, .footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sectionHead { margin-bottom: 16px; }
+.sectionHead h2 { margin-bottom: 4px; }
+.sectionHead p { margin: 0; color: var(--color-muted); font-size: 12px; }
+.secondary, .addLesson { min-height: 40px; padding: 0 13px; border: 1px solid var(--color-primary); border-radius: 9px; background: var(--color-primary-soft); color: var(--color-primary-dark); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.units { display: grid; gap: 14px; }
+.unit { padding: 16px; border: 1px solid var(--color-border); border-radius: 12px; background: #fbfcfa; }
+.unitHead { margin-bottom: 14px; color: var(--color-primary-dark); }
+.remove { border: 0; background: transparent; color: #a33d36; font: inherit; font-size: 12px; cursor: pointer; }
+.lessonList { display: grid; gap: 12px; margin-top: 14px; padding-left: 14px; border-left: 2px solid var(--color-primary-faded); }
+.lesson { padding: 14px; border: 1px solid var(--color-divider); border-radius: 10px; background: #fff; }
+.lessonHead { margin-bottom: 12px; color: var(--color-ink); font-size: 12px; }
+.addLesson { justify-self: start; }
+.error { margin: 0; padding: 12px; border-radius: 9px; background: #fff0ed; color: #a33d36; font-size: 13px; }
+.footer { justify-content: flex-end; }
+.footer a { color: var(--color-muted); font-size: 13px; text-decoration: none; }
+.footer button { min-height: 44px; padding: 0 18px; border: 0; border-radius: 9px; background: var(--color-primary); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
+.footer button:disabled { opacity: .6; cursor: wait; }
+@media (max-width: 700px) { .fields { grid-template-columns: 1fr; } .full { grid-column: auto; } .panel { padding: 14px; } .sectionHead { align-items: flex-start; flex-direction: column; } .lessonList { padding-left: 8px; } }

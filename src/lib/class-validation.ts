@@ -6,6 +6,7 @@ export interface ClassInput {
   endTime: string; // "18:30"
   monthlyFee: number; // VNĐ / tháng
   currentUnit: number;
+  courseId?: string;
 }
 
 export type ClassErrors = Partial<Record<keyof ClassInput, string>>;

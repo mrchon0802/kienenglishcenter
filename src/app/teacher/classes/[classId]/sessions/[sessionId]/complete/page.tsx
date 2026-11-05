@@ -6,6 +6,8 @@ import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getSessionById } from "@/mocks/classes";
 import { getTeacherSessionCompletion } from "@/mocks/teacher-session-completions";
+import { getClassCurriculum } from "@/mocks/class-curriculum";
+import { getQuestions } from "@/mocks/questions";
 import { CompletionForm } from "./CompletionForm";
 import styles from "./completion.module.css";
 
@@ -14,9 +16,9 @@ type Params = Promise<{ classId: string; sessionId: string }>;
 async function CompletionPage({ params }: { params: Params }) {
   await connection();
   const { classId, sessionId } = await params;
-  const [portal, session, completion] = await Promise.all([
+  const [portal, session, completion, questions, curriculum] = await Promise.all([
     getTeacherPortalData(DEMO_CENTER_USER.teacherId), getSessionById(classId, sessionId),
-    getTeacherSessionCompletion(classId, sessionId, DEMO_CENTER_USER.teacherId),
+    getTeacherSessionCompletion(classId, sessionId, DEMO_CENTER_USER.teacherId), getQuestions(), getClassCurriculum(classId),
   ]);
   const cls = portal?.classes.find((item) => item.id === classId);
   if (!cls || !session) notFound();
@@ -26,7 +28,7 @@ async function CompletionPage({ params }: { params: Params }) {
     <p className={styles.eyebrow}>SESSION RECORD</p><h1>Hoàn thành buổi học</h1>
     <p className={styles.muted}>Lớp {cls.name} · {date} · {session.session.topic}</p>
     {completion && <p className={styles.saved}>Buổi học đã có biên bản. Bạn có thể cập nhật thông tin.</p>}
-    <CompletionForm classId={classId} sessionId={sessionId} date={session.session.date} topic={session.session.topic} initial={completion} />
+    <CompletionForm classId={classId} sessionId={sessionId} date={session.session.date} topic={session.session.topic} initial={completion} curriculum={curriculum} existingAssignmentId={completion?.autoAssignmentId} bankQuestions={questions.map(({ id, prompt, type, points, status }) => ({ id, prompt, type, points, status }))} />
   </main>;
 }
 export default function Page({ params }: { params: Params }) { return <Suspense fallback={<p>Đang tải thông tin buổi học...</p>}><CompletionPage params={params} /></Suspense>; }

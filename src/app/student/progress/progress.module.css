@@ -1,0 +1,22 @@
+.stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.stats article { display: flex; flex-direction: column; gap: 7px; min-width: 0; padding: 18px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+.stats span, .stats small, .scoreRow small, .assignmentRow small { color: var(--color-muted); font-size: 12px; }
+.stats strong { color: var(--color-primary); font-size: 27px; line-height: 1.2; }
+.scoreList, .assignmentList, .lessonList { display: grid; gap: 0; }
+.scoreRow, .assignmentRow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--color-border); }
+.scoreRow:last-child, .assignmentRow:last-child { border-bottom: 0; }
+.scoreRow > div, .assignmentRow > div:first-child { display: grid; gap: 5px; min-width: 0; }
+.score { color: var(--color-primary); white-space: nowrap; }
+.assignmentMeta { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+.assignmentMeta a, .note a { color: var(--color-primary); font-size: 13px; font-weight: 700; text-decoration: none; }
+.note { margin: 14px 0 0; text-align: right; }
+.lesson { display: grid; grid-template-columns: 115px minmax(0, 1fr) auto; align-items: start; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--color-border); }
+.lesson:last-child { border-bottom: 0; }
+.lessonDate { color: var(--color-muted); font-size: 12px; }
+.lessonBody { min-width: 0; }
+.lessonBody p { margin: 6px 0 0; color: var(--color-muted); font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+.lessonBody p b { color: var(--color-ink); }
+.muted, .disclaimer { color: var(--color-muted); }
+.disclaimer { margin: 0; font-size: 12px; line-height: 1.6; }
+@media (max-width: 850px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .lesson { grid-template-columns: 1fr; gap: 8px; } .assignmentRow { align-items: flex-start; flex-direction: column; } .assignmentMeta { width: 100%; justify-content: space-between; } .scoreRow { align-items: flex-start; } }

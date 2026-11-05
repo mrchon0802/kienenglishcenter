@@ -76,3 +76,31 @@
   color: #8a1c12;
   font-size: 14px;
 }
+
+.courseField {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 600;
+}
+.courseField select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+}
+.courseField select:focus-visible {
+  outline: 2px solid var(--color-primary-faded);
+  outline-offset: 2px;
+}
+.courseField small {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 400;
+}

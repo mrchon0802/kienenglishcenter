@@ -1,0 +1,8 @@
+.wrap { display: grid; gap: 14px; }
+.title { margin: 0; font-size: 18px; color: var(--color-text, #183b38); }
+.tableScroll { width: 100%; overflow-x: auto; }
+.table { width: 100%; border-collapse: collapse; min-width: 650px; }
+.table th, .table td { padding: 12px 14px; border-bottom: 1px solid var(--color-border, #e5e9e5); text-align: left; font-size: 14px; }
+.table th { color: var(--color-muted, #66736f); font-weight: 600; background: var(--color-surface-soft, #f7f8f6); }
+.empty { padding: 20px; color: var(--color-muted, #66736f); background: var(--color-surface-soft, #f7f8f6); border-radius: 10px; }
+.note { margin: 0; color: var(--color-muted, #66736f); font-size: 13px; line-height: 1.6; }

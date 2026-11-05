@@ -3,7 +3,8 @@
 import { findScheduleConflict, validateClassInput, type ClassInput } from "@/lib/class-validation";
 import { formatSchedule } from "@/lib/schedule";
 import { revalidateEverything } from "@/lib/revalidate";
-import { createClass, getClassById, getClasses, updateClass } from "@/mocks/classes";
+import { createClass, getClassById, getClasses, getClassStudents, updateClass } from "@/mocks/classes";
+import { createClassScheduleNotifications } from "@/mocks/student-notifications";
 
 type Response = { ok: true; id: string } | { ok: false; error: string };
 
@@ -36,6 +37,7 @@ export async function createClassAction(input: ClassInput): Promise<Response> {
     endTime: input.endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
+    courseId: input.courseId || undefined,
   });
   revalidateEverything();
   return { ok: true, id: created.id };
@@ -60,6 +62,7 @@ export async function updateClassAction(id: string, input: ClassInput): Promise<
     endTime: input.endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
+    courseId: input.courseId || undefined,
   });
   revalidateEverything();
   return { ok: true, id };

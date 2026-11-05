@@ -1,1 +1,13 @@
 .page{max-width:900px;margin:0 auto;padding:28px 20px 56px;color:#183b37}.page>a{color:#0f766e;text-decoration:none;font-weight:650}.eyebrow{margin:24px 0 6px;color:#0f766e;font-size:12px;font-weight:800;letter-spacing:.12em}.page h1{margin:0;font-size:30px}.muted{color:#64736f}.saved,.message{padding:12px 14px;border-radius:10px;background:#e8f5ef;color:#17634c}.form{display:grid;gap:16px;margin-top:24px;padding:22px;background:#fff;border:1px solid #dce5df;border-radius:16px}.form label{display:grid;gap:7px;font-weight:650}.form input,.form textarea{width:100%;padding:11px 12px;border:1px solid #cbd8d1;border-radius:9px;font:inherit;color:#183b37;background:#fff}.form input:focus,.form textarea:focus{outline:3px solid #b9e3d8;border-color:#0f766e}.form button{justify-self:start;min-height:44px;padding:0 20px;border:0;border-radius:9px;background:#0f766e;color:#fff;font:inherit;font-weight:700;cursor:pointer}.form button:disabled{opacity:.6;cursor:wait}
+
+.homeworkBox{display:grid;gap:12px;padding:18px;border:1px solid #cbded5;border-radius:12px;background:#f7faf7}.homeworkBox h3{margin:8px 0 0;color:#183f3a;font-size:15px}.toggle{display:flex!important;grid-template-columns:auto 1fr;align-items:center;gap:10px!important}.toggle input,.questionChoices input{width:18px;height:18px;accent-color:#0f766e}.questionChoices{display:grid;gap:8px;max-height:260px;overflow:auto;padding:10px;border:1px solid #dce5df;border-radius:9px;background:#fff}.questionChoices label{display:flex;grid-template-columns:auto 1fr;align-items:flex-start;gap:10px!important;padding:7px 0;font-weight:500!important}.questionChoices small{display:block;color:#718078;font-size:11px}.addQuestion{justify-self:start!important;min-height:40px!important;background:#e5f2ed!important;color:#17634c!important;border:1px solid #b9d8ca!important}.helper{margin:0;color:#64736f;font-size:12px;line-height:1.5}
+
+.curriculumBox{display:grid;gap:14px;padding:18px;border:1px solid #b9d8ca;border-radius:12px;background:#f2f8f4}
+.curriculumBox h2{margin:0 0 4px;font-size:17px;color:#183f3a}
+.curriculumBox p{margin:0;color:#64736f;font-size:13px;line-height:1.5}
+.curriculumBox label{display:grid;gap:7px;font-weight:650}
+.curriculumBox select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #cbd8d1;border-radius:9px;background:#fff;color:#183b37;font:inherit}
+.lessonInfo{padding:12px;border-radius:9px;background:#fff;border:1px solid #dce5df}
+.lessonInfo strong{color:#183f3a}
+.confirmLesson{display:flex!important;grid-template-columns:auto 1fr;align-items:center;gap:10px!important}
+.confirmLesson input{width:18px;height:18px;accent-color:#0f766e}

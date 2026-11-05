@@ -1,0 +1,22 @@
+.form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.form label, .updateForm label { display: grid; gap: 6px; color: var(--color-ink); font-size: 13px; font-weight: 600; }
+.form input, .updateForm input { width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-ink); font: inherit; }
+.form button, .updateForm button { min-height: 44px; padding: 9px 16px; border: 0; border-radius: var(--radius-control); background: var(--color-primary); color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.form button:focus-visible, .updateForm button:focus-visible, .form input:focus-visible, .updateForm input:focus-visible { outline: 3px solid var(--color-primary-faded); outline-offset: 2px; }
+.list { display: grid; gap: 18px; }
+.goal { padding: 16px; border: 1px solid var(--color-border); border-radius: var(--radius-card); }
+.goalHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.goalHead h2 { margin: 0; font-size: 16px; }
+.goalHead p, .note, .updateForm small { margin: 6px 0 0; color: var(--color-muted); font-size: 12px; }
+.done, .active { flex: 0 0 auto; padding: 5px 10px; border-radius: var(--radius-pill); font-size: 12px; font-weight: 700; }
+.done { color: #166534; background: #dcfce7; }
+.active { color: var(--color-primary-dark); background: var(--color-primary-soft); }
+.progressMeta { display: flex; justify-content: space-between; margin: 16px 0 7px; font-size: 13px; }
+.track { height: 9px; overflow: hidden; border-radius: 99px; background: var(--color-track); }
+.track span { display: block; height: 100%; border-radius: inherit; background: var(--color-primary); }
+.updateForm { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-top: 14px; }
+.updateForm label { width: 140px; }
+.updateForm small { align-self: center; }
+.note { line-height: 1.6; }
+@media (max-width: 850px) { .form { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .form { grid-template-columns: 1fr; } .goalHead { flex-direction: column; } .updateForm label { width: 100%; } }

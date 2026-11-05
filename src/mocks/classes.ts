@@ -11,11 +11,11 @@ import { getStudents } from "./students";
 const TODAY = "2026-10-16";
 
 const SEED_CLASSES: ClassInfo[] = [
-  { id: "1a", name: "1A", grade: 1, scheduleDays: [3, 5], startTime: "16:00", endTime: "17:00", monthlyFee: 500_000, currentUnit: 2 },
-  { id: "3a", name: "3A", grade: 3, scheduleDays: [2, 4, 6], startTime: "17:30", endTime: "18:30", monthlyFee: 600_000, currentUnit: 4 },
-  { id: "4a", name: "4A", grade: 4, scheduleDays: [3, 5], startTime: "17:30", endTime: "18:30", monthlyFee: 600_000, currentUnit: 5 },
-  { id: "6b", name: "6B", grade: 6, scheduleDays: [2, 4, 6], startTime: "18:45", endTime: "19:45", monthlyFee: 700_000, currentUnit: 3 },
-  { id: "9a", name: "9A", grade: 9, scheduleDays: [2, 4, 6], startTime: "20:00", endTime: "21:00", monthlyFee: 800_000, currentUnit: 6 },
+  { id: "1a", name: "1A", grade: 1, courseId: "english-beginner", scheduleDays: [3, 5], startTime: "16:00", endTime: "17:00", monthlyFee: 500_000, currentUnit: 2 },
+  { id: "3a", name: "3A", grade: 3, courseId: "english-beginner", scheduleDays: [2, 4, 6], startTime: "17:30", endTime: "18:30", monthlyFee: 600_000, currentUnit: 4 },
+  { id: "4a", name: "4A", grade: 4, courseId: "english-elementary", scheduleDays: [3, 5], startTime: "17:30", endTime: "18:30", monthlyFee: 600_000, currentUnit: 5 },
+  { id: "6b", name: "6B", grade: 6, courseId: "english-elementary", scheduleDays: [2, 4, 6], startTime: "18:45", endTime: "19:45", monthlyFee: 700_000, currentUnit: 3 },
+  { id: "9a", name: "9A", grade: 9, courseId: "english-intermediate", scheduleDays: [2, 4, 6], startTime: "20:00", endTime: "21:00", monthlyFee: 800_000, currentUnit: 6 },
 ];
 
 // Kho lớp học trong bộ nhớ server (globalThis), mất khi khởi động lại. Backend thật sẽ thay thế.

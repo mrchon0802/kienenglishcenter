@@ -7,6 +7,7 @@ export interface ClassInfo {
   endTime: string; // "18:30"
   monthlyFee: number; // VNĐ / tháng
   currentUnit: number;
+  courseId?: string;
 }
 
 export interface ClassWithCount extends ClassInfo {

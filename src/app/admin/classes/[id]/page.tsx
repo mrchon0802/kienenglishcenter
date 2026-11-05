@@ -5,10 +5,11 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { formatScore } from "@/lib/format";
+import { formatScore, formatVND } from "@/lib/format";
 import { formatSchedule } from "@/lib/schedule";
 import { getClassById, getClassSessions, getClassStudents, getClasses } from "@/mocks/classes";
 import { getStudents } from "@/mocks/students";
+import { getCourseById } from "@/mocks/courses";
 import { ClassStudentsTable } from "../_components/ClassStudentsTable";
 import { EnrollStudentForm } from "../_components/EnrollStudentForm";
 import { SessionList } from "../_components/SessionList";
@@ -21,11 +22,12 @@ async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
   const cls = await getClassById(id);
   if (!cls) notFound();
 
-  const [students, sessions, allStudents, classes] = await Promise.all([
+  const [students, sessions, allStudents, classes, course] = await Promise.all([
     getClassStudents(id),
     getClassSessions(id),
     getStudents(),
     getClasses(),
+    cls.courseId ? getCourseById(cls.courseId) : Promise.resolve(undefined),
   ]);
   const count = students.length;
   const scored = students.filter((s) => s.averageScore > 0); // averageScore = 0 nghĩa là chưa có điểm
@@ -50,6 +52,14 @@ async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
           </>
         }
       />
+
+      {course ? (
+        <Card title="Khóa học đang áp dụng">
+          <p><strong>{course.name}</strong> · {course.level}</p>
+          <p>{course.totalSessions} buổi · {course.durationWeeks} tuần · Học phí chuẩn {formatVND(course.standardFee)}</p>
+          <Button href={`/admin/courses/${course.id}`}>Xem khóa học</Button>
+        </Card>
+      ) : null}
 
       <div className={styles.stats}>
         <StatCard label="Sĩ số" value={String(count)} hint={`Đang học Unit ${cls.currentUnit}`} />

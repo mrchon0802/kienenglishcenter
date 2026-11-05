@@ -1,0 +1,19 @@
+.wrap{display:flex;flex-direction:column;gap:20px}
+.form{display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--color-bg);border:1px solid var(--color-border);border-radius:12px}
+.form h2,.listHead h2{font-size:16px;margin:0}
+.form label{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700}
+.form input,.form select,.listHead select{min-height:42px;border:1px solid var(--color-border);border-radius:8px;padding:8px 10px;background:white;font:inherit;color:var(--color-ink)}
+.formRow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.primary{align-self:flex-start;min-height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--color-primary);color:white;font:inherit;font-weight:700;cursor:pointer}
+.listHead{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.task{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--color-divider)}
+.taskMain{display:flex;align-items:center;gap:12px;cursor:pointer}
+.taskMain input{width:18px;height:18px;accent-color:var(--color-primary)}
+.taskMain span{display:flex;flex-direction:column;gap:4px}
+.taskMain small{font-size:12px;color:var(--color-muted)}
+.completed{text-decoration:line-through;color:var(--color-muted)}
+.done,.pending{font-size:11px;font-weight:700;padding:5px 9px;border-radius:99px;white-space:nowrap}
+.done{background:var(--color-primary-soft);color:var(--color-primary-dark)}
+.pending{background:var(--color-warning-soft);color:var(--color-warning-text)}
+.empty{padding:20px;text-align:center;color:var(--color-muted);border:1px dashed var(--color-border);border-radius:10px}
+@media(max-width:600px){.formRow{grid-template-columns:1fr}.task{align-items:flex-start;flex-direction:column}}

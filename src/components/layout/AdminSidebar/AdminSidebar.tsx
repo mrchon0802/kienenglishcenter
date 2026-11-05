@@ -9,11 +9,17 @@ const NAV_ITEMS = [
   { href: "/admin/students", label: "Học sinh" },
   { href: "/admin/teachers", label: "Giáo viên" },
   { href: "/admin/classes", label: "Lớp học & điểm danh" },
+  { href: "/admin/courses", label: "Khóa học" },
+  { href: "/admin/curriculum", label: "Giáo trình" },
+  { href: "/admin/teaching-progress", label: "Tiến độ giảng dạy" },
+  { href: "/admin/enrollments", label: "Đăng ký khóa học" },
   { href: "/admin/question-bank", label: "Ngân hàng câu hỏi" },
   { href: "/admin/assignments", label: "Bài tập & kiểm tra" },
   { href: "/admin/gradebook", label: "Bảng điểm" },
   { href: "/admin/tuition", label: "Học phí & công nợ" },
+  { href: "/admin/schedule", label: "Thời khóa biểu" },
   { href: "/admin/reports", label: "Báo cáo" },
+  { href: "/admin/settings", label: "Cài đặt" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
@@ -49,7 +55,9 @@ export function AdminSidebar() {
         </ul>
       </nav>
       <div className={styles.modeSwitch}>
-        <Link href="/teacher" className={styles.modeLink}>Chuyển sang Teacher ↗</Link>
+        <Link href="/teacher" className={styles.modeLink}>
+          Chuyển sang Teacher ↗
+        </Link>
       </div>
     </aside>
   );

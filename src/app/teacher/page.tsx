@@ -35,6 +35,13 @@ async function TeacherDashboard() {
         <div className={styles.panelHead}><h2>Lớp đang phụ trách</h2><Link href="/teacher/classes">Xem tất cả</Link></div>
         {data.classes.length ? <div className={styles.classGrid}>{data.classes.map((cls) => <article className={styles.classCard} key={cls.id}><div><span className={styles.classTag}>LỚP {cls.name}</span><h3>Khối {cls.grade}</h3></div><p>{cls.students.length} học sinh · Unit {cls.currentUnit}</p><p className={styles.muted}>{cls.startTime} – {cls.endTime}</p></article>)}</div> : <p className={styles.empty}>Hiện chưa có lớp được phân công.</p>}
       </section>
+      <section className={styles.panel}>
+        <div className={styles.panelHead}><h2>Không gian làm việc</h2></div>
+        <div className={styles.classGrid}>
+          <article className={styles.classCard}><h3>Học viên</h3><p className={styles.muted}>Xem danh sách học viên và ghi chú giảng dạy.</p><Link href="/teacher/students">Mở danh sách học viên →</Link></article>
+          <article className={styles.classCard}><h3>Công việc</h3><p className={styles.muted}>Tạo và theo dõi các đầu việc cá nhân.</p><Link href="/teacher/tasks">Quản lý công việc →</Link></article>
+        </div>
+      </section>
     </>
   );
 }
