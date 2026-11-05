@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/admin/courses", label: "Khóa học" },
   { href: "/admin/curriculum", label: "Giáo trình" },
   { href: "/admin/teaching-progress", label: "Tiến độ giảng dạy" },
+  { href: "/admin/assessments", label: "Đánh giá năng lực" },
   { href: "/admin/enrollments", label: "Đăng ký khóa học" },
   { href: "/admin/question-bank", label: "Ngân hàng câu hỏi" },
   { href: "/admin/assignments", label: "Bài tập & kiểm tra" },

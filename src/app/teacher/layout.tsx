@@ -21,6 +21,7 @@ async function TeacherLayoutContent({ children }: Readonly<{ children: React.Rea
           <Link href="/teacher/schedule" className={styles.navLink}>Lịch giảng dạy</Link>
           <Link href="/teacher/calendar" className={styles.navLink}>Lịch cá nhân</Link>
           <Link href="/teacher/students" className={styles.navLink}>Học viên</Link>
+          <Link href="/teacher/assessments" className={styles.navLink}>Đánh giá học sinh</Link>
           <Link href="/teacher/tasks" className={styles.navLink}>Công việc</Link>
           <Link href="/teacher/reports" className={styles.navLink}>Báo cáo</Link>
           <Link href="/teacher/profile" className={styles.navLink}>Hồ sơ</Link>

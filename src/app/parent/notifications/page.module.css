@@ -1,0 +1,40 @@
+.page { display:flex; flex-direction:column; gap:20px; color:#203431; }
+.heading { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
+.eyebrow { color:#0f766e; font-size:10px; font-weight:800; letter-spacing:.13em; }
+.heading h1 { margin:7px 0 5px; color:#123b38; font-size:clamp(23px,3vw,30px); }
+.heading p { margin:0; color:#71807b; font-size:13px; line-height:1.55; }
+.student { display:flex; flex-direction:column; gap:5px; padding:12px 15px; border:1px solid #dce9e2; border-radius:12px; background:#fff; }
+.student strong { color:#173c37; font-size:13px; }.student span { color:#788780; font-size:11px; }
+.stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.stat { display:flex; flex-direction:column; gap:7px; min-height:100px; padding:16px; border:1px solid #e0e8e3; border-radius:14px; background:#fff; }
+.stat span { color:#65746f; font-size:11px; }.stat strong { color:#123b38; font-size:24px; }.stat small { color:#84908b; font-size:10px; }
+.panel { min-width:0; padding:20px; border:1px solid #e0e8e3; border-radius:16px; background:#fff; }
+.panelHead { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.panelHead h2 { margin:0; color:#173c37; font-size:16px; }.panelHead p { margin:5px 0 0; color:#82908b; font-size:11px; }
+.list { display:flex; flex-direction:column; gap:0; margin:0; padding:0; list-style:none; }
+.list li { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; padding:13px 0; border-top:1px solid #edf1ee; }
+.list li:first-child { border-top:0; }
+.info { display:flex; flex:1; flex-direction:column; gap:5px; min-width:0; }
+.info strong { color:#29433d; font-size:12px; }.info small { color:#84908b; font-size:10px; line-height:1.5; }
+.pill { flex:0 0 auto; padding:5px 9px; border-radius:999px; background:#edf5f0; color:#0f766e; font-size:10px; font-weight:700; }
+.warning { background:#fff5e7; color:#a66a13; }.danger { background:#fff0ed; color:#b54735; }.muted { background:#f1f3f1; color:#7b8982; }
+.empty,.notice { padding:18px; border:1px solid #e0e8e3; border-radius:14px; background:#fff; color:#84908b; font-size:12px; line-height:1.6; }
+.notice { border-color:#eadfc9; background:#fffdf7; color:#74684f; }.notice h1 { margin:0 0 8px; color:#654b1c; font-size:21px; }.notice p { margin:0; }
+.tableWrap { overflow-x:auto; border:1px solid #e8eee9; border-radius:12px; }
+.table { width:100%; border-collapse:collapse; min-width:620px; text-align:left; }
+.table th,.table td { padding:12px 14px; border-bottom:1px solid #edf1ee; font-size:11px; }
+.table th { color:#71807b; background:#f7faf8; font-weight:700; }.table td { color:#42564f; }.table tr:last-child td { border-bottom:0; }
+.skillGrid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.skill { display:flex; flex-direction:column; gap:7px; padding:14px; border-radius:11px; background:#f3f8f5; }
+.skill span { color:#71807b; font-size:10px; }.skill strong { color:#0f766e; font-size:22px; }.skill small { color:#91a09a; font-size:10px; }
+.comment { margin-top:13px; padding:13px; border-left:3px solid #8ab9a5; border-radius:0 9px 9px 0; background:#f7faf8; font-size:11px; line-height:1.55; }
+.comment p { margin:6px 0 0; color:#64736e; }
+.loading { padding:24px; color:#71807b; font-size:13px; }
+@media (max-width:900px) { .stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width:650px) { .heading { align-items:stretch; flex-direction:column; }.stats { gap:8px; }.stat { min-height:88px; padding:12px; }.panel { padding:15px; }.skillGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }.list li { gap:8px; } }
+
+.disclaimer { margin:0; color:#8a9691; font-size:10px; line-height:1.55; }
+.dot { width:8px; height:8px; flex:0 0 8px; margin-top:5px; border-radius:50%; }
+.dotRead { background:#c4cec8; }.dotUnread { background:#0f766e; }
+.link { width:max-content; color:#0f766e; font-size:10px; font-weight:700; text-decoration:none; }
+.link:hover { text-decoration:underline; }

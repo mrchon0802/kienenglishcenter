@@ -118,3 +118,25 @@ export async function importStudentsAction(
   revalidateEverything();
   return { ok: true, created: valid.length, skipped };
 }
+
+
+/** Bật/tắt quyền truy cập Parent Portal trên cùng tài khoản học sinh. */
+export async function updateParentAccessAction(
+  studentId: string,
+  enabled: boolean,
+): Promise<{ ok: true } | Fail> {
+  if (typeof enabled !== "boolean") {
+    return { ok: false, error: "Trạng thái quyền truy cập không hợp lệ." };
+  }
+
+  const student = await getStudentById(studentId);
+  if (!student) return { ok: false, error: "Không tìm thấy học sinh." };
+  if (enabled && student.status !== "active") {
+    return { ok: false, error: "Chỉ có thể bật Parent Portal cho học sinh đang học." };
+  }
+
+  await updateStudent(studentId, { parentAccessEnabled: enabled });
+  revalidateEverything();
+  return { ok: true };
+}
+

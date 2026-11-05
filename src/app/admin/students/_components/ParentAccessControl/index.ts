@@ -1,0 +1,1 @@
+export { ParentAccessControl } from "./ParentAccessControl";
