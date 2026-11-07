@@ -1,12 +1,18 @@
 "use server";
 
+import { requireTeacherAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { createStudentAssessment } from "@/mocks/student-assessments";
 import type { StudentAssessmentInput } from "@/types/student-assessment";
 
 export async function createStudentAssessmentAction(input: StudentAssessmentInput) {
-  const result = await createStudentAssessment(DEMO_CENTER_USER.teacherId, input);
+  await requireTeacherAction();
+
+  const currentTeacherId = await getCurrentTeacherId();
+
+  const result = await createStudentAssessment(currentTeacherId, input);
   if (!result.ok) return result;
   revalidatePath("/teacher/assessments");
   revalidatePath("/admin/assessments");

@@ -1,8 +1,10 @@
+import { toISODate } from "@/lib/month";
+import { syncTuitionReminderNotifications } from "@/mocks/tuition-notifications";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { getStudentNotifications } from "@/mocks/student-notifications";
 import styles from "./page.module.css";
@@ -27,7 +29,9 @@ function getParentNotificationHref(category: keyof typeof categoryLabel | undefi
 
 async function NotificationsContent() {
   await connection();
-  const student = await getStudentById(CURRENT_STUDENT_ID);
+  const currentStudentId = await getCurrentStudentId();
+  await syncTuitionReminderNotifications(toISODate(new Date()));
+  const student = await getStudentById(currentStudentId);
   if (!student) return <section className={styles.notice}><h1>Không tìm thấy hồ sơ học sinh</h1><p>Vui lòng liên hệ trung tâm.</p></section>;
   if (!student.parentAccessEnabled) return <section className={styles.notice}><h1>Quyền truy cập chưa được kích hoạt</h1><p>Trung tâm chưa bật Parent Portal cho {student.fullName}.</p></section>;
 

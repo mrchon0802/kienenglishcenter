@@ -7,11 +7,15 @@ import styles from "./TuitionTabs.module.css";
 const TABS = [
   { href: "/admin/tuition", label: "Hóa đơn theo tháng" },
   { href: "/admin/tuition/debts", label: "Công nợ" },
+  { href: "/admin/tuition/debt-report", label: "Báo cáo công nợ" },
+  { href: "/admin/tuition/reminders", label: "Thông báo" },
   { href: "/admin/tuition/revenue", label: "Doanh thu" },
+  { href: "/admin/tuition/transactions", label: "Giao dịch thu" },
 ] as const;
 
 function isActive(pathname: string, href: string): boolean {
-  if (href === "/admin/tuition") return pathname === href || pathname.startsWith("/admin/tuition/invoices");
+  if (href === "/admin/tuition")
+    return pathname === href || pathname.startsWith("/admin/tuition/invoices");
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 

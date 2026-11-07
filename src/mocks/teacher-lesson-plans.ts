@@ -1,6 +1,7 @@
 import type { TeacherLessonPlan, TeacherLessonPlanInput } from "@/types/teacher-lesson-plan";
 import { getClassById } from "./classes";
 import { getTeacherAssignments } from "./teacher-assignments";
+import { getCurricula } from "./curricula";
 
 const SEED: TeacherLessonPlan[] = [
   {
@@ -30,39 +31,67 @@ function store(): Store {
   return g.__ecTeacherLessonPlans;
 }
 
+export async function getAllTeacherLessonPlans(): Promise<TeacherLessonPlan[]> {
+  return store().plans.map((plan) => ({ ...plan, sharedWithTeacherIds: [...(plan.sharedWithTeacherIds ?? [])] }))
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+}
+
 export async function getTeacherLessonPlans(teacherId: string): Promise<TeacherLessonPlan[]> {
-  const assignments = await getTeacherAssignments();
-  const assignedClassIds = new Set(assignments.filter((item) => item.teacherId === teacherId && !item.endDate).map((item) => item.classId));
-  return store().plans.filter((plan) => plan.teacherId === teacherId || (plan.visibility === "shared" && assignedClassIds.has(plan.classId)))
+  return store().plans.filter((plan) => plan.teacherId === teacherId || (plan.sharedWithTeacherIds ?? []).includes(teacherId))
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
 export async function getTeacherLessonPlanById(planId: string, teacherId: string): Promise<TeacherLessonPlan | null> {
   const plan = store().plans.find((item) => item.id === planId);
-  if (!plan) return null;
-  const assignments = await getTeacherAssignments();
-  const assigned = assignments.some((item) => item.teacherId === teacherId && item.classId === plan.classId && !item.endDate);
-  if (plan.teacherId !== teacherId && !(plan.visibility === "shared" && assigned)) return null;
-  return { ...plan };
+  if (!plan || (plan.teacherId !== teacherId && !(plan.sharedWithTeacherIds ?? []).includes(teacherId))) return null;
+  return { ...plan, sharedWithTeacherIds: [...(plan.sharedWithTeacherIds ?? [])] };
 }
 
-export async function saveTeacherLessonPlan(teacherId: string, input: TeacherLessonPlanInput, planId?: string): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
-  const assignments = await getTeacherAssignments();
-  const assigned = assignments.some((item) => item.teacherId === teacherId && item.classId === input.classId && !item.endDate);
-  if (!assigned) return { ok: false, error: "Bạn chỉ có thể tạo giáo án cho lớp đang được phân công." };
-  const cls = await getClassById(input.classId);
-  if (!cls) return { ok: false, error: "Không tìm thấy lớp học." };
+export async function saveTeacherLessonPlan(teacherId: string, input: TeacherLessonPlanInput, planId?: string, copiedFromId?: string): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  const curricula = await getCurricula();
+  const curriculum = curricula.find((item) => item.id === input.curriculumId && item.status === "active");
+  const unit = curriculum?.units.find((item) => item.id === input.unitId);
+  const lesson = unit?.lessons.find((item) => item.id === input.lessonId);
+  if (!curriculum || !unit || !lesson) return { ok: false, error: "Vui lòng chọn đúng chương trình, Unit và Lesson đang hoạt động." };
   const title = input.title.trim();
-  if (!title || !input.unit.trim() || !input.lesson.trim() || !input.objectives.trim()) return { ok: false, error: "Vui lòng nhập tiêu đề, Unit, Lesson và mục tiêu bài học." };
+  if (!title || !input.objectives.trim()) return { ok: false, error: "Vui lòng nhập tiêu đề và mục tiêu bài học." };
   if (!Number.isFinite(input.duration) || input.duration < 10 || input.duration > 180) return { ok: false, error: "Thời lượng phải từ 10 đến 180 phút." };
   const now = new Date().toISOString();
   if (planId) {
     const existing = store().plans.find((item) => item.id === planId);
-    if (!existing || existing.teacherId !== teacherId) return { ok: false, error: "Bạn không có quyền chỉnh sửa giáo án này." };
-    Object.assign(existing, { ...input, title, grade: cls.grade, updatedAt: now });
+    if (!existing || existing.teacherId !== teacherId) return { ok: false, error: "Bạn chỉ có thể chỉnh sửa giáo án do mình tạo." };
+    Object.assign(existing, { ...input, title, grade: curriculum.grade ?? existing.grade, unit: unit.title, lesson: lesson.title, updatedAt: now });
     return { ok: true, id: existing.id };
   }
-  const id = `plan-${Date.now().toString(36)}`;
-  store().plans.unshift({ ...input, title, id, teacherId, grade: cls.grade, createdAt: now, updatedAt: now });
+  const id = `plan-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,6)}`;
+  store().plans.unshift({ ...input, title, id, teacherId, grade: curriculum.grade ?? 0, unit: unit.title, lesson: lesson.title, sharedWithTeacherIds: [], copiedFromId, createdAt: now, updatedAt: now });
   return { ok: true, id };
+}
+
+export async function shareTeacherLessonPlan(planId: string, teacherIds: string[]): Promise<boolean> {
+  const plan = store().plans.find((item) => item.id === planId);
+  if (!plan) return false;
+  plan.sharedWithTeacherIds = [...new Set(teacherIds.filter(Boolean))];
+  plan.updatedAt = new Date().toISOString();
+  return true;
+}
+
+export async function copyTeacherLessonPlan(planId: string, teacherId: string): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  const source = await getTeacherLessonPlanById(planId, teacherId);
+  if (!source) return { ok: false, error: "Bạn không có quyền sử dụng giáo án này." };
+  const { id, teacherId: _owner, createdAt: _created, updatedAt: _updated, sharedWithTeacherIds: _shares, ...rest } = source;
+  if (!source.curriculumId || !source.unitId || !source.lessonId) {
+    return {
+      ok: false,
+      error: "Giáo án này chưa được liên kết với Chương trình, Unit và Lesson. Vui lòng cập nhật liên kết trong giáo án gốc trước khi sao chép.",
+    };
+  }
+  return saveTeacherLessonPlan(teacherId, {
+    ...rest,
+    curriculumId: source.curriculumId,
+    unitId: source.unitId,
+    lessonId: source.lessonId,
+    status: "draft",
+    visibility: "private",
+  }, undefined, source.id);
 }

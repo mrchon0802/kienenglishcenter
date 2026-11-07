@@ -19,13 +19,14 @@ import {
   typeLabel,
 } from "@/lib/question-types";
 import { normalizeText } from "@/lib/text";
-import { setQuestionStatusAction } from "../../actions";
+import { setQuestionStatusAction, shareQuestionAction } from "../../actions";
+import type { Teacher } from "@/types/teacher";
 import type { Question } from "@/types/question";
 import styles from "./QuestionBankView.module.css";
 
 const PAGE_SIZE = 10;
 
-export function QuestionBankView({ questions }: { questions: Question[] }) {
+export function QuestionBankView({ questions, teachers }: { questions: Question[]; teachers: Teacher[] }) {
   const [items, setItems] = useState(questions);
   const [search, setSearch] = useState("");
   const [type, setType] = useState("");
@@ -34,6 +35,10 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
   const [skill, setSkill] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [page, setPage] = useState(1);
+  const [sharingQuestion, setSharingQuestion] = useState<Question | null>(null);
+  const [selectedTeacherIds, setSelectedTeacherIds] = useState<string[]>([]);
+  const [shareMessage, setShareMessage] = useState("");
+  const [sharePending, setSharePending] = useState(false);
 
   const unitOptions = useMemo(
     () =>
@@ -75,6 +80,23 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
     setUnit("");
     setSkill("");
     setPage(1);
+  }
+
+  function openShare(question: Question) {
+    setSharingQuestion(question);
+    setSelectedTeacherIds(question.sharedWithTeacherIds ?? []);
+    setShareMessage("");
+  }
+
+  async function saveShare() {
+    if (!sharingQuestion) return;
+    setSharePending(true);
+    const result = await shareQuestionAction(sharingQuestion.id, selectedTeacherIds);
+    setSharePending(false);
+    if (!result.ok) { setShareMessage(result.error); return; }
+    setItems((prev) => prev.map((item) => item.id === sharingQuestion.id ? { ...item, sharedWithTeacherIds: [...selectedTeacherIds] } : item));
+    setShareMessage(selectedTeacherIds.length ? "Đã cập nhật chia sẻ câu hỏi." : "Đã thu hồi tất cả quyền chia sẻ.");
+    setSharingQuestion(null);
   }
 
   function toggleArchive(id: string) {
@@ -129,6 +151,9 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
                 <th scope="col">Câu hỏi</th>
                 <th scope="col">Dạng</th>
                 <th scope="col">Lớp</th>
+                <th scope="col">Người tạo</th>
+                <th scope="col">Đã chia sẻ</th>
+                <th scope="col">Lesson</th>
                 <th scope="col">Unit</th>
                 <th scope="col">Kỹ năng</th>
                 <th scope="col">Đáp án</th>
@@ -152,6 +177,9 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
                     </Badge>
                   </td>
                   <td>{q.grade}</td>
+                  <td>{teachers.find((teacher) => teacher.id === q.createdBy)?.fullName ?? (q.createdBy ?? "Dữ liệu cũ")}</td>
+                  <td>{(q.sharedWithTeacherIds ?? []).length}</td>
+                  <td>{q.lessonId ?? "Chưa liên kết"}</td>
                   <td>{q.unit}</td>
                   <td>{skillLabel(q.skill)}</td>
                   <td>
@@ -163,6 +191,7 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
                   <td>
                     <div className={styles.actions}>
                       <Link href={`/admin/question-bank/${q.id}/edit`}>Sửa</Link>
+                      <Button onClick={() => openShare(q)}>Chia sẻ</Button>
                       <Button onClick={() => toggleArchive(q.id)}>
                         {q.status === "archived" ? "Khôi phục" : "Lưu trữ"}
                       </Button>
@@ -180,6 +209,31 @@ export function QuestionBankView({ questions }: { questions: Question[] }) {
           </div>
         </>
       )}
+      {sharingQuestion ? (
+        <div className={styles.modalBackdrop} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSharingQuestion(null); }}>
+          <section className={styles.shareModal} role="dialog" aria-modal="true" aria-labelledby="share-question-title">
+            <div className={styles.modalHead}>
+              <div><h2 id="share-question-title">Chia sẻ câu hỏi</h2><p>{sharingQuestion.prompt}</p></div>
+              <button type="button" className={styles.closeButton} onClick={() => setSharingQuestion(null)} aria-label="Đóng">×</button>
+            </div>
+            <p className={styles.modalHint}>Chọn giáo viên được xem và sử dụng câu hỏi này. Họ không thể sửa bản gốc.</p>
+            <div className={styles.teacherChoices}>
+              {teachers.filter((teacher) => teacher.employmentStatus === "working").map((teacher) => (
+                <label key={teacher.id} className={styles.teacherChoice}>
+                  <input type="checkbox" checked={selectedTeacherIds.includes(teacher.id)} onChange={(event) => setSelectedTeacherIds((prev) => event.target.checked ? [...prev, teacher.id] : prev.filter((id) => id !== teacher.id))} />
+                  <span><strong>{teacher.fullName}</strong><small>{teacher.teacherCode} · {teacher.specialization}</small></span>
+                </label>
+              ))}
+            </div>
+            {shareMessage ? <p role="status" className={styles.shareMessage}>{shareMessage}</p> : null}
+            <div className={styles.modalActions}>
+              <Button onClick={() => setSelectedTeacherIds([])}>Thu hồi tất cả</Button>
+              <Button onClick={() => setSharingQuestion(null)}>Hủy</Button>
+              <Button variant="primary" disabled={sharePending} onClick={saveShare}>{sharePending ? "Đang lưu..." : "Lưu chia sẻ"}</Button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </Card>
   );
 }

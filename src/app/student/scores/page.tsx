@@ -10,13 +10,14 @@ import { Table } from "@/components/ui/Table";
 import { formatScore } from "@/lib/format";
 import { formatDateTime } from "@/lib/format-datetime";
 import { getStudentAssignments } from "@/mocks/assignments";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 
 export const metadata: Metadata = { title: "Điểm số | Học sinh" };
 
 async function ScoresContent() {
   await connection();
-  const all = await getStudentAssignments(CURRENT_STUDENT_ID, new Date());
+  const currentStudentId = await getCurrentStudentId();
+  const all = await getStudentAssignments(currentStudentId, new Date());
   const scored = all.filter((a) => a.bestScore !== null);
   const tests = scored.filter((a) => a.kind === "test");
   const average = tests.length ? tests.reduce((sum, a) => sum + (a.bestScore ?? 0), 0) / tests.length : null;

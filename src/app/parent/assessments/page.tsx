@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { getAssessmentsForStudent } from "@/mocks/student-assessments";
 import { formatScore } from "@/lib/format";
@@ -17,7 +17,8 @@ const kindLabel = { progress: "Đánh giá thường xuyên", periodic: "Đánh 
 
 async function AssessmentContent() {
   await connection();
-  const student = await getStudentById(CURRENT_STUDENT_ID);
+  const currentStudentId = await getCurrentStudentId();
+  const student = await getStudentById(currentStudentId);
   if (!student) return <section className={styles.notice}><h1>Không tìm thấy hồ sơ học sinh</h1><p>Vui lòng liên hệ trung tâm.</p></section>;
   if (!student.parentAccessEnabled) return <section className={styles.notice}><h1>Quyền truy cập chưa được kích hoạt</h1><p>Trung tâm chưa bật Parent Portal cho {student.fullName}.</p></section>;
 

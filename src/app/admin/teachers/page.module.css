@@ -1,1 +1,35 @@
-.wrap{display:grid;gap:18px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;background:white;padding:16px;border:1px solid var(--color-border);border-radius:12px}.toolbar input,.toolbar select{min-height:40px;border:1px solid var(--color-border);border-radius:8px;padding:8px 10px;font:inherit}.toolbar input{flex:1;min-width:220px}.tableWrap{overflow:auto;background:white;border:1px solid var(--color-border);border-radius:12px}.table{width:100%;border-collapse:collapse;min-width:720px}.table th,.table td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--color-divider);font-size:13px}.table th{color:var(--color-muted);font-weight:600;background:#fafbf9}.table td a{color:var(--color-primary);font-weight:600;text-decoration:none}.muted{color:var(--color-muted)}.status{display:inline-block;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:600;background:var(--color-track);color:var(--color-muted)}.active{background:var(--color-primary-soft);color:var(--color-primary-dark)}.locked{background:#fff0ef;color:#a22}.empty{padding:32px;text-align:center;color:var(--color-muted)}
+.wrap{display:grid;gap:18px;min-width:0}
+.toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;background:white;padding:16px;border:1px solid var(--color-border);border-radius:12px;min-width:0}
+.toolbar input,.toolbar select{min-height:44px;border:1px solid var(--color-border);border-radius:8px;padding:8px 12px;font:inherit;background:white;color:var(--color-ink);max-width:100%}
+.toolbar input{flex:1;min-width:220px}
+.toolbar select{min-width:180px}
+.tableWrap{overflow:auto;background:white;border:1px solid var(--color-border);border-radius:12px;max-width:100%}
+.table{width:100%;border-collapse:collapse;min-width:720px}
+.table th,.table td{text-align:left;padding:14px 16px;border-bottom:1px solid var(--color-divider);font-size:13px;vertical-align:middle}
+.table th{color:var(--color-muted);font-weight:600;background:#fafbf9;white-space:nowrap}
+.table td a{color:var(--color-primary);font-weight:600;text-decoration:none;white-space:nowrap}
+.muted{color:var(--color-muted);font-size:12px}
+.status{display:inline-flex;align-items:center;max-width:100%;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:600;background:var(--color-track);color:var(--color-muted);white-space:nowrap}
+.active{background:var(--color-primary-soft);color:var(--color-primary-dark)}
+.locked{background:#fff0ef;color:#a22}
+.empty{padding:32px;text-align:center;color:var(--color-muted)}
+.mobileList{display:none}
+@media(max-width:700px){
+ .toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:12px}
+ .toolbar input,.toolbar select{width:100%;min-width:0}
+ .toolbar .muted{padding:2px 2px 0}
+ .tableWrap{display:none}
+ .mobileList{display:grid;gap:12px;min-width:0}
+ .teacherCard{display:grid;gap:14px;padding:15px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px;min-width:0}
+ .teacherCardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;min-width:0}
+ .teacherIdentity{display:grid;gap:4px;min-width:0}
+ .teacherIdentity strong{font-size:15px;line-height:1.4;color:var(--color-ink);overflow-wrap:anywhere}
+ .teacherIdentity>span{font-size:12px;color:var(--color-muted)}
+ .teacherDetails{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0}
+ .teacherDetails>div{min-width:0}
+ .teacherDetails dt{font-size:11px;color:var(--color-muted);margin-bottom:4px}
+ .teacherDetails dd{margin:0;font-size:13px;color:var(--color-ink);overflow-wrap:anywhere}
+ .detailLink{display:flex;align-items:center;justify-content:center;min-height:44px;padding:9px 12px;border-radius:9px;background:var(--color-primary-soft);color:var(--color-primary-dark);font-size:13px;font-weight:700;text-decoration:none}
+ .mobileEmpty{margin:0;padding:24px 12px;text-align:center;color:var(--color-muted);background:var(--color-surface);border:1px solid var(--color-border);border-radius:12px}
+}
+@media(max-width:380px){.teacherDetails{grid-template-columns:1fr}.teacherCardHead{flex-direction:column}}

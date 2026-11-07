@@ -22,7 +22,7 @@ const blankUnit = (): CurriculumUnit => ({
 
 function initialValue(curriculum?: Curriculum): CurriculumInput {
   if (curriculum) {
-    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...input } = curriculum;
+    const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, version: _version, previousVersionId: _previousVersionId, ...input } = curriculum;
     return structuredClone(input);
   }
   return {
@@ -72,7 +72,7 @@ export function CurriculumForm({ courses, curriculum }: { courses: Course[]; cur
           <label className={styles.full}>Mô tả<textarea rows={3} value={value.description} onChange={(e) => setValue({ ...value, description: e.target.value })} placeholder="Mô tả nội dung và phạm vi giáo trình..." /></label>
           <label>Áp dụng cho<select value={value.targetType} onChange={(e) => setValue({ ...value, targetType: e.target.value as "grade" | "course", grade: e.target.value === "grade" ? 1 : null, courseId: e.target.value === "course" ? (courses[0]?.id ?? null) : null })}><option value="grade">Khối lớp 1–9</option><option value="course">Khóa học chuyên biệt</option></select></label>
           {value.targetType === "grade" ? (
-            <label>Khối lớp<select value={value.grade ?? 1} onChange={(e) => setValue({ ...value, grade: Number(e.target.value) })}>{Array.from({ length: 9 }, (_, index) => <option key={index + 1} value={index + 1}>Khối {index + 1}</option>)}</select></label>
+            <label>Lớp<select value={value.grade ?? 1} onChange={(e) => setValue({ ...value, grade: Number(e.target.value) })}>{Array.from({ length: 9 }, (_, index) => <option key={index + 1} value={index + 1}>Lớp {index + 1}</option>)}</select></label>
           ) : (
             <label>Khóa học<select required value={value.courseId ?? ""} onChange={(e) => setValue({ ...value, courseId: e.target.value })}><option value="">-- Chọn khóa học --</option>{courses.map((course) => <option key={course.id} value={course.id}>{course.name}</option>)}</select></label>
           )}
@@ -81,8 +81,9 @@ export function CurriculumForm({ courses, curriculum }: { courses: Course[]; cur
       </section>
 
       <section className={styles.panel}>
-        <div className={styles.sectionHead}><div><h2>Nội dung giáo trình</h2><p>Chia giáo trình thành các Unit và từng Lesson cụ thể.</p></div><button type="button" className={styles.secondary} onClick={() => setValue({ ...value, units: [...value.units, blankUnit()] })}>+ Thêm Unit</button></div>
+        <div className={styles.sectionHead}><div><h2>Nội dung giáo trình</h2><p>Xây dựng cấu trúc Unit và Lesson. Có thể lưu khung lớp trước rồi bổ sung nội dung dần.</p></div><button type="button" className={styles.secondary} onClick={() => setValue({ ...value, units: [...value.units, blankUnit()] })}>+ Thêm Unit</button></div>
         <div className={styles.units}>
+          {value.units.length === 0 && <p className={styles.emptyLesson}>Chưa có Unit. Hãy chọn “+ Thêm Unit” để bắt đầu xây dựng chương trình.</p>}
           {value.units.map((unit, unitIndex) => (
             <article className={styles.unit} key={unit.id}>
               <div className={styles.unitHead}><strong>Unit {unitIndex + 1}</strong>{value.units.length > 1 && <button type="button" className={styles.remove} onClick={() => setValue({ ...value, units: value.units.filter((item) => item.id !== unit.id) })}>Xóa Unit</button>}</div>
@@ -104,6 +105,7 @@ export function CurriculumForm({ courses, curriculum }: { courses: Course[]; cur
                     </div>
                   </div>
                 ))}
+                {unit.lessons.length === 0 && <p className={styles.emptyLesson}>Unit này chưa có Lesson. Bạn có thể bổ sung sau.</p>}
                 <button type="button" className={styles.addLesson} onClick={() => updateUnit(unit.id, { lessons: [...unit.lessons, blankLesson()] })}>+ Thêm Lesson</button>
               </div>
             </article>
@@ -111,7 +113,7 @@ export function CurriculumForm({ courses, curriculum }: { courses: Course[]; cur
         </div>
       </section>
       {error && <p role="alert" className={styles.error}>{error}</p>}
-      <div className={styles.footer}><Link href="/admin/curriculum">Quay lại</Link><button type="submit" disabled={pending}>{pending ? "Đang lưu..." : curriculum ? "Lưu thay đổi" : "Tạo giáo trình"}</button></div>
+      <div className={styles.footer}><Link href="/admin/curriculum">Quay lại</Link><button type="submit" disabled={pending}>{pending ? "Đang lưu..." : curriculum ? "Tạo phiên bản mới" : "Tạo giáo trình"}</button></div>
     </form>
   );
 }

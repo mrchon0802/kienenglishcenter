@@ -1,13 +1,16 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Input } from "@/components/ui/Input";
 import { Pagination } from "@/components/ui/Pagination";
 import { Select } from "@/components/ui/Select";
 import { normalizeText } from "@/lib/text";
+import { formatDate, formatPhone } from "@/lib/format-date";
 import type { ClassOption, Student } from "@/types/student";
 import { StudentTable } from "../StudentTable";
 import styles from "./StudentsView.module.css";
@@ -46,7 +49,6 @@ export function StudentsView({ students, classes }: StudentsViewProps) {
   const start = (currentPage - 1) * PAGE_SIZE;
   const visible = filtered.slice(start, start + PAGE_SIZE);
 
-  // Mỗi lần đổi bộ lọc phải quay về trang 1.
   function updateFilter(setter: (value: string) => void) {
     return (value: string) => {
       setter(value);
@@ -98,7 +100,51 @@ export function StudentsView({ students, classes }: StudentsViewProps) {
         </EmptyState>
       ) : (
         <>
-          <StudentTable students={visible} />
+          <div className={styles.desktopTable}>
+            <StudentTable students={visible} />
+          </div>
+
+          <div className={styles.mobileList}>
+            {visible.map((student) => (
+              <article className={styles.studentCard} key={student.id}>
+                <div className={styles.studentHeading}>
+                  <div className={styles.studentIdentity}>
+                    <Link className={styles.studentName} href={`/admin/students/${student.id}`}>
+                      {student.fullName}
+                    </Link>
+                    <span className={styles.studentCode}>{student.code}</span>
+                  </div>
+                  <Badge tone={student.status === "active" ? "teal" : "amber"}>
+                    {student.status === "active" ? "Đang học" : "Nghỉ học"}
+                  </Badge>
+                </div>
+
+                <div className={styles.studentDetails}>
+                  <div>
+                    <span className={styles.detailLabel}>Lớp</span>
+                    <strong>{student.className}</strong>
+                  </div>
+                  <div>
+                    <span className={styles.detailLabel}>Ngày nhập học</span>
+                    <strong>{formatDate(student.enrolledDate)}</strong>
+                  </div>
+                  <div>
+                    <span className={styles.detailLabel}>Phụ huynh</span>
+                    <strong>{student.parentName || "Chưa cập nhật"}</strong>
+                  </div>
+                  <div>
+                    <span className={styles.detailLabel}>Số điện thoại</span>
+                    <strong>{formatPhone(student.parentPhone) || "Chưa cập nhật"}</strong>
+                  </div>
+                </div>
+
+                <Link className={styles.detailLink} href={`/admin/students/${student.id}`}>
+                  Xem hồ sơ học sinh <span aria-hidden="true">→</span>
+                </Link>
+              </article>
+            ))}
+          </div>
+
           <div className={styles.footer}>
             <p className={styles.count} role="status">
               Hiển thị {start + 1} - {start + visible.length} / {filtered.length} học sinh

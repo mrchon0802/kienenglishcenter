@@ -103,3 +103,57 @@ video {
     font-size: 14px;
   }
 }
+
+
+/* Mobile-first responsive foundations */
+html {
+  width: 100%;
+  min-width: 320px;
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+table {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --page-gutter: var(--page-gutter-mobile);
+  }
+
+  body {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --page-gutter: var(--page-gutter-tablet);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-gutter: 32px;
+  }
+}

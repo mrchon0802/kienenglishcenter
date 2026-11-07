@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import { getAssignmentById, getAttemptById, saveManualGrade } from "@/mocks/assignments";
 
@@ -15,6 +17,8 @@ export async function saveManualGradeAction(input: {
   score: number;
   comment: string;
 }): Promise<GradeResponse> {
+  await requireAdminAction();
+
   const attempt = await getAttemptById(input.attemptId);
   if (!attempt) return { ok: false, error: "Không tìm thấy bài nộp." };
 

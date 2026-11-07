@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { getClasses } from "@/mocks/classes";
 import { getClassCurriculum } from "@/mocks/class-curriculum";
@@ -26,8 +26,9 @@ function dateLabel(value: string) {
 
 async function ParentLearningProgressContent() {
   await connection();
+  const currentStudentId = await getCurrentStudentId();
 
-  const student = await getStudentById(CURRENT_STUDENT_ID);
+  const student = await getStudentById(currentStudentId);
 
   if (!student) {
     return (

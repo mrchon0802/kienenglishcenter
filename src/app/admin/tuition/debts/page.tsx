@@ -1,3 +1,4 @@
+import { syncTuitionReminderNotifications } from "@/mocks/tuition-notifications";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -10,7 +11,9 @@ export const metadata: Metadata = { title: "Công nợ | Quản trị" };
 
 async function DebtsContent() {
   await connection();
-  const debtors = await getDebtors(toISODate(new Date()));
+  const today = toISODate(new Date());
+  await syncTuitionReminderNotifications(today);
+  const debtors = await getDebtors(today);
   return <DebtsView debtors={debtors} />;
 }
 

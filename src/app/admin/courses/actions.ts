@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import { createCourse, deleteCourse, getCourseById, getCourses, updateCourse } from "@/mocks/courses";
 import type { CourseInput } from "@/types/course";
@@ -18,6 +20,8 @@ function validate(input: CourseInput): string | null {
 }
 
 export async function saveCourseAction(input: CourseInput, id?: string): Promise<Result> {
+  await requireAdminAction();
+
   const error = validate(input);
   if (error) return { ok: false, error };
   const courses = await getCourses();
@@ -38,6 +42,8 @@ export async function saveCourseAction(input: CourseInput, id?: string): Promise
 }
 
 export async function deleteCourseAction(id: string): Promise<Result> {
+  await requireAdminAction();
+
   const course = await getCourseById(id);
   if (!course) return { ok: false, error: "Không tìm thấy khóa học." };
   const deleted = await deleteCourse(id);

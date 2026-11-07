@@ -1,9 +1,12 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import { createAssignment } from "@/mocks/assignments";
 import { getClasses } from "@/mocks/classes";
 import { getQuestionById } from "@/mocks/questions";
+import { getCurriculumById } from "@/mocks/curricula";
 import type { NewAssignmentInput } from "@/types/assignment";
 
 type CreateResponse = { ok: true; id: string } | { ok: false; error: string };
@@ -14,8 +17,15 @@ type CreateResponse = { ok: true; id: string } | { ok: false; error: string };
  * TODO (khi có backend): gọi API POST /assignments.
  */
 export async function createAssignmentAction(input: NewAssignmentInput): Promise<CreateResponse> {
+  await requireAdminAction();
+
   if (!input.title.trim()) return { ok: false, error: "Nhập tên bài." };
   if (input.kind !== "practice" && input.kind !== "test") return { ok: false, error: "Loại bài không hợp lệ." };
+
+  if (!input.curriculumId || !input.unitId || !input.lessonId) return { ok: false, error: "Chọn chương trình, Unit và Lesson." };
+  const curriculum = await getCurriculumById(input.curriculumId);
+  const unit = curriculum?.units.find((item) => item.id === input.unitId);
+  if (!unit?.lessons.some((item) => item.id === input.lessonId)) return { ok: false, error: "Unit hoặc Lesson không thuộc chương trình đã chọn." };
 
   const classes = await getClasses();
   if (!classes.some((c) => c.id === input.classId)) return { ok: false, error: "Lớp không tồn tại." };

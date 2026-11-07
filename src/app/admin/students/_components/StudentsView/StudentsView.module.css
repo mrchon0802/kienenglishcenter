@@ -4,6 +4,15 @@
   grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
   margin-bottom: var(--space-4);
 }
+
+.desktopTable {
+  min-width: 0;
+}
+
+.mobileList {
+  display: none;
+}
+
 .footer {
   display: flex;
   flex-wrap: wrap;
@@ -12,13 +21,126 @@
   gap: var(--space-3);
   margin-top: var(--space-4);
 }
+
 .count {
+  margin: 0;
   font-size: 13px;
   color: var(--color-muted);
 }
 
 @media (max-width: 700px) {
   .toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .desktopTable {
+    display: none;
+  }
+
+  .mobileList {
+    display: grid;
+    gap: 12px;
+  }
+
+  .studentCard {
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+
+  .studentHeading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .studentIdentity {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .studentName {
+    color: var(--color-ink);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+  }
+
+  .studentCode {
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+
+  .studentDetails {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 10px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .studentDetails > div {
+    display: grid;
+    min-width: 0;
+    gap: 3px;
+  }
+
+  .detailLabel {
+    color: var(--color-muted);
+    font-size: 11px;
+  }
+
+  .studentDetails strong {
+    min-width: 0;
+    color: var(--color-ink);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .detailLink {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .footer {
+    align-items: stretch;
+  }
+
+  .count {
+    width: 100%;
+  }
+
+  .footer nav {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .studentCard {
+    padding: 12px;
+  }
+
+  .studentDetails {
     grid-template-columns: 1fr;
   }
 }

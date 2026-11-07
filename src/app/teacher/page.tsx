@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import styles from "./teacher.module.css";
 
@@ -13,7 +13,8 @@ function formatDate(value: string) {
 
 async function TeacherDashboard() {
   await connection();
-  const data = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const currentTeacherId = await getCurrentTeacherId();
+  const data = await getTeacherPortalData(currentTeacherId);
   if (!data) return <p>Không tìm thấy hồ sơ giáo viên.</p>;
   const firstName = data.teacher.fullName.split(" ").slice(-1)[0];
   return (
@@ -38,6 +39,7 @@ async function TeacherDashboard() {
       <section className={styles.panel}>
         <div className={styles.panelHead}><h2>Không gian làm việc</h2></div>
         <div className={styles.classGrid}>
+          <article className={styles.classCard}><h3>Thông báo học phí</h3><p className={styles.muted}>Theo dõi học sinh còn nợ học phí trong lớp phụ trách.</p><Link href="/teacher/tuition">Xem thông báo học phí →</Link></article>
           <article className={styles.classCard}><h3>Học viên</h3><p className={styles.muted}>Xem danh sách học viên và ghi chú giảng dạy.</p><Link href="/teacher/students">Mở danh sách học viên →</Link></article>
           <article className={styles.classCard}><h3>Công việc</h3><p className={styles.muted}>Tạo và theo dõi các đầu việc cá nhân.</p><Link href="/teacher/tasks">Quản lý công việc →</Link></article>
         </div>

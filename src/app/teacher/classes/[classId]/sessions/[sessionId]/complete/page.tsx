@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getSessionById } from "@/mocks/classes";
 import { getTeacherSessionCompletion } from "@/mocks/teacher-session-completions";
@@ -15,10 +15,11 @@ export const metadata = { title: "Hoàn thành buổi học | Giáo viên" };
 type Params = Promise<{ classId: string; sessionId: string }>;
 async function CompletionPage({ params }: { params: Params }) {
   await connection();
+  const currentTeacherId = await getCurrentTeacherId();
   const { classId, sessionId } = await params;
   const [portal, session, completion, questions, curriculum] = await Promise.all([
-    getTeacherPortalData(DEMO_CENTER_USER.teacherId), getSessionById(classId, sessionId),
-    getTeacherSessionCompletion(classId, sessionId, DEMO_CENTER_USER.teacherId), getQuestions(), getClassCurriculum(classId),
+    getTeacherPortalData(currentTeacherId), getSessionById(classId, sessionId),
+    getTeacherSessionCompletion(classId, sessionId, currentTeacherId), getQuestions(), getClassCurriculum(classId),
   ]);
   const cls = portal?.classes.find((item) => item.id === classId);
   if (!cls || !session) notFound();

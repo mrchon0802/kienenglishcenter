@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { getStudentProgress } from "@/mocks/student-progress";
 import { getAssessmentsForStudent } from "@/mocks/student-assessments";
@@ -33,7 +33,8 @@ function dateLabel(value: string) {
 
 async function ParentDashboard() {
   await connection();
-  const student = await getStudentById(CURRENT_STUDENT_ID);
+  const currentStudentId = await getCurrentStudentId();
+  const student = await getStudentById(currentStudentId);
   if (!student)
     return (
       <section className={styles.notice}>

@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import styles from "../teacher.module.css";
 
@@ -9,7 +9,8 @@ export const metadata = { title: "Lớp phụ trách | Giáo viên" };
 
 async function AssignedClasses() {
   await connection();
-  const data = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const currentTeacherId = await getCurrentTeacherId();
+  const data = await getTeacherPortalData(currentTeacherId);
   if (!data) return <p>Không tìm thấy hồ sơ giáo viên.</p>;
   return <>
     <section className={styles.heading}><div><p className={styles.eyebrow}>TEACHING</p><h1>Lớp phụ trách</h1><p className={styles.muted}>Danh sách chỉ bao gồm các lớp có phân công hiện tại cho {data.teacher.fullName}.</p></div><span className={styles.demo}>{data.classes.length} lớp</span></section>

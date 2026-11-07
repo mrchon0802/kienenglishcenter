@@ -28,9 +28,12 @@ export interface Curriculum {
   grade: number | null;
   courseId: string | null;
   status: "active" | "inactive";
+  /** Phiên bản bất biến; chỉnh sửa sẽ tạo bản mới thay vì ghi đè. */
+  version?: number;
+  previousVersionId?: string | null;
   units: CurriculumUnit[];
   createdAt: string;
   updatedAt: string;
 }
 
-export type CurriculumInput = Omit<Curriculum, "id" | "createdAt" | "updatedAt">;
+export type CurriculumInput = Omit<Curriculum, "id" | "createdAt" | "updatedAt" | "version" | "previousVersionId">;

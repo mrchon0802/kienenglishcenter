@@ -1,10 +1,12 @@
 "use server";
 
+import { requireStudentAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import { buildResult } from "@/lib/grading";
 import { toLocalInput } from "@/lib/format-datetime";
 import { addAttempt, getAssignmentById, getAttempts, studentCanAccess } from "@/mocks/assignments";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import type { AnswerMap, SubmissionResult } from "@/types/quiz";
 
 type SubmitResponse = { ok: true; result: SubmissionResult } | { ok: false; error: string };
@@ -15,14 +17,18 @@ type SubmitResponse = { ok: true; result: SubmissionResult } | { ok: false; erro
  * TODO (khi có backend): gọi API POST /assignments/:id/submit, kiểm tra thêm thời gian làm bài.
  */
 export async function submitAttemptAction(assignmentId: string, answers: AnswerMap): Promise<SubmitResponse> {
+  await requireStudentAction();
+
+  const currentStudentId = await getCurrentStudentId();
+
   const assignment = await getAssignmentById(assignmentId);
-  if (!assignment || !(await studentCanAccess(assignment, CURRENT_STUDENT_ID))) {
+  if (!assignment || !(await studentCanAccess(assignment, currentStudentId))) {
     return { ok: false, error: "Không tìm thấy bài tập." };
   }
 
   const now = new Date();
   const overdue = now.getTime() > new Date(assignment.dueAt).getTime();
-  const prior = await getAttempts(assignmentId, CURRENT_STUDENT_ID);
+  const prior = await getAttempts(assignmentId, currentStudentId);
 
   if (assignment.kind === "test") {
     if (prior.length >= 1) return { ok: false, error: "Bạn đã nộp bài kiểm tra này rồi." };
@@ -35,7 +41,7 @@ export async function submitAttemptAction(assignmentId: string, answers: AnswerM
 
   const attempt = await addAttempt({
     assignmentId,
-    studentId: CURRENT_STUDENT_ID,
+    studentId: currentStudentId,
     attemptNo: prior.length + 1,
     answers: clean,
     submittedAt: toLocalInput(now),

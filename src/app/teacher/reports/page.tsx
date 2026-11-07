@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getAssignments, getSubmissionRows } from "@/mocks/assignments";
 import { getClassSessions } from "@/mocks/classes";
@@ -12,10 +12,11 @@ import styles from "./reports.module.css";
 export const metadata = { title: "Báo cáo giảng dạy | Giáo viên" };
 async function ReportContent() {
   await connection();
-  const portal = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const currentTeacherId = await getCurrentTeacherId();
+  const portal = await getTeacherPortalData(currentTeacherId);
   const classes = portal?.classes ?? [];
   const classIds = classes.map((item) => item.id);
-  const [allAssignments, completions] = await Promise.all([getAssignments(), getTeacherCompletionStats(DEMO_CENTER_USER.teacherId, classIds)]);
+  const [allAssignments, completions] = await Promise.all([getAssignments(), getTeacherCompletionStats(currentTeacherId, classIds)]);
   const assignments = allAssignments.filter((item) => classIds.includes(item.classId));
   const assignmentStats = await Promise.all(assignments.map(async (assignment) => {
     const rows = await getSubmissionRows(assignment, new Date());

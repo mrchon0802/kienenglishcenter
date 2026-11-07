@@ -1,0 +1,173 @@
+/* Shared section */
+.section {
+  display: grid;
+  gap: 16px;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+}
+
+.table thead {
+  background: #f5f8f7;
+}
+
+.table th {
+  padding: 14px 16px;
+  color: #52615e;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: 14px 16px;
+  color: #34413e;
+  border-bottom: 1px solid #edf0ee;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table tbody tr:hover {
+  background: #f5faf8;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.right {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.muted {
+  color: var(--color-muted) !important;
+}
+
+.amount {
+  color: #b45309 !important;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.paidAmount {
+  color: #0f766e !important;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.period {
+  color: #183d38 !important;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.date {
+  color: #52615e !important;
+  white-space: nowrap;
+}
+
+.detailLink {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 11px;
+  border: 1px solid #c8dfd9;
+  border-radius: 7px;
+  background: #f0f8f5;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.detailLink:hover {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: white;
+}
+
+.detailLink:focus-visible {
+  outline: 3px solid #99d5c9;
+  outline-offset: 2px;
+}
+
+/* Payment history */
+.paymentSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.paymentCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 27px;
+  padding: 0 10px;
+  border-radius: 20px;
+  background: #e8f5f0;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.method {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: #eff4f3;
+  color: #45635d;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.note {
+  max-width: 250px;
+  color: #64736f !important;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.empty {
+  padding: 32px 20px;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: 12px;
+  background: #f8faf9;
+}
+
+@media (max-width: 768px) {
+  .table {
+    min-width: 720px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px;
+  }
+}

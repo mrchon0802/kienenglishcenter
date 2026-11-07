@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getAssignmentById, getEssayGradingItems } from "@/mocks/assignments";
 import { GradingQueue } from "./GradingQueue";
@@ -12,8 +12,9 @@ export const metadata = { title: "Chấm bài tự luận | Giáo viên" };
 
 async function GradingPage({ params }: { params: Promise<{ assignmentId: string }> }) {
   await connection();
+  const currentTeacherId = await getCurrentTeacherId();
   const { assignmentId } = await params;
-  const [assignment, portal] = await Promise.all([getAssignmentById(assignmentId), getTeacherPortalData(DEMO_CENTER_USER.teacherId)]);
+  const [assignment, portal] = await Promise.all([getAssignmentById(assignmentId), getTeacherPortalData(currentTeacherId)]);
   if (!assignment || !portal?.classes.some((item) => item.id === assignment.classId)) notFound();
   const items = await getEssayGradingItems(assignment);
   return <div className={styles.package7Page}>

@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidateEverything } from "@/lib/revalidate";
 import { createTeacher, getTeacherById, getTeachers, setTeacherAccountStatus, updateTeacher } from "@/mocks/teachers";
 import { endAssignmentsForTeacher } from "@/mocks/teacher-assignments";
@@ -15,21 +17,29 @@ function validate(input: TeacherInput, excludeId?: string): string | null {
   return null;
 }
 async function duplicateEmail(email: string, excludeId?: string) {
+  await requireAdminAction();
+
   return (await getTeachers()).some((t) => t.email.toLowerCase() === email.trim().toLowerCase() && t.id !== excludeId);
 }
 export async function createTeacherAction(input: TeacherInput): Promise<{ok:true;id:string;code:string}|Fail> {
+  await requireAdminAction();
+
   const error = validate(input); if (error) return {ok:false,error};
   if (await duplicateEmail(input.email)) return {ok:false,error:"Email này đã được sử dụng."};
   const teacher = await createTeacher(input); revalidateEverything();
   return {ok:true,id:teacher.id,code:teacher.teacherCode};
 }
 export async function updateTeacherAction(id: string, input: TeacherInput): Promise<{ok:true}|Fail> {
+  await requireAdminAction();
+
   if (!(await getTeacherById(id))) return {ok:false,error:"Không tìm thấy giáo viên."};
   const error = validate(input,id); if (error) return {ok:false,error};
   if (await duplicateEmail(input.email,id)) return {ok:false,error:"Email này đã được sử dụng."};
   await updateTeacher(id,input); revalidateEverything(); return {ok:true};
 }
 export async function setTeacherStatusAction(id: string, status: TeacherAccountStatus): Promise<{ok:true}|Fail> {
+  await requireAdminAction();
+
   if (!["pending_activation","active","locked"].includes(status)) return {ok:false,error:"Trạng thái tài khoản không hợp lệ."};
   if (!(await getTeacherById(id))) return {ok:false,error:"Không tìm thấy tài khoản giáo viên."};
   if (status === "locked") await endAssignmentsForTeacher(id, new Date().toISOString().slice(0,10));

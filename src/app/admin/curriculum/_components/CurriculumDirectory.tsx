@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import type { Curriculum } from "@/types/curriculum";
-import { deleteCurriculumAction } from "../actions";
+import { deleteCurriculumAction, initializeGradeCurriculaAction } from "../actions";
 import styles from "../page.module.css";
 
 export function CurriculumDirectory({ curricula, targetLabels }: {
@@ -14,6 +14,7 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
   const [query, setQuery] = useState("");
   const [target, setTarget] = useState("all");
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -22,6 +23,21 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
     const matchText = !q || item.title.toLowerCase().includes(q) || item.code.toLowerCase().includes(q);
     return matchText && (target === "all" || item.targetType === target);
   }), [curricula, query, target]);
+
+  function initializeGrades() {
+    setError("");
+    setNotice("");
+    startTransition(async () => {
+      const result = await initializeGradeCurriculaAction();
+      if (!result.ok) setError(result.error);
+      else {
+        setNotice(result.created > 0
+          ? `Đã khởi tạo ${result.created} chương trình còn thiếu. Các giáo trình đã có được giữ nguyên.`
+          : "Chương trình lớp 1–9 đã được khởi tạo đầy đủ.");
+        router.refresh();
+      }
+    });
+  }
 
   function remove(item: Curriculum) {
     if (!window.confirm(`Xóa giáo trình "${item.title}"?`)) return;
@@ -35,20 +51,22 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
 
   return <>
     {error && <p role="alert" className={styles.error}>{error}</p>}
+    {notice && <p role="status" className={styles.notice}>{notice}</p>}
     <div className={styles.toolbar}>
+      <button type="button" className={styles.initializeButton} onClick={initializeGrades} disabled={pending}> {pending ? "Đang xử lý..." : "Khởi tạo chương trình lớp 1–9"} </button>
       <input className={styles.search} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tên hoặc mã giáo trình..." aria-label="Tìm giáo trình" />
       <div className={styles.filters} aria-label="Lọc loại giáo trình">
-        {[["all", "Tất cả"], ["grade", "Theo khối lớp"], ["course", "Theo khóa học"]].map(([value, label]) => <button key={value} type="button" className={`${styles.filter} ${target === value ? styles.activeFilter : ""}`} onClick={() => setTarget(value)}>{label}</button>)}
+        {[["all", "Tất cả"], ["grade", "Theo lớp"], ["course", "Theo khóa học"]].map(([value, label]) => <button key={value} type="button" className={`${styles.filter} ${target === value ? styles.activeFilter : ""}`} onClick={() => setTarget(value)}>{label}</button>)}
       </div>
     </div>
     {visible.length ? <div className={styles.grid}>
       {visible.map((item) => {
         const lessonCount = item.units.reduce((sum, unit) => sum + unit.lessons.length, 0);
         return <article className={styles.card} key={item.id}>
-          <div className={styles.cardTop}><span className={styles.code}>{item.code}</span><span className={`${styles.pill} ${item.status === "inactive" ? styles.inactive : ""}`}>{item.status === "active" ? "Đang sử dụng" : "Ngừng sử dụng"}</span></div>
+          <div className={styles.cardTop}><span className={styles.code}>{item.code} · v{item.version ?? 1}</span><span className={`${styles.pill} ${item.status === "inactive" ? styles.inactive : ""}`}>{item.status === "active" ? "Đang sử dụng" : "Ngừng sử dụng"}</span></div>
           <div><h2>{item.title}</h2><p className={styles.description}>{item.description || "Chưa có mô tả."}</p></div>
           <div className={styles.meta}><span>{targetLabels[item.id] ?? "Chưa xác định đối tượng"}</span><span>·</span><span>{item.units.length} Unit</span><span>·</span><span>{lessonCount} Lesson</span></div>
-          <div className={styles.cardFooter}><Link className={styles.link} href={`/admin/curriculum/${item.id}/edit`}>Xem / chỉnh sửa →</Link><button type="button" className={styles.link} disabled={pending} onClick={() => remove(item)}>Xóa</button></div>
+          <div className={styles.cardFooter}><div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}><Link className={styles.link} href={`/admin/curriculum/${item.id}`}>Thống kê học liệu →</Link><Link className={styles.link} href={item.status === "active" ? `/admin/curriculum/${item.id}/edit` : `/admin/curriculum/${item.id}`}>{item.status === "active" ? "Tạo phiên bản mới" : "Xem phiên bản"}</Link></div><button type="button" className={styles.link} disabled={pending} onClick={() => remove(item)}>Xóa</button></div>
         </article>;
       })}
     </div> : <div className={styles.empty}>Chưa có giáo trình phù hợp. Hãy tạo giáo trình đầu tiên.</div>}

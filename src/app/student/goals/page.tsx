@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentLearningGoals } from "@/mocks/student-learning";
 import { createLearningGoalAction, updateLearningGoalAction } from "./actions";
 import styles from "./goals.module.css";
@@ -13,7 +13,8 @@ export const metadata: Metadata = { title: "Mục tiêu học tập | Học sinh
 
 async function GoalsContent() {
   await connection();
-  const items = await getStudentLearningGoals(CURRENT_STUDENT_ID);
+  const currentStudentId = await getCurrentStudentId();
+  const items = await getStudentLearningGoals(currentStudentId);
   return (
     <>
       <Card title="Tạo mục tiêu mới">

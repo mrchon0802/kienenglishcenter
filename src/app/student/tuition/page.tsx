@@ -1,3 +1,4 @@
+import { syncTuitionReminderNotifications } from "@/mocks/tuition-notifications";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
@@ -11,17 +12,19 @@ import { formatVND } from "@/lib/format";
 import { formatDate } from "@/lib/format-date";
 import { monthLabel, toISODate } from "@/lib/month";
 import { METHOD_LABEL, STATUS_LABEL } from "@/lib/tuition";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentInvoiceViews, getStudentPayments } from "@/mocks/tuition";
 
 export const metadata: Metadata = { title: "Học phí | Học sinh" };
 
 async function TuitionContent() {
   await connection();
+  const currentStudentId = await getCurrentStudentId();
   const today = toISODate(new Date());
+  await syncTuitionReminderNotifications(today);
   const [invoices, payments] = await Promise.all([
-    getStudentInvoiceViews(CURRENT_STUDENT_ID, today),
-    getStudentPayments(CURRENT_STUDENT_ID),
+    getStudentInvoiceViews(currentStudentId, today),
+    getStudentPayments(currentStudentId),
   ]);
   const owed = invoices.reduce((sum, v) => sum + v.remaining, 0);
   const overdue = invoices.filter((v) => v.status === "overdue").reduce((sum, v) => sum + v.remaining, 0);

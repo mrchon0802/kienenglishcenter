@@ -1,0 +1,18 @@
+.root { min-width: 0; }
+.desktopTable { display: block; min-width: 0; }
+.mobileList { display: none; }
+.actions { display: inline-flex; flex-wrap: wrap; gap: 8px; }
+@media (max-width: 700px) {
+  .desktopTable { display: none; }
+  .mobileList { display: grid; gap: 12px; }
+  .classCard { min-width: 0; padding: 15px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+  .cardHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+  .cardHead strong { color: var(--color-primary-dark); font-size: 16px; }
+  .cardHead span { flex: 0 0 auto; padding: 5px 8px; border-radius: 999px; background: var(--color-primary-soft); color: var(--color-primary-dark); font-size: 11px; font-weight: 700; }
+  .details { display: grid; gap: 10px; margin: 14px 0; }
+  .details div { display: grid; grid-template-columns: 105px minmax(0,1fr); gap: 8px; }
+  .details dt { color: var(--color-muted); font-size: 12px; }
+  .details dd { margin: 0; color: var(--color-ink); font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+  .cardActions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cardActions > * { min-width: 0; }
+}

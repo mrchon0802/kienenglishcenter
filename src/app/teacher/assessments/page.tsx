@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getClassCurriculum } from "@/mocks/class-curriculum";
 import { getStudentAssessments } from "@/mocks/student-assessments";
@@ -11,8 +11,9 @@ export const metadata = { title: "Đánh giá học sinh | Giáo viên" };
 
 async function AssessmentsContent() {
   await connection();
+  const currentTeacherId = await getCurrentTeacherId();
   const [portal, history] = await Promise.all([
-    getTeacherPortalData(DEMO_CENTER_USER.teacherId),
+    getTeacherPortalData(currentTeacherId),
     getStudentAssessments(),
   ]);
   if (!portal) return <p>Không tìm thấy hồ sơ giáo viên.</p>;
@@ -24,7 +25,7 @@ async function AssessmentsContent() {
       lessons: curriculum?.units.flatMap((unit) => unit.lessons.map((lesson) => ({ id: lesson.id, title: lesson.title, unitTitle: unit.title }))) ?? [],
     };
   }));
-  const ownHistory = history.filter((item) => item.teacherId === DEMO_CENTER_USER.teacherId);
+  const ownHistory = history.filter((item) => item.teacherId === currentTeacherId);
   return <div className={styles.page}>
     <section className={styles.heading}><div><p className={styles.eyebrow}>STUDENT DEVELOPMENT</p><h1>Đánh giá năng lực học sinh</h1><p className={styles.muted}>Ghi nhận 4 kỹ năng, điểm mạnh và nội dung cần cải thiện qua từng lần đánh giá.</p></div></section>
     <AssessmentForm classes={classes} />

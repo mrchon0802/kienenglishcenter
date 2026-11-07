@@ -1,8 +1,10 @@
 "use server";
 
+import { requireTeacherAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import type { AttendanceRecord } from "@/types/class";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherAssignments } from "@/mocks/teacher-assignments";
 import { saveTeacherAttendance } from "@/mocks/teacher-attendance";
 
@@ -11,12 +13,16 @@ export async function saveTeacherAttendanceAction(
   sessionId: string,
   record: AttendanceRecord,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
+  await requireTeacherAction();
+
+  const currentTeacherId = await getCurrentTeacherId();
+
   const assignments = await getTeacherAssignments();
   const canTeachClass = assignments.some((item) =>
-    item.teacherId === DEMO_CENTER_USER.teacherId && item.classId === classId && !item.endDate,
+    item.teacherId === currentTeacherId && item.classId === classId && !item.endDate,
   );
   if (!canTeachClass) return { ok: false, error: "Bạn không được phân công phụ trách lớp này." };
-  const result = await saveTeacherAttendance(classId, sessionId, record, DEMO_CENTER_USER.teacherId);
+  const result = await saveTeacherAttendance(classId, sessionId, record, currentTeacherId);
   if (result.ok) {
     revalidatePath(`/teacher/classes/${classId}/attendance`);
     revalidatePath(`/teacher/classes/${classId}/attendance/${sessionId}`);

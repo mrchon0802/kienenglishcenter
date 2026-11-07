@@ -1,12 +1,18 @@
 "use server";
 
+import { requireStudentAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { createStudentLearningGoal, updateStudentLearningGoal } from "@/mocks/student-learning";
 
 export async function createLearningGoalAction(formData: FormData): Promise<void> {
+  await requireStudentAction();
+
+  const currentStudentId = await getCurrentStudentId();
+
   const result = await createStudentLearningGoal({
-    studentId: CURRENT_STUDENT_ID,
+    studentId: currentStudentId,
     title: String(formData.get("title") ?? ""),
     targetDate: String(formData.get("targetDate") ?? ""),
     target: Number(formData.get("target")),
@@ -18,8 +24,12 @@ export async function createLearningGoalAction(formData: FormData): Promise<void
 }
 
 export async function updateLearningGoalAction(formData: FormData): Promise<void> {
+  await requireStudentAction();
+
+  const currentStudentId = await getCurrentStudentId();
+
   const result = await updateStudentLearningGoal(
-    CURRENT_STUDENT_ID,
+    currentStudentId,
     String(formData.get("goalId") ?? ""),
     Number(formData.get("progress")),
   );

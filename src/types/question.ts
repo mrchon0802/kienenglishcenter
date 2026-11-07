@@ -36,6 +36,14 @@ export interface Question {
   points: number;
   explanation: string;
 
+  // Liên kết cấu trúc chương trình; optional để tương thích câu hỏi mẫu/nhập cũ.
+  curriculumId?: string;
+  unitId?: string;
+  lessonId?: string;
+  createdBy?: string;
+  sharedWithTeacherIds?: string[];
+  copiedFromId?: string;
+
   // Phân loại theo sách giáo khoa
   grade: number; // 1-9
   book: string;

@@ -1,0 +1,258 @@
+.container {
+  display: grid;
+  gap: 18px;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr));
+  gap: 14px;
+  align-items: end;
+}
+
+.filters label {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.filters label > span {
+  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.filters input,
+.filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  padding: 8px 11px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.filters input:focus,
+.filters select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+.actions {
+  display: flex;
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.exportButton,
+.secondaryButton {
+  min-height: 42px;
+  padding: 8px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.exportButton {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.exportButton:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.bucketGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bucketCard {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.bucketCard:hover,
+.bucketActive {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.bucketCard > span {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bucketCard > strong {
+  color: var(--color-ink);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.bucketCard > small {
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.table th,
+.table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.table th {
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.subText {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-muted);
+  font-size: 11px;
+}
+
+.amount {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ageBadge {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.notDue {
+  background: #e8f3ec;
+  color: #267344;
+}
+
+.overdue {
+  background: #fff3dc;
+  color: #93600b;
+}
+
+.critical {
+  background: #fde9e7;
+  color: #b42318;
+}
+
+.detailLink {
+  color: var(--color-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.detailLink:hover {
+  text-decoration: underline;
+}
+
+.empty {
+  padding: 22px !important;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.note {
+  margin: 12px 0 0;
+  color: var(--color-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+  .stats,
+  .bucketGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .stats,
+  .bucketGrid,
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  .filters,
+  .actions,
+  .detailLink {
+    display: none !important;
+  }
+
+  .container {
+    gap: 12px;
+  }
+
+  .tableWrap {
+    overflow: visible;
+  }
+
+  .table {
+    font-size: 10px;
+  }
+
+  .table th,
+  .table td {
+    padding: 6px;
+  }
+}

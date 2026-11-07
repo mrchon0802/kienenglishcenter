@@ -5,7 +5,7 @@ import { StatCard } from "@/components/dashboard/StatCard";
 import { Card } from "@/components/ui/Card";
 import { formatScore } from "@/lib/format";
 import { getStudentAssignments } from "@/mocks/assignments";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { StudentAssignmentList } from "./assignments/_components/StudentAssignmentList";
 import styles from "./page.module.css";
@@ -14,10 +14,11 @@ import Link from "next/link";
 export const metadata: Metadata = { title: "Trang chủ | Học sinh" };
 
 async function StudentHome() {
-  await connection(); // dữ liệu bài tập thay đổi theo từng lần truy cập
+  await connection();
+  const currentStudentId = await getCurrentStudentId(); // dữ liệu bài tập thay đổi theo từng lần truy cập
   const [student, assignments] = await Promise.all([
-    getStudentById(CURRENT_STUDENT_ID),
-    getStudentAssignments(CURRENT_STUDENT_ID, new Date()),
+    getStudentById(currentStudentId),
+    getStudentAssignments(currentStudentId, new Date()),
   ]);
   if (!student) return <p>Không tìm thấy học sinh.</p>;
 

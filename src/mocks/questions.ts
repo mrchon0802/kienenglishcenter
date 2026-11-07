@@ -39,7 +39,41 @@ function list(): Question[] {
 
 // Giữ chữ ký async để sau này thay bằng gọi API thật.
 export async function getQuestions(): Promise<Question[]> {
-  return list();
+  return list().map((q) => ({ ...q, sharedWithTeacherIds: [...(q.sharedWithTeacherIds ?? [])] }));
+}
+
+export async function getTeacherQuestions(teacherId: string): Promise<Question[]> {
+  return list().filter((q) => q.createdBy === teacherId || (q.sharedWithTeacherIds ?? []).includes(teacherId))
+    .map((q) => ({ ...q, sharedWithTeacherIds: [...(q.sharedWithTeacherIds ?? [])] }));
+}
+
+export async function getTeacherQuestionById(id: string, teacherId: string): Promise<Question | undefined> {
+  const q = list().find((item) => item.id === id);
+  if (!q || (q.createdBy !== teacherId && !(q.sharedWithTeacherIds ?? []).includes(teacherId))) return undefined;
+  return { ...q, sharedWithTeacherIds: [...(q.sharedWithTeacherIds ?? [])] };
+}
+
+export async function shareQuestion(id: string, teacherIds: string[]): Promise<boolean> {
+  const q = list().find((item) => item.id === id);
+  if (!q) return false;
+  q.sharedWithTeacherIds = [...new Set(teacherIds.filter(Boolean))];
+  return true;
+}
+
+export async function copyQuestion(id: string, teacherId: string): Promise<Question | null> {
+  const source = await getTeacherQuestionById(id, teacherId);
+  if (!source) return null;
+  const { sharedWithTeacherIds: _shares, ...rest } = source;
+  const copiedQuestion: Question = {
+    ...rest,
+    id: source.id,
+    createdAt: source.createdAt,
+    createdBy: teacherId,
+    sharedWithTeacherIds: [],
+    copiedFromId: source.id,
+  };
+  const [copy] = await addQuestions([copiedQuestion], new Date().toISOString().slice(0, 10));
+  return copy ?? null;
 }
 
 export async function getQuestionById(id: string): Promise<Question | undefined> {
@@ -52,7 +86,7 @@ export async function addQuestions(items: Question[], today: string): Promise<Qu
   const all = list();
   let next = Math.max(0, ...all.map((q) => Number.parseInt(q.id.replace(/\D/g, ""), 10))) + 1;
   const created = items.map((item) => {
-    const q: Question = { ...structuredClone(item), id: `q-${String(next).padStart(3, "0")}`, status: "active", createdAt: today };
+    const q: Question = { ...structuredClone(item), sharedWithTeacherIds: [...(item.sharedWithTeacherIds ?? [])], id: `q-${String(next).padStart(3, "0")}`, status: "active", createdAt: today };
     next += 1;
     return q;
   });
@@ -66,7 +100,7 @@ export async function updateQuestion(id: string, data: Question): Promise<Questi
   const index = all.findIndex((q) => q.id === id);
   if (index === -1) return null;
   const old = all[index];
-  all[index] = { ...structuredClone(data), id: old.id, type: old.type, createdAt: old.createdAt, status: old.status };
+  all[index] = { ...structuredClone(data), id: old.id, type: old.type, createdAt: old.createdAt, status: old.status, createdBy: old.createdBy, sharedWithTeacherIds: [...(old.sharedWithTeacherIds ?? [])], copiedFromId: old.copiedFromId };
   return all[index];
 }
 

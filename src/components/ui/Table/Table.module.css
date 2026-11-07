@@ -1,20 +1,44 @@
 .wrap {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
+
 .table {
   width: 100%;
   border-collapse: collapse;
 }
+
 .table th {
   padding: var(--space-2) 10px;
   text-align: left;
   font-size: 12px;
   font-weight: 600;
   color: var(--color-muted);
+  white-space: nowrap;
 }
+
 .table td {
   padding: var(--space-3) 10px;
   border-top: 1px solid var(--color-divider);
   font-size: 14px;
   white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .table {
+    min-width: 620px;
+  }
+
+  .table th {
+    padding: 9px 8px;
+    font-size: 11px;
+  }
+
+  .table td {
+    padding: 10px 8px;
+    font-size: 12px;
+  }
 }

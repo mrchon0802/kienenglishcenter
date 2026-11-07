@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { StudentNotesWorkspace } from "./StudentNotesWorkspace";
 import styles from "../teacher.module.css";
 
 async function StudentsContent() {
   await connection();
-  const data = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const currentTeacherId = await getCurrentTeacherId();
+  const data = await getTeacherPortalData(currentTeacherId);
   const students = data?.classes.flatMap((cls) => cls.students.map((student) => ({
     id: student.id, name: student.fullName, className: cls.name, code: student.code,
   }))) ?? [];

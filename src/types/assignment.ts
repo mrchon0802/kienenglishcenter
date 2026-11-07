@@ -9,6 +9,9 @@ export interface Assignment {
   title: string;
   kind: AssignmentKind;
   classId: string;
+  curriculumId?: string;
+  unitId?: string;
+  lessonId?: string;
   dueAt: string; // "yyyy-mm-ddTHH:mm" (giờ địa phương)
   durationMinutes: number | null; // chỉ bài kiểm tra
   maxAttempts: number | null; // null = không giới hạn
@@ -22,6 +25,9 @@ export interface NewAssignmentInput {
   title: string;
   kind: AssignmentKind;
   classId: string;
+  curriculumId?: string;
+  unitId?: string;
+  lessonId?: string;
   dueAt: string;
   durationMinutes: number | null;
   showAnswers: ShowAnswers;

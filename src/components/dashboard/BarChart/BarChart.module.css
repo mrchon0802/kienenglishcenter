@@ -2,7 +2,9 @@
   display: flex;
   align-items: stretch;
   gap: 14px;
+  min-width: 0;
 }
+
 .column {
   flex: 1;
   display: flex;
@@ -10,29 +12,53 @@
   align-items: center;
   min-width: 0;
 }
+
 .area {
   display: flex;
   align-items: flex-end;
   width: 100%;
   height: 120px;
 }
+
 .bar {
   width: 100%;
+  min-height: 2px;
   background: var(--color-primary-faded);
   border-radius: 6px 6px 0 0;
 }
+
 .active {
   background: var(--color-primary);
 }
+
 .value,
 .valueActive {
   margin-top: var(--space-1);
   font-size: 13px;
+  white-space: nowrap;
 }
+
 .valueActive {
   font-weight: 700;
 }
+
 .label {
   font-size: 13px;
   color: var(--color-muted);
+}
+
+@media (max-width: 640px) {
+  .chart {
+    gap: 6px;
+  }
+
+  .area {
+    height: 104px;
+  }
+
+  .value,
+  .valueActive,
+  .label {
+    font-size: 11px;
+  }
 }

@@ -6,14 +6,15 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { QuizRunner } from "@/components/quiz/QuizRunner";
 import { Button } from "@/components/ui/Button";
 import { getStudentAssignmentView } from "@/mocks/student-view";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 
 export const metadata: Metadata = { title: "Làm bài | Học sinh" };
 
 async function AssignmentContent({ params }: { params: Promise<{ id: string }> }) {
   await connection();
+  const currentStudentId = await getCurrentStudentId();
   const { id } = await params;
-  const view = await getStudentAssignmentView(id, CURRENT_STUDENT_ID, new Date());
+  const view = await getStudentAssignmentView(id, currentStudentId, new Date());
   if (!view) notFound();
 
   return (

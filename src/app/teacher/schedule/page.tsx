@@ -6,14 +6,15 @@ import { Card } from "@/components/ui/Card";
 import { ScheduleTable } from "@/components/schedule/ScheduleTable";
 import { getClasses } from "@/mocks/classes";
 import { getTeacherAssignments } from "@/mocks/teacher-assignments";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 
 export const metadata: Metadata = { title: "Lịch giảng dạy | Giáo viên" };
 
 async function ScheduleContent() {
   await connection();
+  const currentTeacherId = await getCurrentTeacherId();
   const [classes, assignments] = await Promise.all([getClasses(), getTeacherAssignments()]);
-  const assignedIds = new Set(assignments.filter((item) => item.teacherId === DEMO_CENTER_USER.teacherId && !item.endDate).map((item) => item.classId));
+  const assignedIds = new Set(assignments.filter((item) => item.teacherId === currentTeacherId && !item.endDate).map((item) => item.classId));
   const mine = classes.filter((item) => assignedIds.has(item.id));
   return <Card><ScheduleTable classes={mine} title="Lịch giảng dạy của tôi" /></Card>;
 }

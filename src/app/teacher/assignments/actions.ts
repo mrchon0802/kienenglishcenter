@@ -1,9 +1,12 @@
 "use server";
 
+import { requireTeacherAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { addQuestions } from "@/mocks/questions";
+import { getCurriculumById } from "@/mocks/curricula";
 import { createAssignment } from "@/mocks/assignments";
 import { validateQuestion } from "@/lib/question-types";
 import type { NewAssignmentInput } from "@/types/assignment";
@@ -17,10 +20,17 @@ export interface TeacherAssignmentPayload {
   durationMinutes: number | null;
   showAnswers: "immediately" | "after_deadline" | "never";
   questionIds: string[];
+  curriculumId: string;
+  unitId: string;
+  lessonId: string;
   newQuestions: Question[];
 }
 
 export async function publishTeacherAssignment(payload: TeacherAssignmentPayload) {
+  await requireTeacherAction();
+
+  const currentTeacherId = await getCurrentTeacherId();
+
   const title = payload.title.trim();
   if (!title) return { ok: false as const, error: "Vui lòng nhập tên bài tập/kiểm tra." };
   if (!payload.dueAt || Number.isNaN(new Date(payload.dueAt).getTime())) return { ok: false as const, error: "Thời hạn nộp không hợp lệ." };
@@ -28,7 +38,12 @@ export async function publishTeacherAssignment(payload: TeacherAssignmentPayload
     return { ok: false as const, error: "Thời gian làm bài kiểm tra phải từ 1 đến 300 phút." };
   }
 
-  const portal = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  if (!payload.curriculumId || !payload.unitId || !payload.lessonId) return { ok: false as const, error: "Hãy chọn chương trình, Unit và Lesson." };
+  const curriculum = await getCurriculumById(payload.curriculumId);
+  const unit = curriculum?.units.find((item) => item.id === payload.unitId);
+  if (!unit?.lessons.some((item) => item.id === payload.lessonId)) return { ok: false as const, error: "Unit hoặc Lesson không thuộc chương trình đã chọn." };
+
+  const portal = await getTeacherPortalData(currentTeacherId);
   const assignedClass = portal?.classes.find((item) => item.id === payload.classId);
   if (!assignedClass) return { ok: false as const, error: "Bạn không được phân công lớp này." };
 
@@ -44,6 +59,9 @@ export async function publishTeacherAssignment(payload: TeacherAssignmentPayload
     title,
     kind: payload.kind,
     classId: payload.classId,
+    curriculumId: payload.curriculumId,
+    unitId: payload.unitId,
+    lessonId: payload.lessonId,
     dueAt: payload.dueAt,
     durationMinutes: payload.kind === "test" ? payload.durationMinutes : null,
     showAnswers: payload.showAnswers,

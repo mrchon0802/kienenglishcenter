@@ -2,7 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
-import { createQuestionAction, updateQuestionAction } from "@/app/admin/question-bank/actions";
+import {
+  createQuestionAction,
+  updateQuestionAction,
+} from "@/app/admin/question-bank/actions";
 import { AnswerEditor } from "@/components/question-editor/editors";
 import { MediaFields } from "@/components/question-editor/MediaFields";
 import { QuestionPreview } from "@/components/question-editor/QuestionPreview";
@@ -21,15 +24,34 @@ import {
   validateQuestion,
   type QuestionErrors,
 } from "@/lib/question-types";
-import type { Difficulty, Question, QuestionType, Skill } from "@/types/question";
+import type {
+  Difficulty,
+  Question,
+  QuestionType,
+  Skill,
+} from "@/types/question";
+import type { Curriculum } from "@/types/curriculum";
+import {
+  createTeacherQuestionAction,
+  updateTeacherQuestionAction,
+} from "@/app/teacher/questions/actions";
 import styles from "./QuestionEditor.module.css";
 
 interface QuestionEditorProps {
   initial: Question;
   mode: "new" | "edit";
+  curricula?: Curriculum[];
+  ownerId?: string;
+  teacherMode?: boolean;
 }
 
-export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
+export function QuestionEditor({
+  initial,
+  mode,
+  curricula = [],
+  ownerId,
+  teacherMode = false,
+}: QuestionEditorProps) {
   const [draft, setDraft] = useState<Question>(initial);
   const [errors, setErrors] = useState<QuestionErrors>({});
   const [notice, setNotice] = useState<"" | "saved" | "invalid">("");
@@ -37,6 +59,13 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [serverError, setServerError] = useState("");
+
+  const selectedCurriculum = curricula.find(
+    (item) => item.id === draft.curriculumId,
+  );
+  const selectedUnit = selectedCurriculum?.units.find(
+    (item) => item.id === draft.unitId,
+  );
 
   function update(patch: Partial<Question>) {
     setDraft((prev) => ({ ...prev, ...patch }));
@@ -54,13 +83,24 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
     const nextErrors = validateQuestion(draft);
     setErrors(nextErrors);
     setServerError("");
+    if (!draft.curriculumId || !draft.unitId || !draft.lessonId) {
+      setServerError("Vui lòng chọn đầy đủ chương trình, Unit và Lesson.");
+      setNotice("invalid");
+      return;
+    }
     if (Object.keys(nextErrors).length > 0) {
       setNotice("invalid");
       return;
     }
 
     startTransition(async () => {
-      const res = mode === "edit" ? await updateQuestionAction(draft.id, draft) : await createQuestionAction(draft);
+      const res = teacherMode
+        ? mode === "edit"
+          ? await updateTeacherQuestionAction(draft.id, draft)
+          : await createTeacherQuestionAction(draft)
+        : mode === "edit"
+          ? await updateQuestionAction(draft.id, draft)
+          : await createQuestionAction(draft, ownerId);
       if (!res.ok) {
         setServerError(res.error);
         return;
@@ -73,6 +113,9 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
           grade: prev.grade,
           book: prev.book,
           unit: prev.unit,
+          curriculumId: prev.curriculumId,
+          unitId: prev.unitId,
+          lessonId: prev.lessonId,
           skill: prev.skill,
           difficulty: prev.difficulty,
           points: prev.points,
@@ -110,13 +153,17 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
             label="Dạng câu hỏi"
             value={draft.type}
             disabled={mode === "edit"}
-            options={QUESTION_TYPE_OPTIONS.map((t) => ({ value: t.value, label: t.label }))}
+            options={QUESTION_TYPE_OPTIONS.map((t) => ({
+              value: t.value,
+              label: t.label,
+            }))}
             onChange={(e) => handleTypeChange(e.target.value as QuestionType)}
           />
           <p className={styles.hint}>
             {mode === "edit"
               ? "Không đổi dạng câu khi sửa. Muốn đổi dạng, hãy tạo câu hỏi mới."
-              : QUESTION_TYPE_OPTIONS.find((t) => t.value === draft.type)?.description}
+              : QUESTION_TYPE_OPTIONS.find((t) => t.value === draft.type)
+                  ?.description}
           </p>
         </Card>
 
@@ -149,24 +196,60 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
           <div className={styles.stack}>
             <div className={styles.fields}>
               <Select
-                label="Lớp"
-                value={String(draft.grade)}
-                options={GRADE_OPTIONS}
-                onChange={(e) => update({ grade: Number(e.target.value) })}
+                label="Chương trình"
+                value={draft.curriculumId ?? ""}
+                placeholder="Chọn chương trình"
+                options={curricula
+                  .filter((item) => item.status === "active")
+                  .map((item) => ({ value: item.id, label: item.title }))}
+                onChange={(e) => {
+                  const curriculum = curricula.find(
+                    (item) => item.id === e.target.value,
+                  );
+                  update({
+                    curriculumId: e.target.value,
+                    grade: curriculum?.grade ?? draft.grade,
+                    unitId: "",
+                    lessonId: "",
+                    unit: 1,
+                  });
+                }}
+              />
+              <Select
+                label="Unit"
+                value={draft.unitId ?? ""}
+                placeholder="Chọn Unit"
+                options={(selectedCurriculum?.units ?? []).map((item) => ({
+                  value: item.id,
+                  label: item.title,
+                }))}
+                disabled={!selectedCurriculum}
+                onChange={(e) => {
+                  const index = (selectedCurriculum?.units ?? []).findIndex(
+                    (item) => item.id === e.target.value,
+                  );
+                  update({
+                    unitId: e.target.value,
+                    lessonId: "",
+                    unit: index + 1,
+                  });
+                }}
+              />
+              <Select
+                label="Lesson"
+                value={draft.lessonId ?? ""}
+                placeholder="Chọn Lesson"
+                options={(selectedUnit?.lessons ?? []).map((item) => ({
+                  value: item.id,
+                  label: item.title,
+                }))}
+                disabled={!selectedUnit}
+                onChange={(e) => update({ lessonId: e.target.value })}
               />
               <Input
-                label="Sách"
+                label="Sách / tài liệu (không bắt buộc)"
                 value={draft.book}
                 onChange={(e) => update({ book: e.target.value })}
-              />
-              <Input
-                label="Unit"
-                type="number"
-                min={1}
-                max={30}
-                value={draft.unit}
-                error={errors.unit}
-                onChange={(e) => update({ unit: Number(e.target.value) })}
               />
               <Select
                 label="Kỹ năng"
@@ -178,7 +261,9 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
                 label="Độ khó"
                 value={String(draft.difficulty)}
                 options={DIFFICULTY_OPTIONS}
-                onChange={(e) => update({ difficulty: Number(e.target.value) as Difficulty })}
+                onChange={(e) =>
+                  update({ difficulty: Number(e.target.value) as Difficulty })
+                }
               />
               <Input
                 label="Điểm"
@@ -200,7 +285,11 @@ export function QuestionEditor({ initial, mode }: QuestionEditorProps) {
         </Card>
 
         <div className={styles.actions}>
-          <Button href="/admin/question-bank">Hủy</Button>
+          <Button
+            href={teacherMode ? "/teacher/questions" : "/admin/question-bank"}
+          >
+            Hủy
+          </Button>
           <Button type="submit" variant="primary" disabled={pending}>
             {pending ? "Đang lưu..." : "Lưu câu hỏi"}
           </Button>

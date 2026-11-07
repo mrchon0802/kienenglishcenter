@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidateEverything } from "@/lib/revalidate";
 import { toISODate } from "@/lib/month";
 import { normalizePhone, validateStudentInput, type StudentInput } from "@/lib/student-validation";
@@ -9,6 +11,8 @@ import { createStudents, getStudentById, getStudents, updateStudent } from "@/mo
 type Fail = { ok: false; error: string };
 
 async function classNames(): Promise<string[]> {
+  await requireAdminAction();
+
   return (await getClasses()).map((c) => c.name);
 }
 
@@ -18,6 +22,8 @@ function firstError(errors: Record<string, string | undefined>): string {
 
 /** TODO (khi có backend): gọi API POST /students. */
 export async function createStudentAction(input: StudentInput): Promise<{ ok: true; id: string; code: string } | Fail> {
+  await requireAdminAction();
+
   const errors = validateStudentInput(input, await classNames());
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };
 
@@ -40,6 +46,8 @@ export async function updateStudentAction(
   id: string,
   input: StudentInput & { status: "active" | "inactive" },
 ): Promise<{ ok: true } | Fail> {
+  await requireAdminAction();
+
   if (!(await getStudentById(id))) return { ok: false, error: "Không tìm thấy học sinh." };
   const errors = validateStudentInput(input, await classNames());
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };
@@ -62,6 +70,8 @@ export async function updateStudentAction(
  * (nhận bài tập của lớp mới, hóa đơn tháng sau theo học phí lớp mới).
  */
 export async function transferStudentAction(studentId: string, toClassName: string): Promise<{ ok: true } | Fail> {
+  await requireAdminAction();
+
   const student = await getStudentById(studentId);
   if (!student) return { ok: false, error: "Không tìm thấy học sinh." };
   if (!(await classNames()).includes(toClassName)) return { ok: false, error: "Lớp không tồn tại." };
@@ -81,6 +91,8 @@ export interface ImportResult {
 export async function importStudentsAction(
   rows: { rowNumber: number; input: StudentInput }[],
 ): Promise<({ ok: true } & ImportResult) | Fail> {
+  await requireAdminAction();
+
   if (rows.length === 0) return { ok: false, error: "Không có dòng nào để nhập." };
   if (rows.length > 500) return { ok: false, error: "Mỗi lần nhập tối đa 500 học sinh." };
 
@@ -125,6 +137,8 @@ export async function updateParentAccessAction(
   studentId: string,
   enabled: boolean,
 ): Promise<{ ok: true } | Fail> {
+  await requireAdminAction();
+
   if (typeof enabled !== "boolean") {
     return { ok: false, error: "Trạng thái quyền truy cập không hợp lệ." };
   }

@@ -4,14 +4,15 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card } from "@/components/ui/Card";
 import { getStudentAssignments } from "@/mocks/assignments";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { StudentAssignmentList } from "./_components/StudentAssignmentList";
 
 export const metadata: Metadata = { title: "Bài tập | Học sinh" };
 
 async function AssignmentsContent() {
   await connection();
-  const all = await getStudentAssignments(CURRENT_STUDENT_ID, new Date());
+  const currentStudentId = await getCurrentStudentId();
+  const all = await getStudentAssignments(currentStudentId, new Date());
   const todo = all.filter((a) => a.status === "todo");
   const rest = all.filter((a) => a.status !== "todo");
 

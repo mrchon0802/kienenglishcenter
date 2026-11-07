@@ -79,9 +79,35 @@ export async function createCurriculum(input: CurriculumInput): Promise<Curricul
   const now = new Date().toISOString().slice(0, 10);
   const created: Curriculum = {
     ...structuredClone(input),
+    version: 1,
+    previousVersionId: null,
     id: `${slug}-${Date.now().toString(36)}`,
     code: input.code.trim().toUpperCase(),
     title: input.title.trim(),
+    createdAt: now,
+    updatedAt: now,
+  };
+  list().push(created);
+  return structuredClone(created);
+}
+
+export async function createCurriculumVersion(id: string, input: CurriculumInput): Promise<Curriculum | null> {
+  const previous = list().find((item) => item.id === id);
+  if (!previous) return null;
+  const nextVersion = (previous.version ?? 1) + 1;
+  // Giữ nguyên bản cũ để các lớp đã gán tiếp tục học theo đúng nội dung trước đây.
+  previous.status = "inactive";
+  previous.updatedAt = new Date().toISOString().slice(0, 10);
+  const slug = input.code.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const now = new Date().toISOString().slice(0, 10);
+  const created: Curriculum = {
+    ...structuredClone(input),
+    id: `${slug}-v${nextVersion}-${Date.now().toString(36)}`,
+    code: input.code.trim().toUpperCase(),
+    title: input.title.trim(),
+    status: "active",
+    version: nextVersion,
+    previousVersionId: previous.id,
     createdAt: now,
     updatedAt: now,
   };

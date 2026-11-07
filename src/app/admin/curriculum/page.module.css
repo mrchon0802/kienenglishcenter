@@ -22,3 +22,7 @@
 .error { margin-bottom: 12px; color: #a33d36; font-size: 13px; }
 @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 700px) { .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid { grid-template-columns: 1fr; } .toolbar { align-items: stretch; } .search { width: 100%; } }
+
+.initializeButton { min-height: 40px; padding: 0 13px; border: 1px solid var(--color-primary); border-radius: 9px; background: var(--color-primary-soft); color: var(--color-primary-dark); font: inherit; font-size: 12px; font-weight: 800; cursor: pointer; }
+.initializeButton:disabled { opacity: .6; cursor: wait; }
+.notice { margin: 0 0 12px; padding: 11px 13px; border: 1px solid #b8ddd5; border-radius: 9px; background: #eff8f5; color: #17665d; font-size: 13px; }

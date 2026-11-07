@@ -51,3 +51,55 @@
   font-size: 13px;
   color: var(--color-muted);
 }
+
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(15 23 42 / 48%);
+}
+.shareModal {
+  width: min(100%, 560px);
+  max-height: min(80vh, 720px);
+  overflow: auto;
+  padding: 22px;
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  background: var(--color-card, #fff);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 20%);
+}
+.modalHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.modalHead h2 { margin: 0; font-size: 20px; }
+.modalHead p { margin: 8px 0 0; color: var(--color-muted); font-size: 14px; }
+.closeButton {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  border: 1px solid var(--color-border); border-radius: 10px;
+  background: transparent; font-size: 24px; cursor: pointer;
+}
+.modalHint { color: var(--color-muted); font-size: 13px; line-height: 1.5; }
+.teacherChoices { display: grid; gap: 8px; margin: 16px 0; }
+.teacherChoice {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 52px; padding: 10px 12px;
+  border: 1px solid var(--color-border); border-radius: 10px;
+  cursor: pointer;
+}
+.teacherChoice input { width: 18px; height: 18px; accent-color: var(--color-primary); }
+.teacherChoice span { display: grid; gap: 3px; }
+.teacherChoice small { color: var(--color-muted); }
+.modalActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.shareMessage { color: var(--color-primary); font-size: 13px; }
+@media (max-width: 600px) {
+  .shareModal { padding: 16px; }
+  .modalActions { justify-content: stretch; }
+  .modalActions > * { flex: 1 1 auto; }
+}

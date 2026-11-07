@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { formatDateTime } from "@/lib/format-datetime";
 import { formatScore } from "@/lib/format";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentProgress } from "@/mocks/student-progress";
 import styles from "./progress.module.css";
 
@@ -16,7 +16,8 @@ export const metadata: Metadata = { title: "Tiến độ học tập | Học sin
 
 async function ProgressContent() {
   await connection();
-  const data = await getStudentProgress(CURRENT_STUDENT_ID, new Date());
+  const currentStudentId = await getCurrentStudentId();
+  const data = await getStudentProgress(currentStudentId, new Date());
   if (!data) return <EmptyState title="Không tìm thấy hồ sơ học sinh" />;
   const scored = data.assignments.filter((item) => item.bestScore !== null);
   return (

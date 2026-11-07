@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/Select";
 import { DIFFICULTY_OPTIONS, GRADE_OPTIONS, SKILL_OPTIONS, typeLabel } from "@/lib/question-types";
 import type { AssignmentKind, ShowAnswers } from "@/types/assignment";
 import type { Question } from "@/types/question";
+import type { Curriculum } from "@/types/curriculum";
 import { createAssignmentAction } from "../../actions";
 import { QuestionPicker } from "./QuestionPicker";
 import styles from "./AssignmentForm.module.css";
@@ -17,6 +18,7 @@ import styles from "./AssignmentForm.module.css";
 interface AssignmentFormProps {
   classes: { id: string; name: string }[];
   questions: Question[]; // chỉ câu đang dùng (chưa lưu trữ)
+  curricula: Curriculum[];
 }
 
 const KIND_OPTIONS = [
@@ -41,13 +43,18 @@ function shuffle<T>(items: T[]): T[] {
   return copy;
 }
 
-export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
+export function AssignmentForm({ classes, questions, curricula }: AssignmentFormProps) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<AssignmentKind>("practice");
   const [classId, setClassId] = useState("");
+  const [curriculumId, setCurriculumId] = useState("");
+  const [unitId, setUnitId] = useState("");
+  const [lessonId, setLessonId] = useState("");
+  const selectedCurriculum = curricula.find((item) => item.id === curriculumId);
+  const selectedUnit = selectedCurriculum?.units.find((item) => item.id === unitId);
   const [dueAt, setDueAt] = useState("");
   const [duration, setDuration] = useState("20");
   const [showAnswers, setShowAnswers] = useState<ShowAnswers>("immediately");
@@ -104,7 +111,7 @@ export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
   function drawRandom() {
     const count = Math.max(1, Math.floor(Number(ruleCount) || 0));
     const pool = questions.filter(
-      (q) =>
+      (q) => q.curriculumId === curriculumId && q.unitId === unitId && q.lessonId === lessonId &&
         (!ruleGrade || String(q.grade) === ruleGrade) &&
         (!ruleUnit || String(q.unit) === ruleUnit) &&
         (!ruleSkill || q.skill === ruleSkill) &&
@@ -126,6 +133,7 @@ export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
     const next: Errors = {};
     if (!title.trim()) next.title = "Nhập tên bài.";
     if (!classId) next.classId = "Chọn lớp được giao.";
+    if (!curriculumId || !unitId || !lessonId) next.questions = "Chọn chương trình, Unit và Lesson.";
     if (!dueAt) next.dueAt = "Chọn hạn nộp.";
     if (kind === "test" && !(Number(duration) > 0)) next.duration = "Nhập thời gian làm bài (phút).";
     if (selectedIds.length === 0) next.questions = "Chọn ít nhất 1 câu hỏi.";
@@ -144,6 +152,9 @@ export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
         title,
         kind,
         classId,
+        curriculumId,
+        unitId,
+        lessonId,
         dueAt,
         durationMinutes: kind === "test" ? Number(duration) : null,
         showAnswers,
@@ -162,6 +173,9 @@ export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
             <Input label="Tên bài" value={title} error={errors.title} onChange={(e) => setTitle(e.target.value)} placeholder="Ví dụ: Kiểm tra Unit 5" />
             <Select label="Loại bài" value={kind} options={KIND_OPTIONS} onChange={(e) => handleKindChange(e.target.value as AssignmentKind)} />
             <Select label="Giao cho lớp" placeholder="Chọn lớp" value={classId} error={errors.classId} options={classes.map((c) => ({ value: c.id, label: `Lớp ${c.name}` }))} onChange={(e) => setClassId(e.target.value)} />
+            <Select label="Chương trình" placeholder="Chọn chương trình" value={curriculumId} options={curricula.map((c) => ({ value: c.id, label: c.title }))} onChange={(e) => { setCurriculumId(e.target.value); setUnitId(""); setLessonId(""); setSelectedIds([]); }} />
+            <Select label="Unit" placeholder="Chọn Unit" value={unitId} disabled={!selectedCurriculum} options={(selectedCurriculum?.units ?? []).map((u) => ({ value: u.id, label: u.title }))} onChange={(e) => { setUnitId(e.target.value); setLessonId(""); setSelectedIds([]); }} />
+            <Select label="Lesson" placeholder="Chọn Lesson" value={lessonId} disabled={!selectedUnit} options={(selectedUnit?.lessons ?? []).map((l) => ({ value: l.id, label: l.title }))} onChange={(e) => { setLessonId(e.target.value); setSelectedIds([]); }} />
             <Input label="Hạn nộp" type="datetime-local" value={dueAt} error={errors.dueAt} onChange={(e) => setDueAt(e.target.value)} />
             {kind === "test" ? (
               <Input label="Thời gian làm bài (phút)" type="number" min={1} value={duration} error={errors.duration} onChange={(e) => setDuration(e.target.value)} />
@@ -188,7 +202,7 @@ export function AssignmentForm({ classes, questions }: AssignmentFormProps) {
           </div>
 
           {mode === "manual" ? (
-            <QuestionPicker questions={questions} selectedIds={selectedIds} onToggle={toggle} onSelectMany={selectMany} />
+            <QuestionPicker questions={questions.filter((q) => q.curriculumId === curriculumId && q.unitId === unitId && q.lessonId === lessonId)} selectedIds={selectedIds} onToggle={toggle} onSelectMany={selectMany} />
           ) : (
             <div className={styles.stack}>
               <p className={styles.hint}>

@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
 import { createCourseEnrollment, updateCourseEnrollmentStatus } from "@/mocks/course-enrollments";
 import { getClasses } from "@/mocks/classes";
@@ -10,6 +12,8 @@ import type { CourseEnrollmentInput, CourseEnrollmentStatus } from "@/types/cour
 type Result = { ok: true } | { ok: false; error: string };
 
 export async function createCourseEnrollmentAction(input: CourseEnrollmentInput): Promise<Result> {
+  await requireAdminAction();
+
   if (!input.studentId || !input.courseId || !input.classId) return { ok: false, error: "Vui lòng chọn học sinh, khóa học và lớp học." };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.enrolledAt)) return { ok: false, error: "Ngày đăng ký không hợp lệ." };
   if (!Number.isFinite(input.fee) || input.fee < 0 || input.fee > 100_000_000) return { ok: false, error: "Học phí không hợp lệ." };
@@ -28,6 +32,8 @@ export async function createCourseEnrollmentAction(input: CourseEnrollmentInput)
 }
 
 export async function updateCourseEnrollmentStatusAction(id: string, status: CourseEnrollmentStatus): Promise<Result> {
+  await requireAdminAction();
+
   const allowed: CourseEnrollmentStatus[] = ["active", "completed", "paused", "cancelled"];
   if (!id || !allowed.includes(status)) return { ok: false, error: "Trạng thái đăng ký không hợp lệ." };
   const updated = await updateCourseEnrollmentStatus(id, status);

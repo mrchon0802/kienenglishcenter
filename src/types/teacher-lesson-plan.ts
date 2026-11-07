@@ -4,6 +4,11 @@ export interface TeacherLessonPlan {
   id: string;
   teacherId: string;
   classId: string;
+  curriculumId?: string;
+  unitId?: string;
+  lessonId?: string;
+  sharedWithTeacherIds?: string[];
+  copiedFromId?: string;
   title: string;
   grade: number;
   unit: string;
@@ -23,7 +28,7 @@ export interface TeacherLessonPlan {
 }
 
 export type TeacherLessonPlanInput = Pick<TeacherLessonPlan,
-  "classId" | "title" | "unit" | "lesson" | "objectives" | "materials" |
+  "classId" | "curriculumId" | "unitId" | "lessonId" | "title" | "unit" | "lesson" | "objectives" | "materials" |
   "warmUp" | "presentation" | "practice" | "production" | "homework" |
   "duration" | "status" | "visibility"
->;
+> & { curriculumId: string; unitId: string; lessonId: string };

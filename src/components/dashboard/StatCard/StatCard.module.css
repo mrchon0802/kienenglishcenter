@@ -1,14 +1,31 @@
 .label,
 .hint {
   font-size: 13px;
+  line-height: 1.45;
   color: var(--color-muted);
+  overflow-wrap: anywhere;
 }
+
 .value {
   margin: var(--space-1) 0;
-  font-size: 30px;
+  font-size: clamp(22px, 2vw, 30px);
   font-weight: 700;
   line-height: 1.2;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
+
 .warning {
   color: var(--color-debt);
+}
+
+@media (max-width: 640px) {
+  .label,
+  .hint {
+    font-size: 12px;
+  }
+
+  .value {
+    font-size: clamp(19px, 5vw, 25px);
+  }
 }

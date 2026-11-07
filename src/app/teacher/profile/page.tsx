@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import styles from "../teacher.module.css";
 
@@ -8,7 +8,8 @@ export const metadata = { title: "Hồ sơ cá nhân | Giáo viên" };
 
 async function TeacherProfile() {
   await connection();
-  const data = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const currentTeacherId = await getCurrentTeacherId();
+  const data = await getTeacherPortalData(currentTeacherId);
   if (!data) return <p>Không tìm thấy hồ sơ giáo viên.</p>;
   const { teacher, account } = data;
   const fields = [

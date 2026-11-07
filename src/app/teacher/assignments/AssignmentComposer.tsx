@@ -9,13 +9,14 @@ import {
   validateQuestion,
 } from "@/lib/question-types";
 import type { Question, QuestionType } from "@/types/question";
+import type { Curriculum } from "@/types/curriculum";
 import type { AssignmentKind, ShowAnswers } from "@/types/assignment";
 import { publishTeacherAssignment } from "./actions";
 import styles from "./assignments.module.css";
 
 type BankQuestion = Pick<
   Question,
-  "id" | "prompt" | "type" | "points" | "grade" | "unit" | "status"
+  "id" | "prompt" | "type" | "points" | "grade" | "unit" | "status" | "curriculumId" | "unitId" | "lessonId"
 >;
 type ClassOption = {
   id: string;
@@ -27,14 +28,21 @@ type ClassOption = {
 export default function AssignmentComposer({
   classes,
   bankQuestions,
+  curricula,
 }: {
   classes: ClassOption[];
   bankQuestions: BankQuestion[];
+  curricula: Curriculum[];
 }) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [kind, setKind] = useState<AssignmentKind>("practice");
   const [classId, setClassId] = useState(classes[0]?.id ?? "");
+  const [curriculumId, setCurriculumId] = useState("");
+  const [unitId, setUnitId] = useState("");
+  const [lessonId, setLessonId] = useState("");
+  const selectedCurriculum = curricula.find((item) => item.id === curriculumId);
+  const selectedUnit = selectedCurriculum?.units.find((item) => item.id === unitId);
   const [dueAt, setDueAt] = useState("");
   const [duration, setDuration] = useState("30");
   const [showAnswers, setShowAnswers] = useState<ShowAnswers>("after_deadline");
@@ -47,8 +55,8 @@ export default function AssignmentComposer({
   const [notice, setNotice] = useState("");
   const [saving, setSaving] = useState(false);
   const activeQuestions = useMemo(
-    () => bankQuestions.filter((q) => q.status === "active"),
-    [bankQuestions],
+    () => bankQuestions.filter((q) => q.status === "active" && q.curriculumId === curriculumId && q.unitId === unitId && q.lessonId === lessonId),
+    [bankQuestions, curriculumId, unitId, lessonId],
   );
 
   function changeType(type: QuestionType) {
@@ -62,6 +70,7 @@ export default function AssignmentComposer({
     }));
   }
   function addDraft() {
+    if (!curriculumId || !unitId || !lessonId) { setNotice("Hãy chọn chương trình, Unit và Lesson trước."); return; }
     const errors = validateQuestion(draft);
     if (Object.keys(errors).length) {
       setNotice(Object.values(errors)[0]);
@@ -71,6 +80,7 @@ export default function AssignmentComposer({
       ...items,
       {
         ...draft,
+        curriculumId, unitId, lessonId,
         id: `draft-${items.length + 1}`,
         status: "active",
         createdAt: "",
@@ -111,7 +121,8 @@ export default function AssignmentComposer({
       durationMinutes: kind === "test" ? Number(duration) : null,
       showAnswers,
       questionIds: selected,
-      newQuestions,
+      newQuestions: newQuestions.map((q) => ({ ...q, curriculumId, unitId, lessonId })),
+      curriculumId, unitId, lessonId,
     });
     setSaving(false);
     if (!result.ok) {
@@ -159,6 +170,26 @@ export default function AssignmentComposer({
             </select>
           </label>
         </div>
+        <div className={styles.twoCols}>
+          <label className={styles.field}>Chương trình
+            <select value={curriculumId} onChange={(e) => { setCurriculumId(e.target.value); setUnitId(""); setLessonId(""); setSelected([]); }}>
+              <option value="">Chọn chương trình</option>
+              {curricula.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
+            </select>
+          </label>
+          <label className={styles.field}>Unit
+            <select value={unitId} disabled={!selectedCurriculum} onChange={(e) => { setUnitId(e.target.value); setLessonId(""); setSelected([]); }}>
+              <option value="">Chọn Unit</option>
+              {(selectedCurriculum?.units ?? []).map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
+            </select>
+          </label>
+        </div>
+        <label className={styles.field}>Lesson
+          <select value={lessonId} disabled={!selectedUnit} onChange={(e) => { setLessonId(e.target.value); setSelected([]); }}>
+            <option value="">Chọn Lesson</option>
+            {(selectedUnit?.lessons ?? []).map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}
+          </select>
+        </label>
         <div className={styles.twoCols}>
           <label className={styles.field}>
             Hạn nộp

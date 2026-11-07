@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getAssignments, getSubmissionRows } from "@/mocks/assignments";
 import styles from "./assignments.module.css";
@@ -10,8 +10,9 @@ export const metadata = { title: "Bài tập & Kiểm tra | Giáo viên" };
 
 async function AssignmentList() {
   await connection();
+  const currentTeacherId = await getCurrentTeacherId();
   const [portal, assignments] = await Promise.all([
-    getTeacherPortalData(DEMO_CENTER_USER.teacherId),
+    getTeacherPortalData(currentTeacherId),
     getAssignments(),
   ]);
   const classes = portal?.classes ?? [];

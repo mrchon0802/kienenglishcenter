@@ -15,6 +15,7 @@ import { formatDate } from "@/lib/format-date";
 import { monthLabel, toISODate } from "@/lib/month";
 import { METHOD_LABEL, STATUS_LABEL } from "@/lib/tuition";
 import { getInvoiceViewById, getPaymentsForInvoice } from "@/mocks/tuition";
+import { getAdminTuitionNotifications, getPaymentAgreements } from "@/mocks/tuition-notifications";
 import { DeletePaymentButton } from "../../_components/DeletePaymentButton";
 import { PaymentForm } from "../../_components/PaymentForm";
 
@@ -26,7 +27,17 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
   const today = toISODate(new Date());
   const invoice = await getInvoiceViewById(id, today);
   if (!invoice) notFound();
-  const payments = await getPaymentsForInvoice(id);
+  const [payments, allNotices, allAgreements] = await Promise.all([
+    getPaymentsForInvoice(id),
+    getAdminTuitionNotifications(500),
+    getPaymentAgreements(),
+  ]);
+  const invoiceNotices = allNotices.filter((item) => item.invoiceId === id);
+  const invoiceAgreements = allAgreements.filter((item) => item.invoiceId === id);
+  const dateTimeFormatter = new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 
   return (
     <>
@@ -94,6 +105,57 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
           Nhập nhầm? Xóa khoản thu rồi ghi nhận lại. Xem công nợ của cả trung tâm ở{" "}
           <Link href="/admin/tuition/debts">tab Công nợ</Link>.
         </p>
+      </Card>
+
+      <Card title={`Lịch sử nhắc học phí (${invoiceNotices.length})`}>
+        {invoiceNotices.length === 0 ? (
+          <EmptyState title="Chưa có lịch sử nhắc học phí" />
+        ) : (
+          <div style={{ display: "grid", gap: 12 }}>
+            {invoiceNotices.map((notice) => (
+              <article key={notice.id} style={{ padding: 14, border: "1px solid var(--color-border)", borderRadius: 10, display: "grid", gap: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                  <strong>{notice.title}</strong>
+                  <Badge tone={notice.kind === "overdue" ? "amber" : "teal"}>
+                    {notice.kind === "reminder" ? "Nhắc lần đầu" : notice.kind === "due" ? "Đến hạn" : notice.kind === "overdue" ? "Quá hạn" : notice.kind === "payment" ? "Thanh toán" : "Lịch hẹn"}
+                  </Badge>
+                </div>
+                <p style={{ margin: 0, fontSize: 14 }}>{notice.message}</p>
+                <small style={{ color: "var(--color-muted)" }}>
+                  {dateTimeFormatter.format(new Date(notice.createdAt))}
+                </small>
+              </article>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      <Card title={`Lịch hẹn thanh toán (${invoiceAgreements.length})`}>
+        {invoiceAgreements.length === 0 ? (
+          <EmptyState title="Chưa có lịch hẹn thanh toán" />
+        ) : (
+          <div style={{ display: "grid", gap: 12 }}>
+            {invoiceAgreements.map((agreement) => {
+              const isPaid = invoice.remaining <= 0;
+              const isWaiting = today < agreement.promisedDate;
+              return (
+                <article key={agreement.id} style={{ padding: 14, border: "1px solid var(--color-border)", borderRadius: 10, display: "grid", gap: 8 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+                    <strong>Hẹn ngày {formatDate(agreement.promisedDate)}</strong>
+                    <Badge tone={isPaid ? "teal" : "amber"}>
+                      {isPaid ? "Đã thanh toán" : isWaiting ? "Đang chờ" : "Đã đến ngày hẹn"}
+                    </Badge>
+                  </div>
+                  <p style={{ margin: 0 }}>Số tiền dự kiến: <strong>{formatVND(agreement.expectedAmount)}</strong></p>
+                  {agreement.note ? <p style={{ margin: 0, color: "var(--color-muted)" }}>Ghi chú: {agreement.note}</p> : null}
+                  <small style={{ color: "var(--color-muted)" }}>
+                    Tạo lúc: {dateTimeFormatter.format(new Date(agreement.createdAt))}
+                  </small>
+                </article>
+              );
+            })}
+          </div>
+        )}
       </Card>
     </>
   );

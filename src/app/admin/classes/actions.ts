@@ -1,5 +1,7 @@
 "use server";
 
+import { requireAdminAction } from "@/lib/action-auth";
+
 import { findScheduleConflict, validateClassInput, type ClassInput } from "@/lib/class-validation";
 import { formatSchedule } from "@/lib/schedule";
 import { revalidateEverything } from "@/lib/revalidate";
@@ -13,6 +15,8 @@ function firstError(errors: Record<string, string | undefined>): string {
 }
 
 async function checkConflict(input: ClassInput, ignoreId?: string): Promise<string | null> {
+  await requireAdminAction();
+
   const conflict = findScheduleConflict(await getClasses(), input, ignoreId);
   return conflict
     ? `Trùng giờ với lớp ${conflict.name} (${formatSchedule(conflict.scheduleDays, conflict.startTime, conflict.endTime)}). Trung tâm chỉ có 1 giáo viên nên hai lớp không được học cùng giờ.`
@@ -21,6 +25,8 @@ async function checkConflict(input: ClassInput, ignoreId?: string): Promise<stri
 
 /** TODO (khi có backend): gọi API POST /classes. */
 export async function createClassAction(input: ClassInput): Promise<Response> {
+  await requireAdminAction();
+
   const errors = validateClassInput(input, "new");
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };
 
@@ -49,6 +55,8 @@ export async function createClassAction(input: ClassInput): Promise<Response> {
  * TODO (khi có backend): gọi API PATCH /classes/:id.
  */
 export async function updateClassAction(id: string, input: ClassInput): Promise<Response> {
+  await requireAdminAction();
+
   if (!(await getClassById(id))) return { ok: false, error: "Không tìm thấy lớp." };
   const errors = validateClassInput(input, "edit");
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };

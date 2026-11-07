@@ -1,16 +1,22 @@
 "use server";
 
+import { requireTeacherAction } from "@/lib/action-auth";
+
 import { revalidatePath } from "next/cache";
-import { DEMO_CENTER_USER } from "@/mocks/teacher-session";
+import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherPortalData } from "@/mocks/teacher-portal";
 import { getAssignmentById, getAttemptById, saveManualGrade } from "@/mocks/assignments";
 
 export async function saveTeacherManualGrade(input: { attemptId: string; questionId: string; score: number; comment: string }) {
+  await requireTeacherAction();
+
+  const currentTeacherId = await getCurrentTeacherId();
+
   const attempt = await getAttemptById(input.attemptId);
   if (!attempt) return { ok: false as const, error: "Không tìm thấy bài nộp." };
   const assignment = await getAssignmentById(attempt.assignmentId);
   if (!assignment) return { ok: false as const, error: "Không tìm thấy bài tập." };
-  const portal = await getTeacherPortalData(DEMO_CENTER_USER.teacherId);
+  const portal = await getTeacherPortalData(currentTeacherId);
   if (!portal?.classes.some((item) => item.id === assignment.classId)) return { ok: false as const, error: "Bạn không được phân công lớp của bài này." };
   const question = assignment.questions.find((item) => item.id === input.questionId);
   if (!question || question.type !== "essay") return { ok: false as const, error: "Chỉ có thể chấm câu hỏi tự luận." };

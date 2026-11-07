@@ -33,4 +33,14 @@
 
   --font-body: var(--font-be-vietnam-pro), system-ui, sans-serif;
   --touch-target: 44px;
+
+  /* Responsive design system */
+  --content-max: 1280px;
+  --page-gutter: 32px;
+  --page-gutter-tablet: 24px;
+  --page-gutter-mobile: 16px;
+  --breakpoint-sm: 375px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
 }

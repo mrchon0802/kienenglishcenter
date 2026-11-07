@@ -1,7 +1,9 @@
+import { toISODate } from "@/lib/month";
+import { syncTuitionReminderNotifications } from "@/mocks/tuition-notifications";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { CURRENT_STUDENT_ID } from "@/mocks/session";
+import { getCurrentStudentId } from "@/lib/current-user";
 import { getStudentById } from "@/mocks/students";
 import { getStudentInvoiceViews, getStudentPayments } from "@/mocks/tuition";
 import { formatVND } from "@/lib/format";
@@ -9,11 +11,6 @@ import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Học phí và thanh toán | Kien English Center" };
 
-function todayISO() {
-  const now = new Date();
-  const local = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
-  return local.toISOString().slice(0, 10);
-}
 function dateLabel(value: string) {
   const date = new Date(`${value.slice(0,10)}T00:00:00`);
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("vi-VN", { day:"2-digit", month:"2-digit", year:"numeric" }).format(date);
@@ -26,12 +23,15 @@ const statusLabel = { paid:"Đã thanh toán", partial:"Thanh toán một phần
 
 async function TuitionContent() {
   await connection();
-  const student = await getStudentById(CURRENT_STUDENT_ID);
+  const currentStudentId = await getCurrentStudentId();
+  const today = toISODate(new Date());
+  await syncTuitionReminderNotifications(today);
+  const student = await getStudentById(currentStudentId);
   if (!student) return <section className={styles.notice}><h1>Không tìm thấy hồ sơ học sinh</h1><p>Vui lòng liên hệ trung tâm.</p></section>;
   if (!student.parentAccessEnabled) return <section className={styles.notice}><h1>Quyền truy cập chưa được kích hoạt</h1><p>Trung tâm chưa bật Parent Portal cho {student.fullName}.</p></section>;
 
   const [invoices,payments] = await Promise.all([
-    getStudentInvoiceViews(student.id, todayISO()),
+    getStudentInvoiceViews(student.id, today),
     getStudentPayments(student.id),
   ]);
   const billed = invoices.reduce((sum,item) => sum + item.amount,0);
