@@ -85,6 +85,7 @@ async function CourseDetail({ id }: { id: string }) {
       <section className={styles.section}>
         <h2>Các lớp đang sử dụng khóa học</h2>
         {usage.classes.length ? (
+          <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
               <tr>
@@ -109,6 +110,7 @@ async function CourseDetail({ id }: { id: string }) {
               ))}
             </tbody>
           </table>
+          </div>
         ) : (
           <p className={styles.empty}>
             Chưa có lớp nào được gắn với khóa học này. Bạn có thể chọn khóa học

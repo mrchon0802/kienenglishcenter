@@ -27,23 +27,42 @@ export function ScheduleTable({
       {rows.length === 0 ? (
         <p className={styles.empty}>Chưa có lịch học được phân công.</p>
       ) : (
-        <div className={styles.tableScroll}>
-          <table className={styles.table}>
-            <thead><tr><th>Ngày</th><th>Giờ học</th><th>Lớp</th><th>Giáo viên</th><th>Sĩ số</th><th>Phòng</th></tr></thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={`${row.id}-${row.day}`}>
-                  <td><strong>{DAYS.find((day) => day.value === row.day)?.label ?? `Thứ ${row.day}`}</strong></td>
-                  <td>{row.startTime} – {row.endTime}</td>
-                  <td><strong>{row.name}</strong></td>
-                  <td>{row.teacherName ?? "Chưa phân công"}</td>
-                  <td>{row.studentCount}</td>
-                  <td>Chưa phân phòng</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <>
+          <div className={styles.tableScroll}>
+            <table className={styles.table}>
+              <thead><tr><th>Ngày</th><th>Giờ học</th><th>Lớp</th><th>Giáo viên</th><th>Sĩ số</th><th>Phòng</th></tr></thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={`${row.id}-${row.day}`}>
+                    <td><strong>{DAYS.find((day) => day.value === row.day)?.label ?? `Thứ ${row.day}`}</strong></td>
+                    <td>{row.startTime} – {row.endTime}</td>
+                    <td><strong>{row.name}</strong></td>
+                    <td>{row.teacherName ?? "Chưa phân công"}</td>
+                    <td>{row.studentCount}</td>
+                    <td>Chưa phân phòng</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <ul className={styles.mobileList} aria-label="Lịch học dạng danh sách">
+            {rows.map((row) => (
+              <li className={styles.mobileItem} key={`${row.id}-${row.day}-mobile`}>
+                <div className={styles.mobileTop}>
+                  <strong>{DAYS.find((day) => day.value === row.day)?.label ?? `Thứ ${row.day}`}</strong>
+                  <span className={styles.time}>{row.startTime} – {row.endTime}</span>
+                </div>
+                <h3>{row.name}</h3>
+                <dl className={styles.details}>
+                  <div><dt>Giáo viên</dt><dd>{row.teacherName ?? "Chưa phân công"}</dd></div>
+                  <div><dt>Sĩ số</dt><dd>{row.studentCount} học sinh</dd></div>
+                  <div><dt>Phòng</dt><dd>Chưa phân phòng</dd></div>
+                </dl>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       <p className={styles.note}>Lịch học lấy từ cấu hình ngày và giờ của từng lớp. Thay đổi lịch tại Quản trị → Lớp học & điểm danh → Sửa lớp. Hệ thống hiện chưa quản lý danh sách phòng học.</p>
     </section>

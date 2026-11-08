@@ -1,8 +1,28 @@
-.wrap { display: grid; gap: 14px; }
+.wrap { display: grid; gap: 14px; min-width: 0; }
 .title { margin: 0; font-size: 18px; color: var(--color-text, #183b38); }
-.tableScroll { width: 100%; overflow-x: auto; }
+.tableScroll { width: 100%; min-width: 0; overflow-x: auto; border: 1px solid var(--color-border, #e5e9e5); border-radius: 12px; }
 .table { width: 100%; border-collapse: collapse; min-width: 650px; }
 .table th, .table td { padding: 12px 14px; border-bottom: 1px solid var(--color-border, #e5e9e5); text-align: left; font-size: 14px; }
-.table th { color: var(--color-muted, #66736f); font-weight: 600; background: var(--color-surface-soft, #f7f8f6); }
+.table th { color: var(--color-muted, #66736f); font-weight: 600; background: var(--color-surface-soft, #f7f8f6); white-space: nowrap; }
+.table td { color: var(--color-ink, #243b39); }
+.table tr:last-child td { border-bottom: 0; }
+.mobileList { display: none; margin: 0; padding: 0; list-style: none; }
+.mobileItem { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--color-border, #e5e9e5); border-radius: 12px; background: var(--color-surface, #fff); }
+.mobileTop { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.mobileTop strong { color: var(--color-primary-dark, #0b544f); font-size: 13px; }
+.time { padding: 5px 9px; border-radius: 999px; background: var(--color-primary-soft, #e3f1ef); color: var(--color-primary-dark, #0b544f); font-size: 12px; font-weight: 700; }
+.mobileItem h3 { margin: 0; color: var(--color-ink, #243b39); font-size: 16px; }
+.details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.details div { min-width: 0; padding: 9px; border-radius: 9px; background: var(--color-surface-soft, #f7f8f6); }
+.details dt { margin-bottom: 4px; color: var(--color-muted, #66736f); font-size: 10px; }
+.details dd { margin: 0; color: var(--color-ink, #243b39); font-size: 12px; font-weight: 650; overflow-wrap: anywhere; }
 .empty { padding: 20px; color: var(--color-muted, #66736f); background: var(--color-surface-soft, #f7f8f6); border-radius: 10px; }
 .note { margin: 0; color: var(--color-muted, #66736f); font-size: 13px; line-height: 1.6; }
+@media (max-width: 640px) {
+  .tableScroll { display: none; }
+  .mobileList { display: grid; gap: 10px; }
+  .note { font-size: 11px; }
+}
+@media (max-width: 360px) {
+  .details { grid-template-columns: 1fr; }
+}

@@ -171,3 +171,12 @@
     padding: 12px;
   }
 }
+
+
+@media (max-width: 640px) {
+  .paymentSummary { align-items: flex-start; }
+  .tableWrapper { border-radius: 9px; }
+  .table { min-width: 680px; }
+  .detailLink { min-height: 40px; }
+  .paymentCount { flex-shrink: 0; }
+}

@@ -13,6 +13,8 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
 }) {
   const [query, setQuery] = useState("");
   const [target, setTarget] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [pending, startTransition] = useTransition();
@@ -23,6 +25,10 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
     const matchText = !q || item.title.toLowerCase().includes(q) || item.code.toLowerCase().includes(q);
     return matchText && (target === "all" || item.targetType === target);
   }), [curricula, query, target]);
+
+  const pageCount = Math.max(1, Math.ceil(visible.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageCurricula = visible.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   function initializeGrades() {
     setError("");
@@ -54,13 +60,13 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
     {notice && <p role="status" className={styles.notice}>{notice}</p>}
     <div className={styles.toolbar}>
       <button type="button" className={styles.initializeButton} onClick={initializeGrades} disabled={pending}> {pending ? "Đang xử lý..." : "Khởi tạo chương trình lớp 1–9"} </button>
-      <input className={styles.search} value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Tìm theo tên hoặc mã giáo trình..." aria-label="Tìm giáo trình" />
+      <input className={styles.search} value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Tìm theo tên hoặc mã giáo trình..." aria-label="Tìm giáo trình" />
       <div className={styles.filters} aria-label="Lọc loại giáo trình">
-        {[["all", "Tất cả"], ["grade", "Theo lớp"], ["course", "Theo khóa học"]].map(([value, label]) => <button key={value} type="button" className={`${styles.filter} ${target === value ? styles.activeFilter : ""}`} onClick={() => setTarget(value)}>{label}</button>)}
+        {[["all", "Tất cả"], ["grade", "Theo lớp"], ["course", "Theo khóa học"]].map(([value, label]) => <button key={value} type="button" className={`${styles.filter} ${target === value ? styles.activeFilter : ""}`} onClick={() => { setTarget(value); setPage(1); }}>{label}</button>)}
       </div>
     </div>
     {visible.length ? <div className={styles.grid}>
-      {visible.map((item) => {
+      {pageCurricula.map((item) => {
         const lessonCount = item.units.reduce((sum, unit) => sum + unit.lessons.length, 0);
         return <article className={styles.card} key={item.id}>
           <div className={styles.cardTop}><span className={styles.code}>{item.code} · v{item.version ?? 1}</span><span className={`${styles.pill} ${item.status === "inactive" ? styles.inactive : ""}`}>{item.status === "active" ? "Đang sử dụng" : "Ngừng sử dụng"}</span></div>
@@ -70,5 +76,13 @@ export function CurriculumDirectory({ curricula, targetLabels }: {
         </article>;
       })}
     </div> : <div className={styles.empty}>Chưa có giáo trình phù hợp. Hãy tạo giáo trình đầu tiên.</div>}
+    {visible.length > 0 && <nav className={styles.pagination} aria-label="Phân trang giáo trình">
+      <span>Hiển thị {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, visible.length)} / {visible.length} giáo trình</span>
+      <div className={styles.pageControls}>
+        <button type="button" disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Trước</button>
+        <strong>{currentPage} / {pageCount}</strong>
+        <button type="button" disabled={currentPage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>Sau</button>
+      </div>
+    </nav>}
   </>;
 }

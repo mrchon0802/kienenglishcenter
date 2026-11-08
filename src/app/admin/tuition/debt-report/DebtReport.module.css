@@ -256,3 +256,10 @@
     padding: 6px;
   }
 }
+
+
+@media (max-width: 640px) {
+  .filters { grid-template-columns: minmax(0, 1fr); }
+  .actions button, .actions a { width: 100%; min-height: 44px; }
+  .stats, .bucketGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

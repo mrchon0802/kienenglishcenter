@@ -21,22 +21,39 @@ async function AssessmentReport() {
     </section>
     <section className={styles.panel}>
       <h2>Lịch sử đánh giá toàn trung tâm</h2>
-      {items.length ? <div className={styles.tableWrap}><table className={styles.table}>
-        <thead><tr><th>Học sinh</th><th>Lớp</th><th>Ngày / Loại</th><th>4 kỹ năng</th><th>Điểm TB</th><th>Giáo viên</th><th>Nhận xét</th></tr></thead>
-        <tbody>{items.map((item) => {
-          const avg = (Object.values(item.scores).reduce((sum, score) => sum + score, 0) / 4).toFixed(1);
-          const kind = item.kind === "progress" ? "Thường xuyên" : item.kind === "periodic" ? "Định kỳ" : "Cuối khóa";
-          return <tr key={item.id}>
-            <td><strong>{item.studentName}</strong><div className={styles.note}>{item.studentCode}</div></td>
-            <td>{item.className}</td>
-            <td>{item.assessedAt}<div className={styles.note}>{kind}</div></td>
-            <td className={styles.skills}>Nghe {item.scores.listening} · Nói {item.scores.speaking}<br/>Đọc {item.scores.reading} · Viết {item.scores.writing}</td>
-            <td className={styles.score}>{avg}/10</td>
-            <td>{item.teacherId}</td>
-            <td className={styles.note}>{item.strengths}<br/><strong>Cần cải thiện:</strong> {item.improvements}</td>
-          </tr>;
-        })}</tbody>
-      </table></div> : <p className={styles.empty}>Chưa có dữ liệu đánh giá. Giáo viên có thể tạo đánh giá trong khu vực Teacher.</p>}
+      {items.length ? <>
+        <div className={styles.tableWrap}><table className={styles.table}>
+          <thead><tr><th>Học sinh</th><th>Lớp</th><th>Ngày / Loại</th><th>4 kỹ năng</th><th>Điểm TB</th><th>Giáo viên</th><th>Nhận xét</th></tr></thead>
+          <tbody>{items.map((item) => {
+            const avg = (Object.values(item.scores).reduce((sum, score) => sum + score, 0) / 4).toFixed(1);
+            const kind = item.kind === "progress" ? "Thường xuyên" : item.kind === "periodic" ? "Định kỳ" : "Cuối khóa";
+            return <tr key={item.id}>
+              <td><strong>{item.studentName}</strong><div className={styles.note}>{item.studentCode}</div></td>
+              <td>{item.className}</td>
+              <td>{item.assessedAt}<div className={styles.note}>{kind}</div></td>
+              <td className={styles.skills}>Nghe {item.scores.listening} · Nói {item.scores.speaking}<br/>Đọc {item.scores.reading} · Viết {item.scores.writing}</td>
+              <td className={styles.score}>{avg}/10</td>
+              <td>{item.teacherId}</td>
+              <td className={styles.note}>{item.strengths}<br/><strong>Cần cải thiện:</strong> {item.improvements}</td>
+            </tr>;
+          })}</tbody>
+        </table></div>
+        <div className={styles.mobileCards}>
+          {items.map((item) => {
+            const avg = (Object.values(item.scores).reduce((sum, score) => sum + score, 0) / 4).toFixed(1);
+            const kind = item.kind === "progress" ? "Thường xuyên" : item.kind === "periodic" ? "Định kỳ" : "Cuối khóa";
+            return <article className={styles.mobileCard} key={item.id}>
+              <div className={styles.mobileCardHead}><div><strong>{item.studentName}</strong><span>{item.studentCode} · Lớp {item.className}</span></div><b>{avg}/10</b></div>
+              <p className={styles.mobileMeta}>{item.assessedAt} · {kind} · GV: {item.teacherId}</p>
+              <div className={styles.mobileSkills}>
+                <span>Nghe <b>{item.scores.listening}</b></span><span>Nói <b>{item.scores.speaking}</b></span>
+                <span>Đọc <b>{item.scores.reading}</b></span><span>Viết <b>{item.scores.writing}</b></span>
+              </div>
+              <div className={styles.mobileFeedback}><strong>Điểm mạnh</strong><p>{item.strengths}</p><strong>Cần cải thiện</strong><p>{item.improvements}</p></div>
+            </article>;
+          })}
+        </div>
+      </> : <p className={styles.empty}>Chưa có dữ liệu đánh giá. Giáo viên có thể tạo đánh giá trong khu vực Teacher.</p>}
     </section>
   </div>;
 }

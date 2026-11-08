@@ -103,3 +103,11 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 700px) {
+  .toolbar, .head { align-items: stretch; flex-direction: column; }
+  .form { grid-template-columns: minmax(0, 1fr); }
+  .actions { align-items: stretch; flex-direction: column; }
+  .actions > * { width: 100%; min-height: 44px; }
+  .answer, .sample { overflow-wrap: anywhere; }
+}

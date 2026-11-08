@@ -68,6 +68,7 @@ async function AssignmentDetail({ params }: { params: Promise<{ id: string }> })
 
       <div className={styles.grid}>
         <Card title="Bài nộp của học sinh">
+          <div className={styles.submissionTable}>
           <Table>
             <thead>
               <tr>
@@ -98,6 +99,20 @@ async function AssignmentDetail({ params }: { params: Promise<{ id: string }> })
               ))}
             </tbody>
           </Table>
+          </div>
+          <div className={styles.submissionCards}>
+            {rows.map((row) => (
+              <article className={styles.submissionCard} key={`mobile-${row.studentId}`}>
+                <strong>{row.studentName}</strong>
+                <div className={styles.submissionMeta}>
+                  <span>{row.attempts === 0 ? <Badge tone="amber">Chưa làm</Badge> : row.pendingManual ? <Badge tone="amber">Chờ chấm tay</Badge> : <Badge>Đã nộp</Badge>}</span>
+                  <span>{row.attempts} lần làm</span>
+                  <span>Điểm cao nhất: {row.bestScore === null ? "-" : formatScore(row.bestScore)}</span>
+                </div>
+                <small>{row.lastSubmittedAt ? `Nộp lúc ${formatDateTime(row.lastSubmittedAt)}` : "Chưa có lần nộp"}</small>
+              </article>
+            ))}
+          </div>
         </Card>
 
         <Card title="Câu hỏi trong bài">

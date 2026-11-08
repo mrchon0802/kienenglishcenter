@@ -80,3 +80,12 @@
   padding-left: var(--space-5);
   font-size: 14px;
 }
+
+@media (max-width: 600px) {
+  .wrap, .stack { gap: 14px; }
+  .actions { flex-direction: column; }
+  .actions > * { width: 100%; min-height: 44px; }
+  .truncate { max-width: min(70vw, 280px); }
+  .resultCell { max-width: 100%; overflow-wrap: anywhere; }
+  .check { align-items: flex-start; padding: 8px 0; }
+}

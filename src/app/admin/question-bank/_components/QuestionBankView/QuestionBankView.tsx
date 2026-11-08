@@ -145,6 +145,7 @@ export function QuestionBankView({ questions, teachers }: { questions: Question[
         </EmptyState>
       ) : (
         <>
+          <div className={styles.desktopTable}>
           <Table>
             <thead>
               <tr>
@@ -201,6 +202,34 @@ export function QuestionBankView({ questions, teachers }: { questions: Question[
               ))}
             </tbody>
           </Table>
+          </div>
+          <div className={styles.mobileCards} aria-label="Danh sách câu hỏi dạng thẻ">
+            {visible.map((q) => (
+              <article className={styles.questionCard} key={`mobile-${q.id}`}>
+                <div className={styles.questionCardHead}>
+                  <Badge tone={q.status === "archived" ? "amber" : "teal"}>
+                    {q.status === "archived" ? "Đã lưu trữ" : typeLabel(q.type)}
+                  </Badge>
+                  <strong>{q.points} điểm</strong>
+                </div>
+                <p className={styles.questionPrompt}>{q.prompt}</p>
+                <dl className={styles.questionMeta}>
+                  <div><dt>Lớp</dt><dd>{q.grade}</dd></div>
+                  <div><dt>Unit</dt><dd>{q.unit}</dd></div>
+                  <div><dt>Kỹ năng</dt><dd>{skillLabel(q.skill)}</dd></div>
+                  <div><dt>Chia sẻ</dt><dd>{(q.sharedWithTeacherIds ?? []).length} giáo viên</dd></div>
+                </dl>
+                <p className={styles.answerPreview}><strong>Đáp án:</strong> {summarizeAnswer(q)}</p>
+                <div className={styles.mobileActions}>
+                  <Link href={`/admin/question-bank/${q.id}/edit`}>Sửa</Link>
+                  <Button onClick={() => openShare(q)}>Chia sẻ</Button>
+                  <Button onClick={() => toggleArchive(q.id)}>
+                    {q.status === "archived" ? "Khôi phục" : "Lưu trữ"}
+                  </Button>
+                </div>
+              </article>
+            ))}
+          </div>
           <div className={styles.footer}>
             <p className={styles.count} role="status">
               Hiển thị {start + 1} - {start + visible.length} / {filtered.length} câu hỏi

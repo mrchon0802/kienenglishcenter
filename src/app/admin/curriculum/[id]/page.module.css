@@ -39,3 +39,22 @@
 .versionItem strong { font-size:12px; }
 .versionItem span,.versionItem small { color:var(--color-muted); font-size:10px; }
 .versionCurrent { border-color:var(--color-primary); background:var(--color-primary-soft); }
+
+.versionHistory, .panel, .note { min-width: 0; }
+.versionList { overflow-x: auto; padding-bottom: 4px; }
+.versionItem { flex: 0 0 min(190px, 72vw); overflow-wrap: anywhere; }
+.lessonTitle > div { min-width: 0; }
+.lessonTitle h4 { overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat { min-width: 0; }
+  .stat strong { font-size: clamp(18px, 5vw, 21px); overflow-wrap: anywhere; }
+  .sectionHead { gap: 8px; }
+  .unitHead { align-items: flex-start; }
+  .unitHead > span { white-space: normal; }
+  .lessonTitle { gap: 8px; }
+  .metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .metrics span { min-width: 0; overflow-wrap: anywhere; }
+  .lessonActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .lessonActions a { min-height: 40px; display: flex; align-items: center; }
+}

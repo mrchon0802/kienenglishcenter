@@ -136,7 +136,8 @@ export function InvoicesView({ invoices, months, currentMonth }: InvoicesViewPro
           />
         ) : (
           <>
-            <Table>
+            <div className={styles.desktopTable}>
+              <Table>
               <thead>
                 <tr>
                   <th scope="col">Học sinh</th>
@@ -173,7 +174,32 @@ export function InvoicesView({ invoices, months, currentMonth }: InvoicesViewPro
                   </tr>
                 ))}
               </tbody>
-            </Table>
+              </Table>
+            </div>
+            <div className={styles.mobileCards} aria-label="Danh sách hóa đơn">
+              {visible.map((v) => (
+                <article className={styles.invoiceCard} key={`mobile-${v.id}`}>
+                  <div className={styles.cardTop}>
+                    <div>
+                      <strong>{v.studentName}</strong>
+                      <span>Lớp {v.className} · {monthLabel(v.month)}</span>
+                    </div>
+                    <Badge tone={v.status === "paid" ? "teal" : "amber"}>{STATUS_LABEL[v.status]}</Badge>
+                  </div>
+                  <div className={styles.cardAmounts}>
+                    <div><span>Học phí</span><strong>{formatVND(v.amount)}</strong></div>
+                    <div><span>Đã đóng</span><strong>{formatVND(v.paid)}</strong></div>
+                    <div><span>Còn lại</span><strong className={v.remaining > 0 ? styles.cardRemaining : ""}>{v.remaining > 0 ? formatVND(v.remaining) : "—"}</strong></div>
+                  </div>
+                  <div className={styles.cardBottom}>
+                    <span>Hạn đóng: {formatDate(v.dueDate)}</span>
+                    <Button href={`/admin/tuition/invoices/${v.id}`} variant={v.remaining > 0 ? "primary" : "secondary"}>
+                      {v.remaining > 0 ? "Thu tiền" : "Xem hóa đơn"}
+                    </Button>
+                  </div>
+                </article>
+              ))}
+            </div>
             <div className={styles.footer}>
               <p className={styles.hint} role="status">
                 Hiển thị {start + 1} - {start + visible.length} / {filtered.length} hóa đơn

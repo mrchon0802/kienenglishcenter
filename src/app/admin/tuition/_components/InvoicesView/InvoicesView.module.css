@@ -35,3 +35,28 @@
   gap: var(--space-3);
   margin-top: var(--space-4);
 }
+
+
+.desktopTable { min-width: 0; }
+.mobileCards { display: none; }
+.invoiceCard { display: grid; gap: 13px; padding: 14px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); }
+.cardTop, .cardBottom { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.cardTop > div { display: grid; gap: 4px; min-width: 0; }
+.cardTop strong { color: var(--color-ink); overflow-wrap: anywhere; }
+.cardTop span, .cardBottom > span { color: var(--color-muted); font-size: 12px; }
+.cardAmounts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.cardAmounts > div { display: grid; gap: 5px; min-width: 0; }
+.cardAmounts span { color: var(--color-muted); font-size: 11px; }
+.cardAmounts strong { font-size: 12px; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.cardRemaining { color: #b45309; }
+.cardBottom { align-items: center; padding-top: 10px; border-top: 1px solid var(--color-border); }
+@media (max-width: 700px) {
+  .desktopTable { display: none; }
+  .mobileCards { display: grid; gap: 10px; }
+  .generate { align-items: stretch; }
+  .generate > :first-child { width: 100%; }
+  .footer { align-items: stretch; }
+  .footer > * { width: 100%; }
+  .cardBottom { align-items: stretch; flex-direction: column; }
+  .cardBottom a, .cardBottom button { width: 100%; justify-content: center; }
+}

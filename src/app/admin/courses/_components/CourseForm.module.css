@@ -21,3 +21,20 @@
 .actions { display: flex; justify-content: flex-end; gap: 10px; }
 .error { margin: 0; padding: 12px 14px; border-radius: 9px; background: #fde8e6; color: #8a1c12; font-size: 13px; }
 @media (max-width: 650px) { .grid { grid-template-columns: 1fr; } .panel { padding: 16px; } .unitRow { grid-template-columns: 1fr 110px; } .remove { grid-column: 1 / -1; } .sectionHead { flex-direction: column; } .actions { flex-direction: column-reverse; } .actions button { width: 100%; } }
+
+/* Touch-friendly responsive form controls */
+.panel, .unitRow, .grid { min-width: 0; }
+.grid input, .grid select, .full textarea, .unitRow input { min-height: 46px; box-sizing: border-box; }
+.full textarea { min-height: 88px; }
+.primary, .secondary, .remove { min-height: 44px; }
+.unitRow label { min-width: 0; }
+@media (max-width: 650px) {
+  .form { gap: 12px; }
+  .panel { padding: 15px; }
+  .panel h2 { font-size: 16px; }
+  .unitRow { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px; }
+  .remove { grid-column: auto; width: 100%; }
+  .sectionHead { align-items: stretch; }
+  .sectionHead .secondary { width: 100%; }
+  .actions { position: sticky; bottom: 8px; z-index: 2; padding: 9px; border: 1px solid var(--color-border); border-radius: 12px; background: rgb(255 255 255 / 94%); box-shadow: 0 4px 18px rgb(20 40 35 / 10%); }
+}

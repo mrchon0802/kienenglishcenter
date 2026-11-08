@@ -13,3 +13,30 @@
 .note { max-width: 260px; color: var(--color-muted); }
 .empty { padding: 20px; color: var(--color-muted); text-align: center; }
 @media(max-width:700px) { .summary { grid-template-columns: 1fr; } }
+
+
+/* Mobile-first assessment history */
+.mobileCards { display:none; }
+@media (max-width: 700px) {
+  .summary { grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; }
+  .kpi { padding:14px; min-width:0; }
+  .kpi strong { font-size:24px; overflow-wrap:anywhere; }
+  .panel { padding:14px; min-width:0; }
+  .panel h2 { font-size:16px; line-height:1.4; }
+  .tableWrap { display:none; }
+  .mobileCards { display:grid; gap:12px; }
+  .mobileCard { display:grid; gap:10px; min-width:0; padding:14px; border:1px solid var(--color-border); border-radius:12px; background:var(--color-surface); }
+  .mobileCardHead { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .mobileCardHead > div { display:grid; gap:4px; min-width:0; }
+  .mobileCardHead strong { color:var(--color-ink); overflow-wrap:anywhere; }
+  .mobileCardHead span,.mobileMeta { color:var(--color-muted); font-size:12px; }
+  .mobileCardHead b { flex:none; padding:6px 9px; border-radius:9px; background:var(--color-primary-soft); color:var(--color-primary-dark); }
+  .mobileMeta { margin:0; line-height:1.5; }
+  .mobileSkills { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .mobileSkills span { display:flex; justify-content:space-between; gap:8px; padding:9px; border-radius:8px; background:var(--color-bg); color:var(--color-muted); font-size:12px; }
+  .mobileSkills b { color:var(--color-ink); }
+  .mobileFeedback { display:grid; gap:4px; padding-top:8px; border-top:1px solid var(--color-divider); font-size:12px; }
+  .mobileFeedback strong { color:var(--color-ink); }
+  .mobileFeedback p { margin:0 0 6px; color:var(--color-muted); line-height:1.5; overflow-wrap:anywhere; }
+}
+@media (max-width: 380px) { .summary { grid-template-columns:1fr; } }

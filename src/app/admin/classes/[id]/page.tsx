@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { formatScore, formatVND } from "@/lib/format";
-import { formatSchedule } from "@/lib/schedule";
+import { formatScheduleSlots } from "@/lib/schedule";
 import { getClassById, getClassSessions, getClassStudents, getClasses } from "@/mocks/classes";
 import { getStudents } from "@/mocks/students";
 import { getCourseById } from "@/mocks/courses";
@@ -43,7 +43,7 @@ async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
     <>
       <PageHeader
         title={`Lớp ${cls.name}`}
-        subtitle={formatSchedule(cls.scheduleDays, cls.startTime, cls.endTime)}
+        subtitle={formatScheduleSlots(cls.scheduleSlots, cls.scheduleDays, cls.startTime, cls.endTime)}
         actions={
           <>
             <Button href={`/admin/reports/classes/${cls.id}`}>Báo cáo lớp</Button>

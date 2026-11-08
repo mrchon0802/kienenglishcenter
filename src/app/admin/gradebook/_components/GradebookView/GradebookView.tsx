@@ -95,6 +95,29 @@ export function GradebookView({ classes }: { classes: GradebookClass[] }) {
               </tbody>
             </table>
           </div>
+          <div className={styles.mobileRows} aria-label="Bảng điểm dạng thẻ">
+            {current.rows.map((row) => (
+              <article className={styles.studentCard} key={`mobile-${row.studentId}`}>
+                <div className={styles.studentCardHead}>
+                  <Link href={`/admin/students/${row.studentId}`}>{row.studentName}</Link>
+                  <span className={styles.average}>
+                    TB kiểm tra: {row.testAverage === null ? "-" : formatScore(row.testAverage)}
+                  </span>
+                </div>
+                <div className={styles.assignmentScores}>
+                  {current.assignments.map((a) => (
+                    <div className={styles.assignmentScore} key={a.id}>
+                      <div className={styles.assignmentLabel}>
+                        <Link href={`/admin/assignments/${a.id}`}>{a.title}</Link>
+                        <small>{a.kind === "test" ? "Kiểm tra" : "Luyện tập"} · {formatDate(a.dueAt.split("T")[0])}</small>
+                      </div>
+                      <Cell cell={row.cells[a.id]} />
+                    </div>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
         )}
       </Card>
     </div>

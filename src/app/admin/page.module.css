@@ -1,13 +1,495 @@
+.welcome {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  overflow: hidden;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid #d5e8e4;
+  border-radius: 18px;
+  background: linear-gradient(115deg, #eaf5f2 0%, #f8fbf9 62%, #e5f1ee 100%);
+}
+
+.welcomeCopy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: var(--color-primary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+}
+
+.title {
+  color: var(--color-ink);
+  font-size: clamp(23px, 3vw, 30px);
+  font-weight: 750;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.subtitle {
+  margin-top: 7px;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+.welcomeMark {
+  display: grid;
+  flex: 0 0 auto;
+  width: 76px;
+  height: 76px;
+  place-items: center;
+  margin-left: 18px;
+  border: 1px solid rgba(15, 118, 110, .16);
+  border-radius: 24px;
+  background: rgba(255,255,255,.58);
+  color: var(--color-primary);
+  font-size: 38px;
+  font-weight: 800;
+}
+
+.quickSection,
+.overviewSection {
+  display: grid;
+  gap: 14px;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionHeading h2 {
+  color: var(--color-ink);
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.sectionHeading p {
+  margin-top: 3px;
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.quickButton {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 76px;
+  justify-content: flex-start;
+  gap: 11px;
+  padding: 12px 14px;
+  border-color: var(--color-border);
+  border-radius: 13px;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  text-align: left;
+  white-space: normal;
+  transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+/* Keep the content aligned to the left even when shared Button styles change. */
+.quickActions .quickButton {
+  justify-content: flex-start;
+}
+
+.quickButton:hover {
+  border-color: #9bc9c1;
+  background: #f8fcfb;
+  color: var(--color-ink);
+  box-shadow: 0 5px 16px rgba(18, 59, 56, .07);
+  transform: translateY(-1px);
+}
+
+.quickButton > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.quickButton strong {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.quickButton small {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.quickIcon {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 20px;
+  font-weight: 700;
+}
+
 .grid {
   display: grid;
   min-width: 0;
-  gap: var(--space-4);
+  gap: 16px;
+  align-items: start;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+}
+
+
+/* Desktop dashboard: compact greeting + actions, with a clear KPI hierarchy. */
+.dashboardHeader {
+  display: grid;
+  grid-template-columns: minmax(250px, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 2px;
+}
+
+.dashboardHeader .welcome {
+  min-height: 82px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.dashboardHeader .welcomeMark {
+  display: none;
+}
+
+.dashboardHeader .eyebrow {
+  margin-bottom: 5px;
+  font-size: 9px;
+}
+
+.dashboardHeader .title {
+  font-size: clamp(25px, 2.1vw, 31px);
+  letter-spacing: -.035em;
+}
+
+.dashboardHeader .subtitle {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.dashboardHeader .quickSection {
+  gap: 0;
+  justify-self: end;
+}
+
+.dashboardHeader .sectionHeading {
+  display: none;
+}
+
+.dashboardHeader .quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.dashboardHeader .quickButton {
+  width: auto;
+  min-width: 132px;
+  min-height: 44px;
+  gap: 8px;
+  padding: 7px 12px;
+  border: 1px solid #c8ded9;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(16, 63, 59, .03);
+}
+
+.dashboardHeader .quickButton:hover {
+  border-color: var(--color-primary);
+  background: #f3faf8;
+  box-shadow: 0 5px 14px rgba(18, 59, 56, .08);
+}
+
+.dashboardHeader .quickIcon {
+  flex-basis: 27px;
+  width: 27px;
+  height: 27px;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+.dashboardHeader .quickButton > span:last-child {
+  gap: 1px;
+}
+
+.dashboardHeader .quickButton strong {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.dashboardHeader .quickButton small {
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.overviewSection {
+  gap: 12px;
+}
+
+.overviewSection .sectionHeading {
+  margin-bottom: 1px;
+}
+
+.overviewSection .sectionHeading h2 {
+  font-size: 18px;
+  letter-spacing: -.015em;
+}
+
+.overviewSection .sectionHeading p {
+  font-size: 12px;
+}
+
+.overviewSection > *:last-child {
+  min-width: 0;
+}
+
+.grid {
+  gap: 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1400px) {
+  .dashboardHeader {
+    gap: 36px;
+  }
+
+  .dashboardHeader .quickActions {
+    gap: 10px;
+  }
+
+  .dashboardHeader .quickButton {
+    min-width: 142px;
+    padding-inline: 13px;
+  }
+
+  .grid {
+    gap: 20px;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1150px) {
+  .dashboardHeader {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .dashboardHeader .quickSection {
+    justify-self: stretch;
+  }
+
+  .dashboardHeader .quickActions {
+    justify-content: flex-start;
+  }
+
+  .dashboardHeader .quickButton {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .quickActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+@media (max-width: 900px) {
+  .dashboardHeader {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .dashboardHeader .welcome {
+    min-height: 112px;
+    padding: 18px;
+    border: 1px solid #d5e8e4;
+    border-radius: 15px;
+    background: linear-gradient(115deg, #eaf5f2 0%, #f8fbf9 62%, #e5f1ee 100%);
+  }
+
+  .dashboardHeader .welcomeMark {
+    display: grid;
+  }
+
+  .dashboardHeader .eyebrow {
+    margin-bottom: 6px;
+    font-size: 9px;
+  }
+
+  .dashboardHeader .title {
+    font-size: 23px;
+    letter-spacing: normal;
+  }
+
+  .dashboardHeader .subtitle {
+    margin-top: 7px;
+    font-size: 11px;
+  }
+
+  .dashboardHeader .quickSection {
+    justify-self: stretch;
+    gap: 11px;
+  }
+
+  .dashboardHeader .sectionHeading {
+    display: flex;
+  }
+
+  .dashboardHeader .quickActions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+    gap: 9px;
+  }
+
+  .dashboardHeader .quickButton {
+    width: 100%;
+    min-width: 0;
+    min-height: 72px;
+    flex: initial;
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--color-primary);
+    border-radius: 11px;
+    box-shadow: none;
+  }
+
+  .dashboardHeader .quickIcon {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+    font-size: 18px;
+  }
+
+  .dashboardHeader .quickButton > span:last-child {
+    gap: 3px;
+  }
+
+  .dashboardHeader .quickButton strong {
+    font-size: 12px;
+    white-space: normal;
+  }
+
+  .dashboardHeader .quickButton small {
+    font-size: 10px;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 640px) {
+  .welcome {
+    min-height: 112px;
+    padding: 18px;
+    border-radius: 15px;
+  }
+
+  .welcomeMark {
+    width: 54px;
+    height: 54px;
+    margin-left: 10px;
+    border-radius: 17px;
+    font-size: 27px;
+  }
+
+  .eyebrow {
+    margin-bottom: 6px;
+    font-size: 9px;
+  }
+
+  .title {
+    font-size: 23px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+  }
+
+  .quickSection,
+  .overviewSection {
+    gap: 11px;
+  }
+
+  .sectionHeading h2 {
+    font-size: 16px;
+  }
+
+  .quickActions {
+    gap: 9px;
+  }
+
+  .quickButton {
+    min-height: 72px;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 11px;
+  }
+
+  .quickIcon {
+    flex-basis: 30px;
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .quickButton strong {
+    font-size: 12px;
+  }
+
+  .quickButton small {
+    font-size: 10px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 360px) {
+  .quickActions,
+  .dashboardHeader .quickActions {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quickButton {
+    transition: none;
+  }
 }
 
 @media (max-width: 640px) {
   .grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-3);
+    gap: 14px;
   }
 }

@@ -13,3 +13,22 @@
   font-size: 13px;
   color: var(--color-muted);
 }
+
+
+.desktopTable { min-width: 0; }
+.mobileCards { display: none; }
+.debtCard { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--color-border); border-radius: 12px; background: var(--color-surface); }
+.cardTop { display: flex; justify-content: space-between; gap: 12px; }
+.cardTop > div { display: grid; gap: 4px; min-width: 0; }
+.cardTop strong { color: var(--color-ink); overflow-wrap: anywhere; }
+.cardTop span, .cardDetails { color: var(--color-muted); font-size: 12px; }
+.debtAmount { color: #b45309 !important; font-size: 15px; font-weight: 800; text-align: right; }
+.cardDetails { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.cardActions { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--color-border); }
+.cardActions a { color: var(--color-primary); font-size: 12px; font-weight: 700; text-decoration: none; }
+@media (max-width: 700px) {
+  .desktopTable { display: none; }
+  .mobileCards { display: grid; gap: 10px; }
+  .toolbar { width: 100%; }
+  .cardActions > * { min-height: 44px; }
+}

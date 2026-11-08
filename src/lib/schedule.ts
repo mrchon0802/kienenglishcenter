@@ -21,3 +21,12 @@ export function formatSessionDate(iso: string): string {
   const label = dow === 0 ? DAY_LABELS[8] : DAY_LABELS[dow + 1];
   return `${label}, ${String(day).padStart(2, "0")}/${String(month).padStart(2, "0")}/${year}`;
 }
+
+
+/** Hiển thị lịch cố định có thể có khung giờ khác nhau theo từng ngày. */
+export function formatScheduleSlots(slots: { day: number; startTime: string; endTime: string }[] | undefined, days: number[], start: string, end: string): string {
+  if (!slots?.length) return formatSchedule(days, start, end);
+  return [...slots].sort((a, b) => a.day - b.day)
+    .map((slot) => `${DAY_LABELS[slot.day] ?? `Thứ ${slot.day}`} · ${slot.startTime}–${slot.endTime}`)
+    .join("; ");
+}

@@ -40,10 +40,39 @@ export async function assignTeacherToClass(classId: string, teacherId: string, s
   const data = store();
   const current = data.assignments.find((item) => item.classId === classId && !item.endDate);
   if (current?.teacherId === teacherId) return { ok:false, error:"Giáo viên này đang phụ trách lớp." };
-  if (current) {
-    if (startDate < current.startDate) return { ok:false, error:"Ngày thay thế không được trước ngày bắt đầu phân công hiện tại." };
-    current.endDate = startDate;
+
+  if (current && startDate < current.startDate) {
+    return { ok:false, error:"Ngày thay thế không được trước ngày bắt đầu phân công hiện tại." };
   }
+
+  // Một giáo viên không thể dạy hai lớp có giờ học giao nhau trong cùng thời điểm.
+  const targetClass = classes.find((item) => item.id === classId);
+  if (!targetClass) return { ok:false, error:"Không tìm thấy thông tin lịch học của lớp." };
+
+  const overlaps = (startA: string, endA: string, startB: string, endB: string) =>
+    startA < endB && startB < endA;
+
+  const conflictingAssignment = data.assignments.find((item) => {
+    if (item.teacherId !== teacherId || item.classId === classId) return false;
+    // Các phân công đã kết thúc trước ngày áp dụng không gây xung đột.
+    if (item.endDate && item.endDate <= startDate) return false;
+
+    const otherClass = classes.find((entry) => entry.id === item.classId);
+    if (!otherClass) return false;
+
+    const hasSameDay = targetClass.scheduleDays.some((day) => otherClass.scheduleDays.includes(day));
+    return hasSameDay && overlaps(targetClass.startTime, targetClass.endTime, otherClass.startTime, otherClass.endTime);
+  });
+
+  if (conflictingAssignment) {
+    const conflictingClass = classes.find((item) => item.id === conflictingAssignment.classId);
+    return {
+      ok:false,
+      error:`Giáo viên này đã có lịch trùng với lớp ${conflictingClass?.name ?? conflictingAssignment.classId}. Vui lòng chọn giáo viên khác hoặc điều chỉnh lịch lớp.`,
+    };
+  }
+
+  if (current) current.endDate = startDate;
   data.assignments.push({ id:`assign-${Date.now()}-${data.assignments.length+1}`, teacherId, classId, startDate, assignedBy:"admin", reason:reason.trim() || (current ? "Thay thế giáo viên phụ trách" : "Phân công giáo viên") });
   return {ok:true};
 }

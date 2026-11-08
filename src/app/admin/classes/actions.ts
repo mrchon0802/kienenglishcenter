@@ -2,11 +2,9 @@
 
 import { requireAdminAction } from "@/lib/action-auth";
 
-import { findScheduleConflict, validateClassInput, type ClassInput } from "@/lib/class-validation";
-import { formatSchedule } from "@/lib/schedule";
+import { validateClassInput, type ClassInput } from "@/lib/class-validation";
 import { revalidateEverything } from "@/lib/revalidate";
-import { createClass, getClassById, getClasses, getClassStudents, updateClass } from "@/mocks/classes";
-import { createClassScheduleNotifications } from "@/mocks/student-notifications";
+import { createClass, getClassById, getClasses, updateClass } from "@/mocks/classes";
 
 type Response = { ok: true; id: string } | { ok: false; error: string };
 
@@ -14,14 +12,6 @@ function firstError(errors: Record<string, string | undefined>): string {
   return Object.values(errors).find(Boolean) ?? "Dữ liệu không hợp lệ.";
 }
 
-async function checkConflict(input: ClassInput, ignoreId?: string): Promise<string | null> {
-  await requireAdminAction();
-
-  const conflict = findScheduleConflict(await getClasses(), input, ignoreId);
-  return conflict
-    ? `Trùng giờ với lớp ${conflict.name} (${formatSchedule(conflict.scheduleDays, conflict.startTime, conflict.endTime)}). Trung tâm chỉ có 1 giáo viên nên hai lớp không được học cùng giờ.`
-    : null;
-}
 
 /** TODO (khi có backend): gọi API POST /classes. */
 export async function createClassAction(input: ClassInput): Promise<Response> {
@@ -32,15 +22,13 @@ export async function createClassAction(input: ClassInput): Promise<Response> {
 
   const id = input.name.trim().toLowerCase();
   if (await getClassById(id)) return { ok: false, error: `Lớp ${input.name.trim().toUpperCase()} đã tồn tại.` };
-  const conflict = await checkConflict(input);
-  if (conflict) return { ok: false, error: conflict };
-
   const created = await createClass({
     name: input.name,
     grade: input.grade,
-    scheduleDays: [...input.scheduleDays].sort((a, b) => a - b),
-    startTime: input.startTime,
-    endTime: input.endTime,
+    scheduleDays: input.scheduleSlots.map((slot) => slot.day).sort((a, b) => a - b),
+    scheduleSlots: input.scheduleSlots.map((slot) => ({ ...slot })).sort((a, b) => a.day - b.day),
+    startTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].startTime,
+    endTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
     courseId: input.courseId || undefined,
@@ -60,14 +48,12 @@ export async function updateClassAction(id: string, input: ClassInput): Promise<
   if (!(await getClassById(id))) return { ok: false, error: "Không tìm thấy lớp." };
   const errors = validateClassInput(input, "edit");
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };
-  const conflict = await checkConflict(input, id);
-  if (conflict) return { ok: false, error: conflict };
-
   await updateClass(id, {
     grade: input.grade,
-    scheduleDays: [...input.scheduleDays].sort((a, b) => a - b),
-    startTime: input.startTime,
-    endTime: input.endTime,
+    scheduleDays: input.scheduleSlots.map((slot) => slot.day).sort((a, b) => a - b),
+    scheduleSlots: input.scheduleSlots.map((slot) => ({ ...slot })).sort((a, b) => a.day - b.day),
+    startTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].startTime,
+    endTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
     courseId: input.courseId || undefined,

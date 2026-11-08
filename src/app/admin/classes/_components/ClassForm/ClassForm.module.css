@@ -114,3 +114,11 @@
   .actions { display: grid; grid-template-columns: 1fr; }
   .actions > * { width: 100%; }
 }
+
+.scheduleHint { margin: 0 0 10px; color: var(--color-muted); font-size: 12px; line-height: 1.5; }
+.slotList { display: grid; gap: 9px; margin-top: 14px; }
+.slotRow { display: grid; grid-template-columns: minmax(90px, .7fr) repeat(2, minmax(150px, 1fr)); align-items: end; gap: 12px; padding: 12px; border: 1px solid var(--color-border); border-radius: 11px; background: var(--color-surface); }
+.slotRow > strong { padding-bottom: 11px; color: var(--color-ink); font-size: 13px; }
+.slotRow label { display: grid; gap: 6px; color: var(--color-muted); font-size: 11px; font-weight: 600; }
+.slotRow input { width: 100%; min-height: 40px; padding: 7px 10px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); color: var(--color-ink); font: inherit; }
+@media (max-width: 600px) { .slotRow { grid-template-columns: 1fr 1fr; gap: 9px; } .slotRow > strong { grid-column: 1 / -1; padding: 0; } }

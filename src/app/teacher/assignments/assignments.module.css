@@ -512,3 +512,16 @@
     font-size: 22px;
   }
 }
+
+/* Assignment list mobile cards */
+.assignmentCards { display: none; }
+.assignmentCard { min-width: 0; padding: 14px; border: 1px solid #e1e8e3; border-radius: 12px; background: #fff; }
+.assignmentCard + .assignmentCard { margin-top: 10px; }
+.assignmentCardHead { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.assignmentCardHead a { min-width: 0; color: #0f766e; overflow-wrap: anywhere; text-decoration: none; }
+.assignmentMeta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 12px 0 0; }
+.assignmentMeta div { padding: 9px; border-radius: 8px; background: #f4f6f2; }
+.assignmentMeta dt { color: #718078; font-size: 11px; }
+.assignmentMeta dd { margin: 3px 0 0; color: #30463f; font-size: 13px; font-weight: 700; }
+.assignmentDue { margin: 10px 0 0; color: #718078; font-size: 12px; }
+@media (max-width: 700px) { .tableWrap { display: none; } .assignmentCards { display: block; } }

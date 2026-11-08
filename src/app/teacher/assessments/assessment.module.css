@@ -27,3 +27,28 @@
 .history article span { color: var(--color-muted); font-size: 12px; }
 .history article b { color: var(--color-primary-dark); }
 .history article p { grid-column: 1/-1; margin: 0; color: var(--color-muted); font-size: 13px; }
+
+
+/* Responsive teacher assessment workflow */
+.page,.form,.skills,.grid,.history { min-width:0; }
+.form input,.form select,.form textarea { box-sizing:border-box; max-width:100%; min-width:0; }
+.form label { overflow-wrap:anywhere; }
+.history article { min-width:0; }
+.history article span,.history article p { overflow-wrap:anywhere; }
+@media (max-width: 700px) {
+  .page { gap:14px; }
+  .heading h1 { font-size:24px; line-height:1.25; }
+  .form { width:100%; max-width:none; gap:14px; padding:14px; }
+  .grid { grid-template-columns:1fr; gap:12px; }
+  .full { grid-column:auto; }
+  .skills { padding:13px; }
+  .sectionHead { align-items:flex-start; }
+  .sectionHead strong { white-space:normal; font-size:12px; }
+  .skillGrid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .form button { width:100%; min-height:46px; }
+  .history article { grid-template-columns:minmax(0,1fr) auto; gap:7px 10px; }
+}
+@media (max-width: 380px) {
+  .skillGrid { grid-template-columns:1fr; }
+  .sectionHead { flex-direction:column; }
+}

@@ -243,6 +243,7 @@ export function DebtManagementTable({
       </div>
 
       {filtered.length ? (
+        <>
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
             <thead>
@@ -276,6 +277,36 @@ export function DebtManagementTable({
             </tbody>
           </table>
         </div>
+        <div className={styles.mobileDebtCards} aria-label="Danh sách công nợ">
+          {filtered.map((item) => (
+            <article className={styles.mobileDebtCard} key={`mobile-${item.id}`}>
+              <div className={styles.mobileDebtTop}>
+                <div>
+                  <Link href={`/admin/tuition/students/${item.studentId}`} className={styles.studentProfileLink}>
+                    <strong className={styles.studentName}>{item.studentName}</strong>
+                  </Link>
+                  <small className={styles.studentId}>{item.studentId} · Lớp {item.className}</small>
+                </div>
+                <strong className={styles.amount}>{formatVND(item.remaining)}</strong>
+              </div>
+              <div className={styles.mobileDebtMeta}>
+                <span>Kỳ học: {monthLabel(item.month)}</span>
+                <span>Hạn đóng: {item.dueDate}</span>
+                <span>Quá hạn: {item.overdueDays > 0 ? `${item.overdueDays} ngày` : "Chưa quá hạn"}</span>
+              </div>
+              <div className={styles.mobileDebtBadges}>
+                <span className={`${styles.levelBadge} ${item.debtLevel === "critical" ? styles.critical : item.debtLevel === "warning" ? styles.warning : styles.normal}`}>
+                  {item.debtLevel === "critical" ? "Nghiêm trọng" : item.debtLevel === "warning" ? "Kéo dài" : "Thông thường"}
+                </span>
+                <span className={`${styles.statusBadge} ${item.status === "overdue" ? styles.overdue : item.status === "partial" ? styles.partial : styles.pending}`}>
+                  {item.status === "overdue" ? "Quá hạn" : item.status === "partial" ? "Đóng một phần" : "Chưa đến hạn"}
+                </span>
+              </div>
+              <Link href={`/admin/tuition/invoices/${item.id}`} className={styles.mobileDebtAction}>Chi tiết hóa đơn</Link>
+            </article>
+          ))}
+        </div>
+        </>
       ) : (
         <div className={styles.emptyState}>Không tìm thấy hóa đơn phù hợp với bộ lọc.</div>
       )}

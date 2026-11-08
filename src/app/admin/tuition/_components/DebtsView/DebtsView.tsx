@@ -44,7 +44,9 @@ export function DebtsView({ debtors }: { debtors: DebtorRow[] }) {
         {visible.length === 0 ? (
           <EmptyState title="Không có công nợ" description="Tất cả học sinh đã đóng đủ học phí." />
         ) : (
-          <Table>
+          <>
+          <div className={styles.desktopTable}>
+            <Table>
             <thead>
               <tr>
                 <th scope="col">Học sinh</th>
@@ -79,7 +81,30 @@ export function DebtsView({ debtors }: { debtors: DebtorRow[] }) {
                 </tr>
               ))}
             </tbody>
-          </Table>
+            </Table>
+          </div>
+          <div className={styles.mobileCards} aria-label="Danh sách học sinh còn nợ">
+            {visible.map((d) => (
+              <article className={styles.debtCard} key={`mobile-${d.studentId}`}>
+                <div className={styles.cardTop}>
+                  <div>
+                    <strong>{d.studentName}</strong>
+                    <span>Lớp {d.className} · {d.invoiceCount} hóa đơn</span>
+                  </div>
+                  <span className={styles.debtAmount}>{formatVND(d.totalOwed)}</span>
+                </div>
+                <div className={styles.cardDetails}>
+                  <span>Nợ từ: {monthLabel(d.oldestMonth)}</span>
+                  <span>Quá hạn: {d.overdueAmount > 0 ? formatVND(d.overdueAmount) : "Không"}</span>
+                </div>
+                <div className={styles.cardActions}>
+                  <Link href={`/admin/tuition/students/${d.studentId}`}>Hồ sơ công nợ</Link>
+                  <Button href={`/admin/tuition/invoices/${d.oldestInvoiceId}`} variant="primary">Thu tiền</Button>
+                </div>
+              </article>
+            ))}
+          </div>
+          </>
         )}
         <p className={styles.hint}>
           Công nợ là tổng số tiền còn lại của các hóa đơn chưa đóng đủ. “Thu tiền” mở hóa đơn cũ nhất của học sinh đó.

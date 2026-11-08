@@ -5,6 +5,7 @@ import { Table } from "@/components/ui/Table";
 import { formatScore } from "@/lib/format";
 import { formatDateTime } from "@/lib/format-datetime";
 import type { Assignment } from "@/types/assignment";
+import styles from "./AssignmentTable.module.css";
 
 export interface AssignmentRowData {
   assignment: Assignment;
@@ -20,6 +21,8 @@ export function AssignmentTable({ rows }: { rows: AssignmentRowData[] }) {
   }
 
   return (
+    <>
+    <div className={styles.desktopTable}>
     <Table>
       <thead>
         <tr>
@@ -54,5 +57,24 @@ export function AssignmentTable({ rows }: { rows: AssignmentRowData[] }) {
         ))}
       </tbody>
     </Table>
+    </div>
+    <div className={styles.mobileCards}>
+      {rows.map(({ assignment: a, className, submitted, total, averageScore }) => (
+        <article className={styles.assignmentCard} key={`mobile-${a.id}`}>
+          <div className={styles.cardHead}>
+            <Link href={`/admin/assignments/${a.id}`}>{a.title}</Link>
+            <Badge tone={a.kind === "test" ? "amber" : "teal"}>{a.kind === "test" ? "Kiểm tra" : "Luyện tập"}</Badge>
+          </div>
+          <dl className={styles.cardMeta}>
+            <div><dt>Lớp</dt><dd>{className}</dd></div>
+            <div><dt>Số câu</dt><dd>{a.questions.length}</dd></div>
+            <div><dt>Đã nộp</dt><dd>{submitted} / {total}</dd></div>
+            <div><dt>Điểm TB</dt><dd>{averageScore === null ? "-" : formatScore(averageScore)}</dd></div>
+          </dl>
+          <p className={styles.due}>Hạn nộp: {formatDateTime(a.dueAt)}</p>
+        </article>
+      ))}
+    </div>
+    </>
   );
 }

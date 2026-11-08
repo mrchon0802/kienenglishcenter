@@ -98,3 +98,18 @@
   color: #8a1c12;
   font-size: 14px;
 }
+
+@media (max-width: 600px) {
+  .facts { padding-left: 20px; font-size: 14px; }
+  .startButton { width: 100%; align-self: stretch; }
+  .player { gap: 14px; }
+  .topbar { align-items: stretch; flex-direction: column; }
+  .progress { font-size: 14px; }
+  .timer { align-self: flex-start; }
+  .navigator { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 7px; }
+  .dot { width: 100%; min-height: 44px; }
+  .actions { flex-direction: column; }
+  .actions > * { width: 100%; min-height: 44px; margin-left: 0; }
+  .submitEarly { margin-left: 0; }
+  .confirmText { font-size: 14px; }
+}

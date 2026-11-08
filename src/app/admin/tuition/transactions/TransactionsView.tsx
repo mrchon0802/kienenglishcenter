@@ -440,6 +440,37 @@ export function TransactionsView({ transactions, reconciliations }: Props) {
             </tbody>
           </table>
         </div>
+        <div className={styles.mobileTransactions} aria-label="Danh sách giao dịch">
+          {filtered.map((item) => {
+            const currentStatus = reconciliations[item.id]?.status ?? "pending";
+            const statusClass = currentStatus === "reconciled"
+              ? styles.reconciled
+              : currentStatus === "needs_review"
+                ? styles.needsReview
+                : styles.pending;
+            return (
+              <article className={styles.transactionCard} key={`mobile-${item.id}`}>
+                <div className={styles.transactionTop}>
+                  <div>
+                    <strong>{item.studentName}</strong>
+                    <small className={styles.subText}>{item.studentId} · Lớp {item.className}</small>
+                  </div>
+                  <strong className={styles.amount}>{formatVND(item.amount)}</strong>
+                </div>
+                <div className={styles.transactionMeta}>
+                  <span>Ngày thu: {item.paidAt}</span>
+                  <span>{METHOD_LABEL[item.method]}</span>
+                  <span>Hóa đơn: {item.invoiceId} · {item.month}</span>
+                </div>
+                <div className={styles.transactionStatus}>
+                  <span className={`${styles.status} ${statusClass}`}>{RECONCILIATION_STATUS_LABEL[currentStatus]}</span>
+                  <span className={styles.note}>{item.note || "Không có ghi chú"}</span>
+                </div>
+                <ReconciliationControl paymentId={item.id} record={reconciliations[item.id]} />
+              </article>
+            );
+          })}
+        </div>
       </Card>
     </div>
   );

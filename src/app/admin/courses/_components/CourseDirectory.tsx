@@ -14,6 +14,8 @@ export function CourseDirectory({ courses, usage }: {
 }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
+  const [page, setPage] = useState(1);
+  const pageSize = 6;
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
   const router = useRouter();
@@ -23,6 +25,10 @@ export function CourseDirectory({ courses, usage }: {
     const matchesQuery = !keyword || course.name.toLowerCase().includes(keyword) || course.code.toLowerCase().includes(keyword);
     return matchesQuery && (status === "all" || course.status === status);
   }), [courses, query, status]);
+
+  const pageCount = Math.max(1, Math.ceil(visible.length / pageSize));
+  const currentPage = Math.min(page, pageCount);
+  const pageCourses = visible.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   function remove(course: Course) {
     if (!window.confirm(`Bạn có chắc muốn xóa khóa học "${course.name}"?`)) return;
@@ -38,15 +44,15 @@ export function CourseDirectory({ courses, usage }: {
     <>
       {error && <p role="alert" className={styles.empty}>{error}</p>}
       <div className={styles.toolbar}>
-        <input className={styles.search} value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Tìm theo tên hoặc mã khóa học..." aria-label="Tìm khóa học" />
+        <input className={styles.search} value={query} onChange={(e) => { setQuery(e.target.value); setPage(1); }} placeholder="Tìm theo tên hoặc mã khóa học..." aria-label="Tìm khóa học" />
         <div className={styles.filters} aria-label="Lọc trạng thái">
           {[["all", "Tất cả"], ["active", "Đang hoạt động"], ["inactive", "Ngừng hoạt động"]].map(([value, label]) => (
-            <button key={value} type="button" className={`${styles.filter} ${status === value ? styles.activeFilter : ""}`} onClick={() => setStatus(value)}>{label}</button>
+            <button key={value} type="button" className={`${styles.filter} ${status === value ? styles.activeFilter : ""}`} onClick={() => { setStatus(value); setPage(1); }}>{label}</button>
           ))}
         </div>
       </div>
       {visible.length ? <div className={styles.grid}>
-        {visible.map((course) => (
+        {pageCourses.map((course) => (
           <article className={styles.course} key={course.id}>
             <div className={styles.courseTop}>
               <span className={styles.code}>{course.code}</span>
@@ -73,6 +79,14 @@ export function CourseDirectory({ courses, usage }: {
           </article>
         ))}
       </div> : <div className={styles.empty}>Không tìm thấy khóa học phù hợp.</div>}
+      {visible.length > 0 && <nav className={styles.pagination} aria-label="Phân trang khóa học">
+        <span>Hiển thị {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, visible.length)} / {visible.length} khóa học</span>
+        <div className={styles.pageControls}>
+          <button type="button" disabled={currentPage === 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Trước</button>
+          <strong>{currentPage} / {pageCount}</strong>
+          <button type="button" disabled={currentPage === pageCount} onClick={() => setPage((value) => Math.min(pageCount, value + 1))}>Sau</button>
+        </div>
+      </nav>}
     </>
   );
 }

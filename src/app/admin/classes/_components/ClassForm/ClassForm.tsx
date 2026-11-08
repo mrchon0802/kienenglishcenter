@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { validateClassInput, type ClassErrors, type ClassInput } from "@/lib/class-validation";
 import { GRADE_OPTIONS } from "@/lib/question-types";
-import type { ClassInfo } from "@/types/class";
+import type { ClassInfo, ClassScheduleSlot } from "@/types/class";
 import type { Course } from "@/types/course";
 import { createClassAction, updateClassAction } from "../../actions";
 import styles from "./ClassForm.module.css";
@@ -34,9 +34,10 @@ export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
   const [pending, startTransition] = useTransition();
   const [name, setName] = useState(cls?.name ?? "");
   const [grade, setGrade] = useState(String(cls?.grade ?? 3));
-  const [days, setDays] = useState<number[]>(cls?.scheduleDays ?? []);
-  const [startTime, setStartTime] = useState(cls?.startTime ?? "17:30");
-  const [endTime, setEndTime] = useState(cls?.endTime ?? "18:30");
+  const [slots, setSlots] = useState<ClassScheduleSlot[]>(() => cls?.scheduleSlots?.length
+    ? cls.scheduleSlots.map((slot) => ({ ...slot }))
+    : (cls?.scheduleDays ?? []).map((day) => ({ day, startTime: cls?.startTime ?? "17:30", endTime: cls?.endTime ?? "18:30" }))
+  );
   const [fee, setFee] = useState(String(cls?.monthlyFee ?? 600000));
   const [unit, setUnit] = useState(String(cls?.currentUnit ?? 1));
   const [courseId, setCourseId] = useState(cls?.courseId ?? "");
@@ -44,7 +45,13 @@ export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
   const [serverError, setServerError] = useState("");
 
   function toggleDay(day: number) {
-    setDays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]));
+    setSlots((prev) => prev.some((slot) => slot.day === day)
+      ? prev.filter((slot) => slot.day !== day)
+      : [...prev, { day, startTime: "17:30", endTime: "18:30" }].sort((a, b) => a.day - b.day));
+  }
+
+  function updateSlot(day: number, field: "startTime" | "endTime", value: string) {
+    setSlots((prev) => prev.map((slot) => slot.day === day ? { ...slot, [field]: value } : slot));
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -52,9 +59,10 @@ export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
     const input: ClassInput = {
       name,
       grade: Number(grade),
-      scheduleDays: days,
-      startTime,
-      endTime,
+      scheduleDays: slots.map((slot) => slot.day),
+      scheduleSlots: slots,
+      startTime: slots[0]?.startTime ?? "17:30",
+      endTime: slots[0]?.endTime ?? "18:30",
       monthlyFee: Number(fee),
       currentUnit: Number(unit),
       courseId: courseId || undefined,
@@ -91,8 +99,6 @@ export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
             autoComplete="off"
           />
           <Select label="Khối lớp" value={grade} options={GRADE_OPTIONS} error={errors.grade} onChange={(e) => setGrade(e.target.value)} />
-          <Input label="Giờ bắt đầu" type="time" value={startTime} error={errors.startTime} onChange={(e) => setStartTime(e.target.value)} />
-          <Input label="Giờ kết thúc" type="time" value={endTime} error={errors.endTime} onChange={(e) => setEndTime(e.target.value)} />
           <Input
             label="Học phí mỗi tháng (đ)"
             type="number"
@@ -117,20 +123,30 @@ export function ClassForm({ mode, cls, courses = [] }: ClassFormProps) {
         </div>
 
         <fieldset className={styles.days}>
-          <legend className={styles.legend}>Ngày học trong tuần</legend>
+          <legend className={styles.legend}>Lịch học cố định theo từng ngày</legend>
+          <p className={styles.scheduleHint}>Chọn ngày học, sau đó thiết lập khung giờ riêng cho từng ngày.</p>
           <div className={styles.dayList}>
-            {DAYS.map((d) => (
-              <label key={d.value} className={`${styles.day} ${days.includes(d.value) ? styles.dayOn : ""}`}>
-                <input type="checkbox" checked={days.includes(d.value)} onChange={() => toggleDay(d.value)} />
-                <span>{d.label}</span>
-              </label>
-            ))}
+            {DAYS.map((d) => {
+              const active = slots.some((slot) => slot.day === d.value);
+              return (
+                <label key={d.value} className={`${styles.day} ${active ? styles.dayOn : ""}`}>
+                  <input type="checkbox" checked={active} onChange={() => toggleDay(d.value)} />
+                  <span>{d.label}</span>
+                </label>
+              );
+            })}
           </div>
-          {errors.scheduleDays ? (
-            <p className={styles.error} role="alert">
-              {errors.scheduleDays}
-            </p>
-          ) : null}
+          <div className={styles.slotList}>
+            {slots.map((slot) => (
+              <div className={styles.slotRow} key={slot.day}>
+                <strong>{DAYS.find((day) => day.value === slot.day)?.label}</strong>
+                <label>Giờ bắt đầu<input type="time" value={slot.startTime} onChange={(e) => updateSlot(slot.day, "startTime", e.target.value)} /></label>
+                <label>Giờ kết thúc<input type="time" value={slot.endTime} onChange={(e) => updateSlot(slot.day, "endTime", e.target.value)} /></label>
+              </div>
+            ))}
+            {slots.length === 0 ? <p className={styles.scheduleHint}>Chưa chọn ngày học.</p> : null}
+          </div>
+          {errors.scheduleDays ? <p className={styles.error} role="alert">{errors.scheduleDays}</p> : null}
         </fieldset>
 
         <div className={styles.actions}>

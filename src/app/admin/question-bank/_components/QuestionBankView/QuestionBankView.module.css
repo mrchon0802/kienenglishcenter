@@ -103,3 +103,40 @@
   .modalActions { justify-content: stretch; }
   .modalActions > * { flex: 1 1 auto; }
 }
+
+/* Mobile-first presentation: retain the full data table on larger screens. */
+.mobileCards { display: none; }\n.desktopTable { min-width: 0; }
+.questionCard {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+.questionCard + .questionCard { margin-top: 10px; }
+.questionCardHead { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.questionCardHead > strong { color: var(--color-primary-dark); font-size: 13px; }
+.questionPrompt { margin: 12px 0; font-size: 14px; font-weight: 650; line-height: 1.55; overflow-wrap: anywhere; }
+.questionMeta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; }
+.questionMeta div { min-width: 0; padding: 9px; border-radius: 8px; background: var(--color-bg); }
+.questionMeta dt { color: var(--color-muted); font-size: 11px; }
+.questionMeta dd { margin: 3px 0 0; font-size: 13px; font-weight: 650; overflow-wrap: anywhere; }
+.answerPreview { margin: 10px 0 0; color: var(--color-muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.mobileActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.mobileActions > * { flex: 1 1 auto; min-height: 42px; }
+@media (max-width: 700px) {
+  .toolbar { grid-template-columns: minmax(0, 1fr); }
+  .search { grid-column: auto; }
+  .checkbox { align-items: flex-start; padding: 8px 0; }
+  .desktopTable { display: none; }
+  .mobileCards { display: block; }
+  .mobileCards + .footer { margin-top: 16px; }
+  .footer { align-items: stretch; flex-direction: column; }
+  .count { margin: 0; }
+  .modalBackdrop { padding: 10px; align-items: end; }
+  .shareModal { width: 100%; max-height: 88dvh; border-radius: 16px 16px 10px 10px; }
+  .teacherChoice { align-items: flex-start; }
+}
+@media (min-width: 701px) {
+  .mobileCards { display: none; }\n.desktopTable { min-width: 0; }
+}

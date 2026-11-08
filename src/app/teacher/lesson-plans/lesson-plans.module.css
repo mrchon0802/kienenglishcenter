@@ -57,3 +57,45 @@
 .sectionHeading span { color:var(--color-muted); font-size:12px; }
 @media(max-width:850px) { .filterPanel { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:560px) { .filterPanel { grid-template-columns:1fr; } }
+
+/* Mobile-first teacher workflow for lesson plans */
+.card, .detail, .form, .filterPanel { min-width: 0; }
+.primaryLink, .formActions button, .shareForm button, .copyPlanButton { min-height: 44px; }
+.form input, .form select, .form textarea, .filterField input, .filterField select { box-sizing: border-box; min-height: 44px; }
+.card h2, .card p, .detailSection p { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .cards { grid-template-columns: 1fr; gap: 12px; }
+  .card, .detail, .form { padding: 15px; }
+  .pageHead { gap: 12px; }
+  .pageHead h1 { font-size: 25px; }
+  .primaryLink { width: 100%; }
+  .cardActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .cardActions a, .cardActions button { display: flex; align-items: center; justify-content: center; min-height: 42px; padding: 7px; border: 1px solid var(--color-border); border-radius: 9px; text-align: center; }
+  .formGrid { grid-template-columns: 1fr; }
+  .formActions { position: sticky; bottom: 8px; z-index: 2; flex-direction: column-reverse; align-items: stretch; gap: 8px; padding: 10px; border: 1px solid var(--color-border); border-radius: 12px; background: rgb(255 255 255 / 95%); box-shadow: 0 4px 18px rgb(20 40 35 / 10%); }
+  .formActions a, .formActions button { display: flex; align-items: center; justify-content: center; min-height: 44px; }
+  .shareForm select { min-height: 120px; }
+  .sectionHeading { align-items: flex-start; flex-direction: column; }
+}
+
+
+/* Responsive refinements for admin and teacher lesson-plan library */
+.filterPanel,.filterField,.card,.detail,.form,.shareForm { min-width:0; }
+.filterField input,.filterField select,.shareForm select { box-sizing:border-box; min-width:0; max-width:100%; }
+.card h2,.card p,.planPreview p { overflow-wrap:anywhere; }
+.shareForm button,.resetFilters,.copyPlanButton { min-height:44px; }
+@media (max-width: 700px) {
+  .filterPanel { grid-template-columns:1fr; gap:10px; margin-top:14px; padding:13px; }
+  .filterField input,.filterField select { min-height:44px; }
+  .resetFilters { width:100%; }
+  .resultCount { line-height:1.5; }
+  .card { padding:14px; }
+  .cardMeta { gap:6px; }
+  .pill { line-height:1.35; }
+  .planPreview { min-width:0; }
+  .shareForm { gap:10px; }
+  .shareForm select { min-height:132px; }
+  .shareForm button { width:100%; }
+  .detailSection { min-width:0; }
+  .detailSection p { overflow-wrap:anywhere; }
+}

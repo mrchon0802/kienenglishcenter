@@ -15,3 +15,27 @@
 .track{height:9px;overflow:hidden;border-radius:20px;background:#e8eee9}.track span{display:block;height:100%;border-radius:20px;background:#0f766e}
 .note,.unassigned{margin:0;color:#718078;font-size:12px;line-height:1.5}
 @media(max-width:650px){.assignRow{grid-template-columns:1fr}.assignRow button{width:100%}}
+
+
+/* Responsive teaching progress workspace */
+.page,.assignments,.progressSection,.assignRow,.card { min-width:0; }
+.assignRow select { box-sizing:border-box; min-width:0; }
+.cardHead strong,.curriculumName,.note,.unassigned { overflow-wrap:anywhere; }
+@media (max-width: 760px) {
+  .page { gap:16px; padding-bottom:24px; }
+  .intro { padding:14px; }
+  .assignments,.progressSection { gap:11px; }
+  .assignments h2,.progressSection h2 { font-size:17px; }
+  .assignRow { grid-template-columns:minmax(0,1fr); gap:10px; padding:14px; }
+  .assignRow button,.assignRow select { width:100%; min-height:44px; }
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .card { padding:13px; gap:9px; }
+  .cardHead,.progressMeta { align-items:flex-start; }
+  .cardHead { flex-direction:column; gap:4px; }
+  .progressMeta { flex-wrap:wrap; }
+}
+@media (max-width: 480px) {
+  .grid { grid-template-columns:1fr; }
+  .cardHead { flex-direction:row; align-items:center; }
+  .track { height:10px; }
+}
