@@ -56,7 +56,8 @@ export function GradebookView({ classes }: { classes: GradebookClass[] }) {
         {!current || current.assignments.length === 0 ? (
           <EmptyState title="Lớp này chưa có bài tập nào" description="Điểm sẽ hiện ở đây sau khi bạn giao bài." />
         ) : (
-          <div className={styles.scroll}>
+          <>
+            <div className={styles.scroll}>
             <table className={styles.table}>
               <thead>
                 <tr>
@@ -117,7 +118,8 @@ export function GradebookView({ classes }: { classes: GradebookClass[] }) {
                 </div>
               </article>
             ))}
-          </div>
+            </div>
+          </>
         )}
       </Card>
     </div>
