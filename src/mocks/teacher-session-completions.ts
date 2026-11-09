@@ -10,13 +10,18 @@ function store(): Store {
   return g.__ecTeacherSessionCompletions;
 }
 
-async function canManage(teacherId: string, classId: string): Promise<boolean> {
+async function canManage(teacherId: string, classId: string, sessionId?: string): Promise<boolean> {
   const [assignments, cls] = await Promise.all([getTeacherAssignments(), getClassById(classId)]);
-  return Boolean(cls && assignments.some((item) => item.teacherId === teacherId && item.classId === classId && !item.endDate));
+  if (!cls) return false;
+  if (sessionId) {
+    const found = await getSessionById(classId, sessionId);
+    if (Array.isArray(found?.session.teacherIds)) return found.session.teacherIds.includes(teacherId);
+  }
+  return assignments.some((item) => item.teacherId === teacherId && item.classId === classId && !item.endDate);
 }
 
 export async function getTeacherSessionCompletion(classId: string, sessionId: string, teacherId: string): Promise<TeacherSessionCompletion | null> {
-  if (!(await canManage(teacherId, classId))) return null;
+  if (!(await canManage(teacherId, classId, sessionId))) return null;
   const session = await getSessionById(classId, sessionId);
   if (!session) return null;
   const item = store().items.find((entry) => entry.classId === classId && entry.sessionId === sessionId);
@@ -24,7 +29,7 @@ export async function getTeacherSessionCompletion(classId: string, sessionId: st
 }
 
 export async function saveTeacherSessionCompletion(teacherId: string, input: TeacherSessionCompletionInput): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
-  if (!(await canManage(teacherId, input.classId))) return { ok: false, error: "Bạn không được phân công lớp này." };
+  if (!(await canManage(teacherId, input.classId, input.sessionId))) return { ok: false, error: "Bạn không được phân công buổi học này." };
   const session = await getSessionById(input.classId, input.sessionId);
   if (!session) return { ok: false, error: "Không tìm thấy buổi học." };
   if (!input.actualTopic.trim() || !input.completedContent.trim()) return { ok: false, error: "Vui lòng nhập chủ đề và nội dung đã thực hiện." };
@@ -73,7 +78,7 @@ export async function getTeacherCompletionStats(teacherId: string, classIds: str
 export async function attachCompletionAssignment(
   classId: string, sessionId: string, teacherId: string, assignmentId: string,
 ): Promise<boolean> {
-  if (!(await canManage(teacherId, classId))) return false;
+  if (!(await canManage(teacherId, classId, sessionId))) return false;
   const item = store().items.find((entry) => entry.classId === classId && entry.sessionId === sessionId && entry.teacherId === teacherId);
   if (!item) return false;
   item.autoAssignmentId = assignmentId;

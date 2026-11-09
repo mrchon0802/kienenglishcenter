@@ -7,6 +7,7 @@ import type {
 } from "@/types/class";
 import type { Student } from "@/types/student";
 import { getStudents } from "./students";
+import { getPublishedWeeklySessionsForClass, getWeeklySessionById } from "./weekly-schedules";
 
 const SEED_CLASSES: ClassInfo[] = [
   {
@@ -182,13 +183,25 @@ export async function getClassSessions(
 
   const members = await getClassStudents(classId);
 
-  return recentDates(cls.scheduleDays, 6).map((date, index) => ({
+  const historical = recentDates(cls.scheduleDays, 6).map((date, index) => ({
     id: `${classId}-${date}`,
     classId,
     date,
     topic: `Unit ${Math.max(1, cls.currentUnit - Math.floor(index / 2))}`,
     summary: summarize(mockRecord(members, date, index), members.length),
+    type: "regular" as const,
+    status: "completed" as const,
   }));
+  const upcoming = getPublishedWeeklySessionsForClass(classId).map((item) => ({
+    id: item.id, classId, date: item.date,
+    topic: item.type === "makeup" ? "Buổi học bù" : `Unit ${cls.currentUnit}`,
+    startTime: item.startTime, endTime: item.endTime,
+    teacherIds: item.teacherIds, type: item.type, status: item.status,
+    originalSessionId: item.originalSessionId, changeReason: item.changeReason,
+  }));
+  const byId = new Map([...historical, ...upcoming].map((item) => [item.id, item]));
+  return [...byId.values()].sort((a, b) => b.date.localeCompare(a.date));
+
 }
 
 export async function getSessionById(
@@ -197,6 +210,29 @@ export async function getSessionById(
 ): Promise<{ session: ClassSession; record: AttendanceRecord } | undefined> {
   const cls = classList().find((c) => c.id === classId);
   if (!cls) return undefined;
+
+  const planned = getWeeklySessionById(sessionId);
+  if (planned && planned.classId === classId) {
+    // Buổi đã huỷ không được mở điểm danh hoặc ghi nhận vắng học.
+    if (planned.status === "cancelled") return undefined;
+    const members = await getClassStudents(classId);
+    return {
+      session: {
+        id: planned.id,
+        classId,
+        date: planned.date,
+        topic: `Unit ${cls.currentUnit}`,
+        startTime: planned.startTime,
+        endTime: planned.endTime,
+        teacherIds: planned.teacherIds,
+        status: "scheduled",
+        type: planned.type ?? "regular",
+        originalSessionId: planned.originalSessionId,
+        changeReason: planned.changeReason,
+      },
+      record: {},
+    };
+  }
 
   const members = await getClassStudents(classId);
   const dates = recentDates(cls.scheduleDays, 6);

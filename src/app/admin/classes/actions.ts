@@ -5,6 +5,7 @@ import { requireAdminAction } from "@/lib/action-auth";
 import { validateClassInput, type ClassInput } from "@/lib/class-validation";
 import { revalidateEverything } from "@/lib/revalidate";
 import { createClass, getClassById, getClasses, updateClass } from "@/mocks/classes";
+import { assignTeacherToClass, getCurrentTeacherAssignment } from "@/mocks/teacher-assignments";
 
 type Response = { ok: true; id: string } | { ok: false; error: string };
 
@@ -31,6 +32,7 @@ export async function createClassAction(input: ClassInput): Promise<Response> {
     endTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
+    currentLesson: input.currentLesson,
     courseId: input.courseId || undefined,
   });
   revalidateEverything();
@@ -48,6 +50,20 @@ export async function updateClassAction(id: string, input: ClassInput): Promise<
   if (!(await getClassById(id))) return { ok: false, error: "Không tìm thấy lớp." };
   const errors = validateClassInput(input, "edit");
   if (Object.keys(errors).length > 0) return { ok: false, error: firstError(errors) };
+  const currentAssignment = await getCurrentTeacherAssignment(id);
+  if (input.teacherId && input.teacherId !== currentAssignment?.teacherId) {
+    if (!input.assignmentStartDate) {
+      return { ok: false, error: "Vui lòng chọn ngày bắt đầu phân công giáo viên." };
+    }
+    const assignment = await assignTeacherToClass(
+      id,
+      input.teacherId,
+      input.assignmentStartDate,
+      "Cập nhật từ màn hình sửa thông tin lớp",
+    );
+    if (!assignment.ok) return { ok: false, error: assignment.error ?? "Không thể cập nhật giáo viên phụ trách." };
+  }
+
   await updateClass(id, {
     grade: input.grade,
     scheduleDays: input.scheduleSlots.map((slot) => slot.day).sort((a, b) => a - b),
@@ -56,8 +72,10 @@ export async function updateClassAction(id: string, input: ClassInput): Promise<
     endTime: [...input.scheduleSlots].sort((a, b) => a.day - b.day)[0].endTime,
     monthlyFee: Math.round(input.monthlyFee),
     currentUnit: input.currentUnit,
+    currentLesson: input.currentLesson,
     courseId: input.courseId || undefined,
   });
+
   revalidateEverything();
   return { ok: true, id };
 }

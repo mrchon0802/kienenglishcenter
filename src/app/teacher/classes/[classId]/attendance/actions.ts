@@ -7,6 +7,7 @@ import type { AttendanceRecord } from "@/types/class";
 import { getCurrentTeacherId } from "@/lib/current-user";
 import { getTeacherAssignments } from "@/mocks/teacher-assignments";
 import { saveTeacherAttendance } from "@/mocks/teacher-attendance";
+import { getSessionById } from "@/mocks/classes";
 
 export async function saveTeacherAttendanceAction(
   classId: string,
@@ -18,10 +19,13 @@ export async function saveTeacherAttendanceAction(
   const currentTeacherId = await getCurrentTeacherId();
 
   const assignments = await getTeacherAssignments();
-  const canTeachClass = assignments.some((item) =>
+  const session = await getSessionById(classId, sessionId);
+  const hasSessionTeacherList = Array.isArray(session?.session.teacherIds);
+  const assignedToSession = session?.session.teacherIds?.includes(currentTeacherId) ?? false;
+  const canTeachClass = !hasSessionTeacherList && assignments.some((item) =>
     item.teacherId === currentTeacherId && item.classId === classId && !item.endDate,
   );
-  if (!canTeachClass) return { ok: false, error: "Bạn không được phân công phụ trách lớp này." };
+  if (!assignedToSession && !canTeachClass) return { ok: false, error: "Bạn không được phân công phụ trách buổi học này." };
   const result = await saveTeacherAttendance(classId, sessionId, record, currentTeacherId);
   if (result.ok) {
     revalidatePath(`/teacher/classes/${classId}/attendance`);

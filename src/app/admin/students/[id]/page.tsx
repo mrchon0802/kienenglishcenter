@@ -10,7 +10,6 @@ import { formatDate, formatPhone } from "@/lib/format-date";
 import { formatScore } from "@/lib/format";
 import { getStudentById } from "@/mocks/students";
 import styles from "./page.module.css";
-import { ParentAccessControl } from "../_components/ParentAccessControl/ParentAccessControl";
 
 export const metadata: Metadata = { title: "Hồ sơ học sinh | Quản trị" };
 
@@ -77,15 +76,6 @@ async function StudentProfile({ params }: { params: Promise<{ id: string }> }) {
             <dd>{student.code}</dd>
           </div>
         </dl>
-      </Card>
-
-      <Card title="Quyền truy cập Parent Portal">
-        <ParentAccessControl
-          studentId={student.id}
-          studentCode={student.code}
-          enabled={student.parentAccessEnabled}
-          studentActive={student.status === "active"}
-        />
       </Card>
     </>
   );

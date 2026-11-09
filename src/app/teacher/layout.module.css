@@ -2,114 +2,186 @@
   min-height: 100vh;
   background: var(--color-bg);
 }
+
 .header {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 18px;
-  flex-wrap: wrap;
-  padding: 14px 28px;
+  padding: 12px 24px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
 }
-.brandBlock {
+
+.brand {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-}
-.brand {
+  gap: 3px;
+  min-width: max-content;
   color: var(--color-primary-dark);
-  font-size: 18px;
-  font-weight: 800;
   text-decoration: none;
 }
+
+.brandName {
+  font-size: 17px;
+  font-weight: 800;
+}
+
 .role {
   color: var(--color-muted);
-  font-size: 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
 }
+
 .nav {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
 }
+
 .navLink {
-  padding: 10px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 9px 10px;
   border-radius: 9px;
   color: var(--color-ink);
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 650;
   text-decoration: none;
+  white-space: nowrap;
 }
-.navLink:hover {
+
+.navLink:hover,
+.navLink:focus-visible {
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
+  outline: none;
 }
+
 .account {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 600;
+  gap: 9px;
+  min-width: max-content;
 }
+
 .avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: var(--color-primary-soft);
   color: var(--color-primary-dark);
+  font-size: 12px;
+  font-weight: 800;
 }
-.switch {
-  color: var(--color-primary);
+
+.accountName {
+  max-width: 140px;
+  overflow: hidden;
+  color: var(--color-ink);
+  font-size: 12px;
   font-weight: 700;
-  text-decoration: none;
-  padding: 9px 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 10px;
   border: 1px solid var(--color-border);
   border-radius: 9px;
+  color: var(--color-primary);
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
 }
+
 .main {
+  display: flex;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 28px;
-  display: flex;
+  padding: 24px;
   flex-direction: column;
   gap: 22px;
 }
-@media (max-width: 760px) {
+
+@media (max-width: 1100px) {
   .header {
-    padding: 14px 16px;
+    grid-template-columns: 1fr auto;
+    gap: 10px 16px;
+    padding: 12px 18px;
   }
-  .main {
-    padding: 20px 16px;
-  }
-  .account {
-    width: 100%;
-    flex-wrap: wrap;
-  }
+
   .nav {
-    order: 3;
+    grid-column: 1 / -1;
+    grid-row: 2;
     width: 100%;
+    padding-bottom: 3px;
+  }
+
+  .account {
+    grid-column: 2;
+    grid-row: 1;
   }
 }
 
 @media (max-width: 600px) {
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px 8px;
+  }
+
+  .brand {
+    align-self: flex-start;
+  }
+
   .nav {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
+    order: 2;
+    gap: 5px;
+    margin: 0 -14px;
+    padding: 0 14px 5px;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
   }
+
   .navLink {
-    white-space: nowrap;
     min-height: 44px;
+    padding: 9px 12px;
+    background: var(--color-bg);
   }
+
   .account {
-    align-items: flex-start;
+    order: 1;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
   }
+
+  .accountName {
+    flex: 1;
+  }
+
   .switch {
     min-height: 44px;
-    display: inline-flex;
-    align-items: center;
+  }
+
+  .main {
+    padding: 16px 14px;
+    gap: 16px;
   }
 }

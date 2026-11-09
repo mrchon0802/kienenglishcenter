@@ -115,9 +115,11 @@
     top: 0;
     z-index: 40;
     display: flex;
+    box-sizing: border-box;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    height: 64px;
     min-height: 64px;
     padding: 8px var(--page-gutter-mobile, 16px);
     border-bottom: 0;

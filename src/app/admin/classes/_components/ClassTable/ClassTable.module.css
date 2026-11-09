@@ -16,3 +16,8 @@
   .cardActions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .cardActions > * { min-width: 0; }
 }
+
+.teacherCell { display: inline-grid; gap: 2px; min-width: 0; }
+.teacherCell strong { font-weight: 600; }
+.teacherCell small { color: var(--color-muted); font-size: 11px; }
+.unassigned { color: var(--color-warning, #a16207); font-size: 12px; font-weight: 600; }

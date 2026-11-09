@@ -41,6 +41,7 @@ async function ParentLayoutContent({
           <Link href="/parent/progress">Tiến độ</Link>
           <Link href="/parent/assessments">Đánh giá</Link>
           <Link href="/parent/attendance">Chuyên cần</Link>
+          <Link href="/parent/schedule">Lịch học</Link>
           <Link href="/parent/homework">Bài tập</Link>
           <Link href="/parent/tuition">Học phí</Link>
           <Link href="/parent/notifications">Thông báo</Link>

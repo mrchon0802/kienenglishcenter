@@ -85,3 +85,28 @@
   .stats { grid-template-columns:1fr; }
   .weekLabel { min-width:120px; }
 }
+.editDetails { margin-top:4px; }
+.editDetails summary { color:var(--color-primary-dark); font-size:10px; font-weight:700; cursor:pointer; }
+.sessionForm { display:grid; gap:8px; margin-top:9px; padding-top:9px; border-top:1px solid var(--color-border); }
+.sessionForm label { display:grid; gap:4px; color:var(--color-ink); font-size:10px; font-weight:650; }
+.sessionForm input,.sessionForm select { width:100%; min-width:0; min-height:34px; padding:6px 8px; border:1px solid var(--color-border); border-radius:7px; background:#fff; color:var(--color-ink); font:inherit; font-size:11px; }
+.sessionForm select[multiple] { min-height:90px; }
+.sessionForm small { color:var(--color-muted); font-size:9px; font-weight:400; line-height:1.4; }
+.sessionForm .submit { min-height:34px; padding:0 10px; font-size:10px; }
+@media (max-width:760px) {
+  .toolbarActions { flex-wrap:wrap; }
+  .toolbarActions > * { width:100%; }
+  .sessionForm label { font-size:12px; }
+  .sessionForm input,.sessionForm select { min-height:40px; font-size:13px; }
+  .sessionForm .submit { min-height:40px; font-size:12px; }
+}
+
+.attendanceLink { color:var(--color-primary-dark); font-size:10px; font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+
+.auditPanel { display:grid; gap:12px; padding:16px; border:1px solid var(--color-border); border-radius:14px; background:var(--color-surface); }
+.auditPanel h2 { color:var(--color-ink); font-size:15px; }
+.auditPanel ul { display:grid; gap:8px; padding:0; margin:0; list-style:none; }
+.auditPanel li { display:grid; gap:4px; padding:10px 12px; border-radius:9px; background:var(--color-background, #f7f9f8); }
+.auditPanel li strong { color:var(--color-ink); font-size:12px; }
+.auditPanel li span,.auditPanel p { color:var(--color-muted); font-size:11px; line-height:1.5; }
+@media (max-width:760px) { .auditPanel { padding:13px; } .auditPanel li { padding:11px; } .auditPanel li span { font-size:12px; } }

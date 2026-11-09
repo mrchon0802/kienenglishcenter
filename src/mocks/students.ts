@@ -27,7 +27,7 @@ function seedStudents(): Student[] {
       averageScore: Number((6 + ((i * 37) % 40) / 10).toFixed(1)),
       attendanceRate: 80 + ((i * 7) % 21),
       tuitionStatus: i % 4 === 3 ? "unpaid" : "paid",
-      parentAccessEnabled: false,
+      parentAccessEnabled: true,
     } satisfies Student;
   });
 }
@@ -85,7 +85,7 @@ export async function createStudents(inputs: NewStudentData[]): Promise<Student[
       averageScore: 0,
       attendanceRate: 100,
       tuitionStatus: "unpaid",
-      parentAccessEnabled: false,
+      parentAccessEnabled: true,
     } satisfies Student;
   });
   all.push(...created);

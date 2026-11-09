@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { connection } from "next/server";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { formatSessionDate } from "@/lib/schedule";
@@ -12,6 +13,9 @@ export const metadata: Metadata = { title: "Điểm danh | Quản trị" };
 type Params = Promise<{ id: string; sessionId: string }>;
 
 async function AttendanceContent({ params }: { params: Params }) {
+  // getSessionById tạo dữ liệu buổi học dựa trên ngày hiện tại.
+  // Chỉ thực hiện logic này ở request time, không chạy khi prerender.
+  await connection();
   const { id, sessionId } = await params;
   const [cls, found, students] = await Promise.all([
     getClassById(id),

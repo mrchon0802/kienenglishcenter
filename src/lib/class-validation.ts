@@ -9,6 +9,9 @@ export interface ClassInput {
   endTime: string; // "18:30"
   monthlyFee: number; // VNĐ / tháng
   currentUnit: number;
+  currentLesson: number;
+  teacherId?: string;
+  assignmentStartDate?: string;
   courseId?: string;
 }
 
@@ -37,6 +40,7 @@ export function validateClassInput(input: ClassInput, mode: "new" | "edit"): Cla
     errors.monthlyFee = "Học phí từ 0 đến 100.000.000 đ.";
   }
   if (!Number.isInteger(input.currentUnit) || input.currentUnit < 1 || input.currentUnit > 30) errors.currentUnit = "Unit từ 1 đến 30.";
+  if (!Number.isInteger(input.currentLesson) || input.currentLesson < 1 || input.currentLesson > 30) errors.currentLesson = "Lesson từ 1 đến 30.";
   return errors;
 }
 

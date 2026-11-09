@@ -39,15 +39,6 @@ async function ParentLearningProgressContent() {
     );
   }
 
-  if (!student.parentAccessEnabled) {
-    return (
-      <section className={styles.notice} role="status">
-        <h1>Quyền truy cập chưa được kích hoạt</h1>
-        <p>Trung tâm chưa bật quyền Parent Portal cho hồ sơ của {student.fullName}.</p>
-      </section>
-    );
-  }
-
   const [classes, enrollments] = await Promise.all([getClasses(), getCourseEnrollments()]);
   const normalizeClassName = (value: string) => value.trim().toLocaleLowerCase("vi-VN");
   const studentClass = classes.find((item) => normalizeClassName(item.name) === normalizeClassName(student.className));

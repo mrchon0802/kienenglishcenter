@@ -15,6 +15,7 @@ export interface ClassInfo {
   scheduleSlots?: ClassScheduleSlot[];
   monthlyFee: number; // VNĐ / tháng
   currentUnit: number;
+  currentLesson?: number;
   courseId?: string;
 }
 

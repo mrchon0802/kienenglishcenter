@@ -1,245 +1,124 @@
 "use client";
 
-import { useMemo, useState, useTransition, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
-import { assignTeacherAction } from "../teachers/assignment-actions";
+import { useEffect, useMemo, useState, useTransition, type FormEvent } from "react";
+import type { ScheduleAuditLog, WeeklySchedule } from "@/types/weekly-schedule";
 import { Button } from "@/components/ui/Button";
+import { copyWeekAction, createMakeupSessionAction, getScheduleAuditLogsAction, prepareWeekAction, publishWeekAction, reopenWeekAction, updateWeeklySessionAction } from "./actions";
 import styles from "./ScheduleManager.module.css";
 
-type ClassOption = {
-  id: string; name: string; grade: number; days: number[];
-  scheduleSlots: { day: number; startTime: string; endTime: string }[];
-  startTime: string; endTime: string; studentCount: number;
-};
+type ClassOption = { id: string; name: string; grade: number; studentCount: number };
 type TeacherOption = { id: string; name: string; code: string; active: boolean };
-type Assignment = {
-  id: string; classId: string; teacherId: string; startDate: string;
-  endDate: string | null; reason: string;
-};
+const DAY_LABELS = [{ value: 2, short: "T2", label: "Thứ 2" }, { value: 3, short: "T3", label: "Thứ 3" }, { value: 4, short: "T4", label: "Thứ 4" }, { value: 5, short: "T5", label: "Thứ 5" }, { value: 6, short: "T6", label: "Thứ 6" }, { value: 7, short: "T7", label: "Thứ 7" }, { value: 8, short: "CN", label: "Chủ nhật" }];
+function parseDate(value: string) { return new Date(`${value}T12:00:00`); }
+function addDays(value: string, amount: number) { const date = parseDate(value); date.setDate(date.getDate() + amount); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
+function dateKey(date: Date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
+function formatDate(value: string) { return parseDate(value).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit" }); }
+function dayValue(value: string) { const day = parseDate(value).getDay(); return day === 0 ? 8 : day + 1; }
+function weekLabel(start: string) { const end = addDays(start, 6); return `${formatDate(start)} – ${formatDate(end)}/${parseDate(end).getFullYear()}`; }
 
-const DAY_LABELS = [
-  { value: 2, short: "T2", label: "Thứ 2" },
-  { value: 3, short: "T3", label: "Thứ 3" },
-  { value: 4, short: "T4", label: "Thứ 4" },
-  { value: 5, short: "T5", label: "Thứ 5" },
-  { value: 6, short: "T6", label: "Thứ 6" },
-  { value: 7, short: "T7", label: "Thứ 7" },
-  { value: 8, short: "CN", label: "Chủ nhật" },
-];
-
-function dateKey(date: Date) {
-  return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
-}
-function startOfWeek(date: Date) {
-  const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = result.getDay();
-  result.setDate(result.getDate() - (day === 0 ? 6 : day - 1));
-  return result;
-}
-function addDays(date: Date, amount: number) {
-  const result = new Date(date);
-  result.setDate(result.getDate() + amount);
-  return result;
-}
-function formatDate(date: Date) {
-  return `${String(date.getDate()).padStart(2, "0")}/${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
-function dayValue(date: Date) {
-  return date.getDay() === 0 ? 8 : date.getDay() + 1;
-}
-function formatRange(start: Date, end: Date) {
-  return `${formatDate(start)} – ${formatDate(end)}/${end.getFullYear()}`;
-}
-
-export function ScheduleManager({
-  classes,
-  teachers,
-  assignments,
-}: {
-  classes: ClassOption[];
-  teachers: TeacherOption[];
-  assignments: Assignment[];
-}) {
-  const router = useRouter();
-  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
-  const [selectedDay, setSelectedDay] = useState(() => dayValue(new Date()));
+export function ScheduleManager({ classes, teachers, initialWeek, initialAuditLogs }: { classes: ClassOption[]; teachers: TeacherOption[]; initialWeek: WeeklySchedule; initialAuditLogs: ScheduleAuditLog[] }) {
+  const [auditLogs, setAuditLogs] = useState(initialAuditLogs);
+  const [weekStart, setWeekStart] = useState(initialWeek.weekStart);
+  const [week, setWeek] = useState(initialWeek);
+  useEffect(() => { setWeek(initialWeek); setWeekStart(initialWeek.weekStart); setAuditLogs(initialAuditLogs); }, [initialWeek, initialAuditLogs]);
+  const [selectedDay, setSelectedDay] = useState(dayValue(dateKey(new Date())));
   const [teacherFilter, setTeacherFilter] = useState("all");
-  const [showForm, setShowForm] = useState(false);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const today = dateKey(new Date());
+  const days = useMemo(() => Array.from({ length: 7 }, (_, index) => { const date = addDays(weekStart, index); return { date, weekday: dayValue(date), sessions: week.sessions.filter((session) => session.date === date && (teacherFilter === "all" || session.teacherIds.includes(teacherFilter))).sort((a, b) => a.startTime.localeCompare(b.startTime)) }; }), [weekStart, week, teacherFilter]);
+  const total = week.sessions.filter((item) => item.status === "scheduled").length;
+  const assigned = week.sessions.filter((item) => item.status === "scheduled" && item.teacherIds.length > 0).length;
+  const selected = days.find((day) => day.weekday === selectedDay) ?? days[0];
 
-  const weekDates = useMemo(() => Array.from({ length: 7 }, (_, index) => addDays(weekStart, index)), [weekStart]);
-  const weekEnd = weekDates[6];
-  const todayKey = dateKey(new Date());
-
-  const scheduled = useMemo(() => {
-    return weekDates.map((date) => {
-      const key = dateKey(date);
-      const weekday = dayValue(date);
-      const sessions = classes
-        .filter((cls) => cls.days.includes(weekday))
-        .map((cls) => {
-          const slot = cls.scheduleSlots.find((item) => item.day === weekday);
-          const assignment = assignments
-            .filter((item) => item.classId === cls.id && item.startDate <= key && (!item.endDate || item.endDate > key))
-            .sort((a, b) => b.startDate.localeCompare(a.startDate))[0];
-          const teacher = assignment ? teachers.find((item) => item.id === assignment.teacherId) : undefined;
-          return { ...cls, startTime: slot?.startTime ?? cls.startTime, endTime: slot?.endTime ?? cls.endTime, teacherName: teacher?.name, teacherId: teacher?.id };
-        })
-        .filter((cls) => teacherFilter === "all" || cls.teacherId === teacherFilter)
-        .sort((a, b) => a.startTime.localeCompare(b.startTime));
-      return { date, key, weekday, sessions };
-    });
-  }, [weekDates, classes, assignments, teachers, teacherFilter]);
-
-  const totalSessions = scheduled.reduce((sum, day) => sum + day.sessions.length, 0);
-  const assignedCount = scheduled.reduce((sum, day) => sum + day.sessions.filter((item) => item.teacherId).length, 0);
-  const unassignedCount = totalSessions - assignedCount;
-
-  function changeWeek(offset: number) {
-    setWeekStart((current) => addDays(current, offset * 7));
+  function runAction(action: () => Promise<{ ok: boolean; error?: string; week?: WeeklySchedule }>, message: string) {
+    setError(""); setSuccess("");
+    startTransition(async () => { const result = await action(); if (!result.ok) { setError(result.error ?? "Không thể thực hiện thao tác."); return; } if (result.week) setWeek(result.week); setAuditLogs(await getScheduleAuditLogsAction(weekStart)); setSuccess(message); });
   }
-
-  function handleAssign(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setError("");
-    setSuccess("");
-    const form = event.currentTarget;
-    const formData = new FormData(form);
+  function navigateWeek(offset: number) {
+    const next = addDays(weekStart, offset * 7);
+    setWeekStart(next);
+    setError(""); setSuccess("");
     startTransition(async () => {
-      const result = await assignTeacherAction(formData);
-      if (!result.ok) {
-        setError(result.error ?? "Không thể lưu phân công.");
-        return;
-      }
-      setSuccess("Đã lưu phân công giáo viên cho lớp.");
-      form.reset();
-      setShowForm(false);
-      router.refresh();
+      const result = await prepareWeekAction(next);
+      if (!result.ok) { setError(result.error ?? "Không thể tải lịch tuần."); return; }
+      if (result.week) setWeek(result.week);
+      setAuditLogs(await getScheduleAuditLogsAction(next));
+    });
+  }
+  function saveSession(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setError(""); setSuccess("");
+    const formData = new FormData(event.currentTarget);
+    startTransition(async () => {
+      const result = await updateWeeklySessionAction(formData);
+      if (!result.ok) { setError(result.error ?? "Không thể lưu buổi học."); return; }
+      if (result.week) setWeek(result.week); setAuditLogs(await getScheduleAuditLogsAction(weekStart)); setSuccess("Đã cập nhật buổi học.");
+    });
+  }
+  function createMakeup(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setError(""); setSuccess("");
+    const formData = new FormData(event.currentTarget);
+    startTransition(async () => {
+      const result = await createMakeupSessionAction(formData);
+      if (!result.ok) { setError(result.error ?? "Không thể tạo buổi học bù."); return; }
+      if (result.week) setWeek(result.week);
+      setAuditLogs(await getScheduleAuditLogsAction(weekStart));
+      setSuccess("Đã tạo buổi học bù. Hãy kiểm tra lịch trước khi công bố.");
     });
   }
 
-  const selectedSchedule = scheduled.find((item) => item.weekday === selectedDay) ?? scheduled[0];
-
-  return (
-    <div className={styles.page}>
-      <section className={styles.toolbar}>
-        <div className={styles.weekControls}>
-          <button type="button" className={styles.arrow} onClick={() => changeWeek(-1)} aria-label="Tuần trước">‹</button>
-          <div className={styles.weekLabel}>
-            <strong>{formatRange(weekStart, weekEnd)}</strong>
-            <span>{weekStart.toLocaleDateString("vi-VN", { month: "long", year: "numeric" })}</span>
-          </div>
-          <button type="button" className={styles.arrow} onClick={() => changeWeek(1)} aria-label="Tuần sau">›</button>
-          <button type="button" className={styles.todayButton} onClick={() => { setWeekStart(startOfWeek(new Date())); setSelectedDay(dayValue(new Date())); }}>Tuần này</button>
-        </div>
-        <div className={styles.toolbarActions}>
-          <label className={styles.filterLabel}>
-            <span>Lọc giáo viên</span>
-            <select value={teacherFilter} onChange={(event) => setTeacherFilter(event.target.value)}>
-              <option value="all">Tất cả giáo viên</option>
-              {teachers.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name}</option>)}
-            </select>
-          </label>
-          <Button variant="primary" onClick={() => { setShowForm((value) => !value); setError(""); }}>+ Xếp lịch dạy</Button>
-        </div>
-      </section>
-
-      <section className={styles.stats}>
-        <article><span>Tổng số buổi trong tuần</span><strong>{totalSessions}</strong></article>
-        <article><span>Đã có giáo viên</span><strong className={styles.good}>{assignedCount}</strong></article>
-        <article><span>Chưa phân công</span><strong className={unassignedCount ? styles.warning : styles.good}>{unassignedCount}</strong></article>
-      </section>
-
-      {success && <p className={styles.success} role="status">{success}</p>}
-      {showForm && (
-        <section className={styles.formPanel}>
-          <div className={styles.formHeading}>
-            <div><h2>Xếp lịch giáo viên cho lớp</h2><p>Lịch học và khung giờ được lấy từ cấu hình hiện tại của lớp.</p></div>
-            <button type="button" className={styles.close} onClick={() => setShowForm(false)} aria-label="Đóng form">×</button>
-          </div>
-          <form className={styles.form} onSubmit={handleAssign}>
-            <label>Lớp học
-              <select name="classId" required defaultValue="">
-                <option value="" disabled>Chọn lớp cần phân công</option>
-                {classes.map((cls) => <option key={cls.id} value={cls.id}>{cls.name} · Khối {cls.grade}</option>)}
-              </select>
-            </label>
-            <label>Giáo viên
-              <select name="teacherId" required defaultValue="">
-                <option value="" disabled>Chọn giáo viên</option>
-                {teachers.filter((teacher) => teacher.active).map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.code} · {teacher.name}</option>)}
-              </select>
-            </label>
-            <label>Ngày bắt đầu áp dụng
-              <input type="date" name="startDate" required defaultValue={dateKey(new Date())}/>
-            </label>
-            <label className={styles.reason}>Lý do / ghi chú (không bắt buộc)
-              <input name="reason" placeholder="Ví dụ: Phân công giáo viên cho lớp mới"/>
-            </label>
-            {error && <p className={styles.error} role="alert">{error}</p>}
-            <div className={styles.formActions}>
-              <button type="button" className={styles.cancel} onClick={() => setShowForm(false)}>Hủy</button>
-              <button type="submit" className={styles.submit} disabled={pending}>{pending ? "Đang lưu..." : "Lưu phân công"}</button>
-            </div>
-          </form>
-        </section>
-      )}
-
-      <section className={styles.calendar} aria-label="Lịch dạy theo tuần">
-        <div className={styles.calendarHeader}>
-          <div><h2>Lịch dạy trong tuần</h2><p>Mỗi thẻ là một buổi học theo lịch định kỳ của lớp.</p></div>
-          <span>{totalSessions} buổi</span>
-        </div>
-        <div className={styles.weekGrid}>
-          {scheduled.map((day) => (
-            <section key={day.key} className={`${styles.dayColumn} ${day.key === todayKey ? styles.today : ""}`}>
-              <header className={styles.dayHeader}>
-                <strong>{DAY_LABELS.find((item) => item.value === day.weekday)?.label}</strong>
-                <span>{formatDate(day.date)}</span>
-              </header>
-              <div className={styles.dayContent}>
-                {day.sessions.length ? day.sessions.map((session) => (
-                  <article key={`${day.key}-${session.id}`} className={`${styles.session} ${!session.teacherId ? styles.unassignedSession : ""}`}>
-                    <span className={styles.sessionTime}>{session.startTime} – {session.endTime}</span>
-                    <strong>Lớp {session.name}</strong>
-                    <span className={styles.teacher}>{session.teacherName ?? "Chưa phân công giáo viên"}</span>
-                    <span className={styles.students}>{session.studentCount} học sinh</span>
-                    {!session.teacherId && <span className={styles.alert}>Cần phân công</span>}
-                  </article>
-                )) : <p className={styles.noSessions}>Không có lớp</p>}
-              </div>
-            </section>
-          ))}
-        </div>
-        <div className={styles.mobileCalendar}>
-          <div className={styles.dayPicker}>
-            {scheduled.map((day) => (
-              <button type="button" key={day.key} className={selectedDay === day.weekday ? styles.daySelected : ""} onClick={() => setSelectedDay(day.weekday)}>
-                <strong>{DAY_LABELS.find((item) => item.value === day.weekday)?.short}</strong>
-                <span>{day.date.getDate()}</span>
-                {day.sessions.length > 0 && <i>{day.sessions.length}</i>}
-              </button>
-            ))}
-          </div>
-          {selectedSchedule && (
-            <div className={styles.mobileDayContent}>
-              <h3>{DAY_LABELS.find((item) => item.value === selectedSchedule.weekday)?.label}, {formatDate(selectedSchedule.date)}</h3>
-              {selectedSchedule.sessions.length ? selectedSchedule.sessions.map((session) => (
-                <article key={`${selectedSchedule.key}-${session.id}`} className={`${styles.session} ${!session.teacherId ? styles.unassignedSession : ""}`}>
-                  <span className={styles.sessionTime}>{session.startTime} – {session.endTime}</span>
-                  <strong>Lớp {session.name}</strong>
-                  <span className={styles.teacher}>{session.teacherName ?? "Chưa phân công giáo viên"}</span>
-                  <span className={styles.students}>{session.studentCount} học sinh</span>
-                  {!session.teacherId && <span className={styles.alert}>Cần phân công</span>}
-                </article>
-              )) : <p className={styles.noSessions}>Ngày này không có lịch dạy.</p>}
-            </div>
-          )}
-        </div>
-      </section>
-      <p className={styles.note}>Lịch tuần được tổng hợp từ ngày học và giờ học đã cấu hình ở từng lớp, kết hợp với lịch sử phân công giáo viên. Muốn đổi ngày/giờ học định kỳ, vào chi tiết lớp để chỉnh sửa lịch học.</p>
-    </div>
-  );
+  return <div className={styles.page}>
+    <section className={styles.toolbar}>
+      <div className={styles.weekControls}>
+        <button type="button" className={styles.arrow} onClick={() => navigateWeek(-1)} aria-label="Tuần trước" disabled={pending}>‹</button>
+        <div className={styles.weekLabel}><strong>{weekLabel(weekStart)}</strong><span>{week.status === "published" ? "Đã công bố" : "Bản nháp"}</span></div>
+        <button type="button" className={styles.arrow} onClick={() => navigateWeek(1)} aria-label="Tuần sau" disabled={pending}>›</button>
+        <button type="button" className={styles.todayButton} onClick={() => navigateWeek(Math.round((new Date(`${initialWeek.weekStart}T12:00:00`).getTime() - parseDate(weekStart).getTime()) / 604800000))}>Tuần hiện tại</button>
+      </div>
+      <div className={styles.toolbarActions}>
+        <label className={styles.filterLabel}><span>Lọc giáo viên</span><select value={teacherFilter} onChange={(event) => setTeacherFilter(event.target.value)}><option value="all">Tất cả giáo viên</option>{teachers.map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name}</option>)}</select></label>
+        <Button variant="secondary" onClick={() => runAction(() => copyWeekAction(weekStart), "Đã sao chép lịch tuần trước. Kiểm tra lại trước khi công bố.")}>Sao chép tuần trước</Button>
+        {week.status === "published" ? <Button variant="secondary" onClick={() => runAction(() => reopenWeekAction(weekStart), "Đã mở lại lịch ở trạng thái bản nháp.")}>Mở lại bản nháp</Button> : <Button variant="primary" onClick={() => runAction(() => publishWeekAction(weekStart), "Đã công bố lịch tuần.")}>Công bố lịch</Button>}
+      </div>
+    </section>
+    <section className={styles.stats}>
+      <article><span>Buổi học dự kiến</span><strong>{total}</strong></article>
+      <article><span>Đã phân công giáo viên</span><strong className={styles.good}>{assigned}</strong></article>
+      <article><span>Chưa phân công</span><strong className={total - assigned ? styles.warning : styles.good}>{total - assigned}</strong></article>
+    </section>
+    {error && <p className={styles.error} role="alert">{error}</p>}{success && <p className={styles.success} role="status">{success}</p>}
+    <section className={styles.calendar}>
+      <div className={styles.calendarHeader}><div><h2>Lịch học trong tuần</h2><p>{week.status === "published" ? "Lịch đã được công bố cho các vai trò liên quan." : "Lịch đang ở trạng thái nháp; chỉnh sửa trước khi công bố."}</p></div><span>{week.sessions.length} buổi</span></div>
+      <div className={styles.weekGrid}>{days.map((day) => <section key={day.date} className={`${styles.dayColumn} ${day.date === today ? styles.today : ""}`}><header className={styles.dayHeader}><strong>{DAY_LABELS.find((item) => item.value === day.weekday)?.label}</strong><span>{formatDate(day.date)}</span></header><div className={styles.dayContent}>{day.sessions.length ? day.sessions.map((session) => <article key={session.id} className={`${styles.session} ${session.status === "cancelled" ? styles.unassignedSession : ""}`}><span className={styles.sessionTime}>{session.startTime} – {session.endTime}</span><strong>{classes.find((item) => item.id === session.classId)?.name ?? session.classId}{session.type === "makeup" ? " · Học bù" : ""}</strong><span className={styles.teacher}>{session.status === "cancelled" ? "Đã huỷ" : session.teacherIds.map((id) => teachers.find((teacher) => teacher.id === id)?.name ?? id).join(", ") || "Chưa phân công"}</span><details className={styles.editDetails}>
+        <summary>Điều chỉnh buổi học</summary>
+        <form className={styles.sessionForm} onSubmit={saveSession}>
+          <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="sessionId" value={session.id}/>
+          <label>Giờ bắt đầu<input type="time" name="startTime" defaultValue={session.startTime} required/></label>
+          <label>Giờ kết thúc<input type="time" name="endTime" defaultValue={session.endTime} required/></label>
+          <label>Giáo viên (có thể chọn nhiều)<select name="teacherIds" multiple defaultValue={session.teacherIds}>{teachers.filter((teacher) => teacher.active).map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name} · {teacher.code}</option>)}</select><small>Giữ Ctrl (Windows) hoặc Command (Mac) để chọn nhiều người.</small></label>
+          <label>Trạng thái<select name="status" defaultValue={session.status}><option value="scheduled">Đang lên lịch</option><option value="cancelled">Huỷ buổi học</option></select></label>
+          <label>Lý do thay đổi<input name="changeReason" defaultValue={session.changeReason ?? ""} placeholder="Ví dụ: giáo viên bận, đổi lịch..."/></label>
+          <button type="submit" className={styles.submit} disabled={pending}>{pending ? "Đang lưu..." : "Lưu thay đổi"}</button>
+          {week.status === "published" && session.status !== "cancelled" && <a className={styles.attendanceLink} href={`/admin/classes/${session.classId}/attendance/${session.id}`}>Mở điểm danh buổi này</a>}
+        </form>
+        {session.status === "cancelled" && <form className={styles.sessionForm} onSubmit={createMakeup}>
+          <strong>Tạo buổi học bù</strong>
+          <input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="originalSessionId" value={session.id}/>
+          <label>Ngày học bù<input type="date" name="date" min={weekStart} max={addDays(weekStart, 6)} defaultValue={session.date} required/></label>
+          <label>Giờ bắt đầu<input type="time" name="startTime" defaultValue={session.startTime} required/></label>
+          <label>Giờ kết thúc<input type="time" name="endTime" defaultValue={session.endTime} required/></label>
+          <label>Giáo viên (chọn nhiều)<select name="teacherIds" multiple required>{teachers.filter((teacher) => teacher.active).map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name} · {teacher.code}</option>)}</select></label>
+          <label>Lý do<input name="reason" defaultValue="Học bù cho buổi đã huỷ"/></label>
+          <button type="submit" className={styles.submit} disabled={pending}>Tạo buổi học bù</button>
+        </form>}
+      </details></article>) : <p className={styles.noSessions}>Không có lớp</p>}</div></section>)}</div>
+      <div className={styles.mobileCalendar}><div className={styles.dayPicker}>{days.map((day) => <button type="button" key={day.date} className={selectedDay === day.weekday ? styles.daySelected : ""} onClick={() => setSelectedDay(day.weekday)}><strong>{DAY_LABELS.find((item) => item.value === day.weekday)?.short}</strong><span>{parseDate(day.date).getDate()}</span>{day.sessions.length > 0 && <i>{day.sessions.length}</i>}</button>)}</div><div className={styles.mobileDayContent}><h3>{DAY_LABELS.find((item) => item.value === selected?.weekday)?.label}, {selected ? formatDate(selected.date) : ""}</h3>{selected?.sessions.length ? selected.sessions.map((session) => <article key={session.id} className={styles.session}><span className={styles.sessionTime}>{session.startTime} – {session.endTime}</span><strong>{classes.find((item) => item.id === session.classId)?.name ?? session.classId}{session.type === "makeup" ? " · Học bù" : ""}</strong><span className={styles.teacher}>{session.status === "cancelled" ? "Đã huỷ" : session.teacherIds.map((id) => teachers.find((teacher) => teacher.id === id)?.name ?? id).join(", ") || "Chưa phân công"}</span><details className={styles.editDetails}><summary>Điều chỉnh buổi học</summary><form className={styles.sessionForm} onSubmit={saveSession}><input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="sessionId" value={session.id}/><label>Giờ bắt đầu<input type="time" name="startTime" defaultValue={session.startTime} required/></label><label>Giờ kết thúc<input type="time" name="endTime" defaultValue={session.endTime} required/></label><label>Giáo viên<select name="teacherIds" multiple defaultValue={session.teacherIds}>{teachers.filter((teacher) => teacher.active).map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name} · {teacher.code}</option>)}</select></label><label>Trạng thái<select name="status" defaultValue={session.status}><option value="scheduled">Đang lên lịch</option><option value="cancelled">Huỷ buổi học</option></select></label><label>Lý do<input name="changeReason" defaultValue={session.changeReason ?? ""}/></label><button type="submit" className={styles.submit} disabled={pending}>Lưu thay đổi</button>{week.status === "published" && session.status !== "cancelled" && <a className={styles.attendanceLink} href={`/admin/classes/${session.classId}/attendance/${session.id}`}>Mở điểm danh buổi này</a>}</form>{session.status === "cancelled" && <form className={styles.sessionForm} onSubmit={createMakeup}><strong>Tạo buổi học bù</strong><input type="hidden" name="weekStart" value={weekStart}/><input type="hidden" name="originalSessionId" value={session.id}/><label>Ngày học bù<input type="date" name="date" min={weekStart} max={addDays(weekStart, 6)} defaultValue={session.date} required/></label><label>Giờ bắt đầu<input type="time" name="startTime" defaultValue={session.startTime} required/></label><label>Giờ kết thúc<input type="time" name="endTime" defaultValue={session.endTime} required/></label><label>Giáo viên<select name="teacherIds" multiple required>{teachers.filter((teacher) => teacher.active).map((teacher) => <option key={teacher.id} value={teacher.id}>{teacher.name} · {teacher.code}</option>)}</select></label><label>Lý do<input name="reason" defaultValue="Học bù cho buổi đã huỷ"/></label><button type="submit" className={styles.submit} disabled={pending}>Tạo buổi học bù</button></form>}</details></article>) : <p className={styles.noSessions}>Ngày này không có buổi học.</p>}</div></div>
+    </section>
+    <section className={styles.auditPanel}>
+      <h2>Lịch sử thay đổi tuần này</h2>
+      {auditLogs.length ? <ul>{auditLogs.map((log) => <li key={log.id}><strong>{log.action === "makeup_created" ? "Tạo buổi học bù" : log.action === "cancelled" ? "Huỷ buổi học" : log.action === "published" ? "Công bố lịch" : log.action === "reopened" ? "Mở lại bản nháp" : "Điều chỉnh buổi học"}</strong><span>{new Date(log.at).toLocaleString("vi-VN")} · {log.reason}</span></li>)}</ul> : <p>Chưa có thay đổi nào được ghi nhận.</p>}
+    </section>
+    <p className={styles.note}>Lịch tuần được tạo từ lịch cố định của lớp hoặc sao chép từ tuần trước. Mỗi buổi có thể điều chỉnh giờ, nhiều giáo viên hoặc huỷ độc lập. Bản nháp chưa được công bố.</p>
+  </div>;
 }

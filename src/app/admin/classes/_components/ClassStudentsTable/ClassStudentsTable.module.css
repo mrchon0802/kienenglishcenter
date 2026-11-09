@@ -1,17 +1,95 @@
-.root { min-width: 0; }
-.desktopTable { display: block; min-width: 0; }
-.mobileList { display: none; }
+.root {
+  min-width: 0;
+}
+
+.desktopTable {
+  display: block;
+  min-width: 0;
+}
+
+.mobileList {
+  display: none;
+}
+
 @media (max-width: 700px) {
- .desktopTable { display: none; }
- .mobileList { display: grid; gap: 10px; }
- .studentCard { padding: 13px; border: 1px solid var(--color-border); border-radius: var(--radius-control); background: var(--color-surface); min-width: 0; }
- .studentHead { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
- .studentHead > div { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
- .studentHead a { color: var(--color-primary-dark); font-size: 14px; font-weight: 700; overflow-wrap: anywhere; }
- .studentHead span { color: var(--color-muted); font-size: 11px; }
- .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--color-divider); }
- .metrics div { display: flex; flex-direction: column; gap: 3px; }
- .metrics span { color: var(--color-muted); font-size: 11px; }
- .metrics strong { color: var(--color-ink); font-size: 13px; }
- .transfer { margin-top: 10px; }
+  .desktopTable {
+    display: none;
+  }
+
+  .mobileList {
+    display: grid;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .studentCard {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 11px;
+    background: var(--color-surface);
+  }
+
+  .studentHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .studentHead > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .studentHead a {
+    color: var(--color-primary-dark);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .studentHead span {
+    color: var(--color-muted);
+    font-size: 11px;
+  }
+
+  .studentHead > :last-child {
+    flex: 0 0 auto;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 11px;
+    padding-top: 10px;
+    border-top: 1px solid var(--color-divider);
+  }
+
+  .metrics div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .metrics span {
+    color: var(--color-muted);
+    font-size: 11px;
+  }
+
+  .metrics strong {
+    color: var(--color-ink);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .transfer {
+    margin-top: 10px;
+  }
 }

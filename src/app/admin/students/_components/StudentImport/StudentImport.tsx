@@ -103,32 +103,52 @@ export function StudentImport({ classNames, existing }: StudentImportProps) {
                   Chỉ hiện dòng lỗi
                 </label>
               ) : null}
-              <Table>
-                <thead>
-                  <tr>
-                    <th scope="col">Dòng</th>
-                    <th scope="col">Họ và tên</th>
-                    <th scope="col">Lớp</th>
-                    <th scope="col">Phụ huynh</th>
-                    <th scope="col">SĐT</th>
-                    <th scope="col">Kết quả</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {shown.map((item) => (
-                    <tr key={item.rowNumber}>
-                      <td>{item.rowNumber}</td>
-                      <td>{item.input.fullName || "-"}</td>
-                      <td>{item.input.className || "-"}</td>
-                      <td>{item.input.parentName || "-"}</td>
-                      <td>{item.input.parentPhone || "-"}</td>
-                      <td className={styles.resultCell}>
-                        {item.errors.length === 0 ? <Badge>Hợp lệ</Badge> : <span className={styles.bad}>{item.errors.join(" ")}</span>}
-                      </td>
+              <div className={styles.desktopPreview}>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Dòng</th>
+                      <th scope="col">Họ và tên</th>
+                      <th scope="col">Lớp</th>
+                      <th scope="col">Phụ huynh</th>
+                      <th scope="col">SĐT</th>
+                      <th scope="col">Kết quả</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {shown.map((item) => (
+                      <tr key={item.rowNumber}>
+                        <td>{item.rowNumber}</td>
+                        <td>{item.input.fullName || "-"}</td>
+                        <td>{item.input.className || "-"}</td>
+                        <td>{item.input.parentName || "-"}</td>
+                        <td>{item.input.parentPhone || "-"}</td>
+                        <td className={styles.resultCell}>
+                          {item.errors.length === 0 ? <Badge>Hợp lệ</Badge> : <span className={styles.bad}>{item.errors.join(" ")}</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
+              <div className={styles.mobilePreview} aria-label="Bản xem trước học sinh">
+                {shown.map((item) => (
+                  <article className={styles.previewCard} key={`mobile-${item.rowNumber}`}>
+                    <div className={styles.previewHead}>
+                      <strong>{item.input.fullName || "Chưa có họ tên"}</strong>
+                      <span>Dòng {item.rowNumber}</span>
+                    </div>
+                    <dl className={styles.previewDetails}>
+                      <div><dt>Lớp</dt><dd>{item.input.className || "-"}</dd></div>
+                      <div><dt>Phụ huynh</dt><dd>{item.input.parentName || "-"}</dd></div>
+                      <div><dt>Số điện thoại</dt><dd>{item.input.parentPhone || "-"}</dd></div>
+                    </dl>
+                    <div className={styles.previewResult}>
+                      {item.errors.length === 0 ? <Badge>Hợp lệ</Badge> : <span className={styles.bad}>{item.errors.join(" ")}</span>}
+                    </div>
+                  </article>
+                ))}
+              </div>
               {items.length > PREVIEW_LIMIT && !onlyErrors ? (
                 <p className={styles.hint}>Chỉ hiện {PREVIEW_LIMIT} dòng đầu, các dòng còn lại vẫn được kiểm tra và nhập.</p>
               ) : null}

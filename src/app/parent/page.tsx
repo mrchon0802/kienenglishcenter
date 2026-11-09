@@ -10,6 +10,8 @@ import { formatScore, formatVND } from "@/lib/format";
 import { Suspense } from "react";
 import styles from "./page.module.css";
 
+export const instant = false;
+
 export const metadata: Metadata = {
   title: "Tổng quan phụ huynh | Kien English Center",
 };
@@ -42,20 +44,6 @@ async function ParentDashboard() {
         <p>Vui lòng liên hệ trung tâm để kiểm tra tài khoản.</p>
       </section>
     );
-
-  if (!student.parentAccessEnabled) {
-    return (
-      <section className={styles.notice} role="status">
-        <span className={styles.eyebrow}>PARENT PORTAL</span>
-        <h1>Quyền truy cập chưa được kích hoạt</h1>
-        <p>
-          Tài khoản hiện được liên kết với <strong>{student.fullName}</strong>,
-          nhưng trung tâm chưa bật quyền truy cập dành cho phụ huynh.
-        </p>
-        <p>Vui lòng liên hệ trung tâm hoặc quản trị viên để được hỗ trợ.</p>
-      </section>
-    );
-  }
 
   const today = todayISO();
   const [progress, assessments, invoices, payments, notifications] =

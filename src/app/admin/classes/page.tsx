@@ -3,12 +3,16 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { getClasses } from "@/mocks/classes";
+import { getTeacherAssignmentOverview } from "@/mocks/teacher-assignments";
 import { ClassTable } from "./_components/ClassTable";
 
 export const metadata: Metadata = { title: "Lớp học & điểm danh | Quản trị" };
 
 export default async function ClassesPage() {
-  const classes = await getClasses();
+  const [classes, teacherAssignments] = await Promise.all([
+    getClasses(),
+    getTeacherAssignmentOverview(),
+  ]);
 
   return (
     <>
@@ -22,7 +26,7 @@ export default async function ClassesPage() {
         }
       />
       <Card>
-        <ClassTable classes={classes} />
+        <ClassTable classes={classes} teacherAssignments={teacherAssignments} />
       </Card>
     </>
   );

@@ -20,7 +20,6 @@ async function AssessmentContent() {
   const currentStudentId = await getCurrentStudentId();
   const student = await getStudentById(currentStudentId);
   if (!student) return <section className={styles.notice}><h1>Không tìm thấy hồ sơ học sinh</h1><p>Vui lòng liên hệ trung tâm.</p></section>;
-  if (!student.parentAccessEnabled) return <section className={styles.notice}><h1>Quyền truy cập chưa được kích hoạt</h1><p>Trung tâm chưa bật Parent Portal cho {student.fullName}.</p></section>;
 
   const assessments = await getAssessmentsForStudent(student.id);
   const latest = assessments[0];
