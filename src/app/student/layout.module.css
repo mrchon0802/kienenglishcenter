@@ -25,3 +25,11 @@
   .userText { display:none; }
   .main { padding:16px 14px 32px; gap:16px; }
 }
+
+/* Logo wordmark on desktop, original ant artwork on mobile */
+.brandText { display: inline; }
+.antLogo { display: none; width: 44px; height: 38px; object-fit: contain; }
+@media (max-width: 600px) {
+  .brandText { display: none; }
+  .antLogo { display: block; }
+}

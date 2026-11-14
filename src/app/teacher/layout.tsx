@@ -37,7 +37,7 @@ async function TeacherLayoutContent({ children }: Readonly<{ children: React.Rea
     <div className={styles.shell}>
       <header className={styles.header}>
         <div className={styles.brandGroup}>
-          <Link href="/teacher" className={styles.brand}>Kien English Center</Link>
+          <Link href="/teacher" className={styles.brand}><span className={styles.brandText}>Kien English Center</span><img className={styles.antLogo} src="/brand/ant-white.png" alt="Kien English Center" /></Link>
           <div className={styles.rolePicker}><RoleSwitcher currentRole="teacher" variant="header" /></div>
         </div>
         <div className={styles.headerActions}>

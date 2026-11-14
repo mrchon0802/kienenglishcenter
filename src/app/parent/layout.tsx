@@ -34,7 +34,7 @@ async function ParentLayoutContent({ children }: Readonly<{ children: React.Reac
     <div className={styles.shell}>
       <header className={styles.header}>
         <div className={styles.brandGroup}>
-          <Link href="/parent" className={styles.brand}>Kien English Center</Link>
+          <Link href="/parent" className={styles.brand}><span className={styles.brandText}>Kien English Center</span><img className={styles.antLogo} src="/brand/ant-white.png" alt="Kien English Center" /></Link>
           <div className={styles.rolePicker}><RoleSwitcher currentRole="parent" variant="header" /></div>
         </div>
         <div className={styles.headerActions}>

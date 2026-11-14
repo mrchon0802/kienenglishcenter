@@ -1,10 +1,10 @@
 .menuButton {
   display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  min-height:40px; padding:0 13px; border:1px solid rgba(255,255,255,.32);
-  border-radius:9px; background:rgba(255,255,255,.12); color:#fff;
+  min-height:40px; padding:0 13px; border:0;
+  border-radius:9px; background:transparent; color:#fff;
   font-size:14px; font-weight:750; cursor:pointer; white-space:nowrap;
 }
-.menuButton:hover { background:rgba(255,255,255,.2); }
+.menuButton:hover { background:transparent; }
 .menuButton span:first-child { font-size:19px; }
 .backdrop { position:fixed; inset:0; z-index:80; display:block; border:0; background:rgba(15,23,42,.42); }
 .drawer {

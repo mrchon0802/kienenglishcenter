@@ -295,3 +295,18 @@
     transition: none;
   }
 }
+
+@media (max-width: 900px) {
+  .mobileBar { gap: 10px; }
+  .mobileBrand {
+    flex: 0 0 44px;
+    width: 44px;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobileAntLogo { display: block; width: 44px; height: 38px; object-fit: contain; }
+  .mobileRolePicker { display: flex; align-items: center; margin-right: auto; }
+}
+@media (min-width: 901px) {
+  .mobileAntLogo, .mobileRolePicker { display: none; }
+}

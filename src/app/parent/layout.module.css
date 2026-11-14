@@ -21,3 +21,11 @@
   .avatar { width:34px; height:34px; flex-basis:34px; }
   .main { width:calc(100% - 28px); padding:18px 0 32px; }
 }
+
+/* Logo wordmark on desktop, original ant artwork on mobile */
+.brandText { display: inline; }
+.antLogo { display: none; width: 44px; height: 38px; object-fit: contain; }
+@media (max-width: 600px) {
+  .brandText { display: none; }
+  .antLogo { display: block; }
+}

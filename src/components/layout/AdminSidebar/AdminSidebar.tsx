@@ -43,9 +43,11 @@ export function AdminSidebar() {
           className={styles.mobileBrand}
           aria-label="Kien English Center - Trang tổng quan"
         >
-          <strong>Kien English Center</strong>
-          <span>Khu vực quản trị</span>
+          <img className={styles.mobileAntLogo} src="/brand/ant-white.png" alt="Kien English Center" />
         </Link>
+        <div className={styles.mobileRolePicker}>
+          <RoleSwitcher currentRole="admin" variant="header" />
+        </div>
         <button
           type="button"
           className={styles.menuButton}
