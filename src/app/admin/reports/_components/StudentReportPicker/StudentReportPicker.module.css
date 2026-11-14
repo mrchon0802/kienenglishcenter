@@ -31,3 +31,21 @@
   font-weight: 400;
   color: var(--color-muted);
 }
+
+@media (max-width: 640px) {
+  .wrap { gap: 10px; }
+  .list { gap: 7px; }
+  .item {
+    display: grid;
+    justify-content: stretch;
+    align-content: center;
+    gap: 3px;
+    padding: 9px 10px;
+    border: 1px solid var(--color-divider);
+    border-radius: 9px;
+    text-decoration: none;
+  }
+  .item > span:first-child { overflow-wrap: anywhere; }
+  .meta { font-size: 11px; }
+  .hint { margin: 0; line-height: 1.5; }
+}

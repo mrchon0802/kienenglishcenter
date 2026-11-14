@@ -16,6 +16,7 @@ import { formatScore, formatVND } from "@/lib/format";
 import { formatDateTime } from "@/lib/format-datetime";
 import { formatSchedule } from "@/lib/schedule";
 import { getClassReport } from "@/mocks/reports";
+import { StudentReportList } from "./_components/StudentReportList/StudentReportList";
 import styles from "../../reports.module.css";
 
 export const metadata: Metadata = { title: "Báo cáo lớp | Quản trị" };
@@ -94,48 +95,7 @@ async function ClassReportContent({ params }: { params: Promise<{ id: string }> 
       </div>
 
       <Card title="Từng học sinh">
-        <Table>
-          <thead>
-            <tr>
-              <th scope="col">Học sinh</th>
-              <th scope="col">TB kiểm tra</th>
-              <th scope="col">Chuyên cần</th>
-              <th scope="col">Công nợ</th>
-              <th scope="col">
-                <span className="sr-only">Thao tác</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.students.map((s) => (
-              <tr key={s.studentId}>
-                <td>{s.studentName}</td>
-                <td>
-                  {s.testAverage === null ? (
-                    "-"
-                  ) : s.testAverage < LOW_SCORE_THRESHOLD ? (
-                    <Badge tone="amber">{formatScore(s.testAverage)}</Badge>
-                  ) : (
-                    <strong>{formatScore(s.testAverage)}</strong>
-                  )}
-                </td>
-                <td>{s.attendanceRate}%</td>
-                <td>
-                  {s.owed > 0 ? (
-                    <>
-                      {formatVND(s.owed)} {s.hasOverdue ? <Badge tone="amber">Quá hạn</Badge> : null}
-                    </>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td>
-                  <Button href={`/admin/reports/students/${s.studentId}`}>Báo cáo</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
+        <StudentReportList students={report.students} />
         <p className={styles.note}>
           Xếp theo điểm trung bình kiểm tra từ cao xuống thấp. Màu cam là dưới {formatScore(LOW_SCORE_THRESHOLD)}.
         </p>

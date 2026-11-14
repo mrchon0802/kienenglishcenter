@@ -5,7 +5,6 @@ import { Suspense } from "react";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { Table } from "@/components/ui/Table";
 import { formatScore, formatVND } from "@/lib/format";
 import { formatSchedule } from "@/lib/schedule";
 import { getClassReport } from "@/mocks/reports";
@@ -14,6 +13,7 @@ import { getStudents } from "@/mocks/students";
 import { getAcademicCenterSummary } from "@/mocks/academic-reports";
 import { StudentReportPicker } from "./_components/StudentReportPicker";
 import { ReportExport } from "./_components/ReportExport";
+import { ClassReportList } from "./_components/ClassReportList";
 import styles from "./reports.module.css";
 import academicStyles from "./academic-reports.module.css";
 
@@ -73,16 +73,15 @@ async function ReportsContent() {
 
       <div className={styles.grid}>
         <Card title="Báo cáo theo lớp">
-          <Table>
-            <thead><tr><th scope="col">Lớp</th><th scope="col">Sĩ số</th><th scope="col">TB kiểm tra</th><th scope="col">Chuyên cần</th><th scope="col">Công nợ</th><th scope="col"><span className="sr-only">Thao tác</span></th></tr></thead>
-            <tbody>
-              {reports.map((r) => <tr key={r.id}>
-                <td><Link href={`/admin/reports/classes/${r.id}`}>Lớp {r.name}</Link><div className={styles.note} style={{ margin: 0 }}>{formatSchedule(r.schedule.days, r.schedule.startTime, r.schedule.endTime)}</div></td>
-                <td>{r.studentCount}</td><td>{r.testAverage === null ? "-" : formatScore(r.testAverage)}</td><td>{r.attendanceAverage}%</td><td>{r.totalOwed > 0 ? formatVND(r.totalOwed) : "-"}</td>
-                <td><Button href={`/admin/reports/classes/${r.id}`}>Xem</Button></td>
-              </tr>)}
-            </tbody>
-          </Table>
+          <ClassReportList reports={reports.map((r) => ({
+            id: r.id,
+            name: r.name,
+            schedule: r.schedule,
+            studentCount: r.studentCount,
+            testAverage: r.testAverage,
+            attendanceAverage: r.attendanceAverage,
+            totalOwed: r.totalOwed,
+          }))} />
         </Card>
         <Card title="Báo cáo theo học sinh">
           <StudentReportPicker students={students.filter((s) => s.status === "active").map((s) => ({ id: s.id, name: s.fullName, className: s.className, code: s.code }))} />

@@ -1,0 +1,22 @@
+.wrapper,.headerWrapper { display:inline-flex; align-items:center; gap:9px; min-width:0; }
+.label { color:inherit; font-size:12px; font-weight:600; opacity:.76; white-space:nowrap; }
+.select {
+  min-width:112px; min-height:40px; padding:7px 30px 7px 11px;
+  border:1px solid var(--color-border,#dce5e2); border-radius:9px;
+  background:var(--color-surface,#fff); color:var(--color-ink,#18312e);
+  font:inherit; font-size:13px; font-weight:700; cursor:pointer;
+}
+.headerSelect {
+  min-width:94px; min-height:34px; padding:5px 26px 5px 10px;
+  border:1px solid rgba(255,255,255,.42); border-radius:8px;
+  background:rgba(255,255,255,.12); color:#fff;
+  font:inherit; font-size:12px; font-weight:750; cursor:pointer;
+}
+.headerSelect option { color:#18312e; background:#fff; }
+.select:focus-visible,.headerSelect:focus-visible { outline:2px solid #facc15; outline-offset:2px; }
+@media(max-width:600px) {
+  .wrapper,.headerWrapper { gap:6px; }
+  .label { display:none; }
+  .select { min-height:42px; }
+  .headerSelect { min-width:86px; min-height:34px; }
+}

@@ -26,3 +26,10 @@
   .actions > * { width: 100%; min-height: 44px; }
   .error { overflow-wrap: anywhere; }
 }
+
+@media (max-width: 640px) {
+  .form { gap: 14px; }
+  .fields { gap: 13px; }
+  .actions { gap: 9px; }
+  .actions > * { width: 100%; min-height: 44px; }
+}

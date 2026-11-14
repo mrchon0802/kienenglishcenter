@@ -234,3 +234,55 @@
   .reconciliation { min-width: 0; }
   .reconciliation button { min-height: 44px; }
 }
+
+@media (max-width: 650px) {
+  .container { gap: 14px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .filters label { min-width: 0; }
+  .filters input,
+  .filters select { min-height: 44px; border-radius: 10px; }
+  .search { grid-column: 1 / -1; }
+  .filterActions { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; }
+  .filterActions button { min-height: 44px; }
+  .transactionCard { gap: 11px; padding: 12px; border-radius: 13px; }
+  .transactionTop { align-items: flex-start; }
+  .transactionTop > div > strong { display: block; font-size: 14px; line-height: 1.4; }
+  .transactionTop > .amount { max-width: 44%; color: var(--color-primary); font-size: 14px; text-align: right; white-space: normal; overflow-wrap: anywhere; }
+  .transactionMeta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px 10px;
+    padding: 10px 0;
+    border-top: 1px solid var(--color-divider);
+    border-bottom: 1px solid var(--color-divider);
+    line-height: 1.45;
+  }
+  .transactionStatus { gap: 7px; }
+  .transactionStatus .note { max-width: none; min-width: 0; }
+  .reconciliation {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding-top: 2px;
+  }
+  .reconciliation .status { grid-column: 1 / -1; }
+  .reconciliation select { grid-column: 1 / -1; min-height: 43px; }
+  .reconciliation input { min-height: 43px; }
+  .reconciliation button { min-width: 76px; min-height: 43px; }
+  .historyInfo,
+  .feedback { grid-column: 1 / -1; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 380px) {
+  .stats,
+  .filters { grid-template-columns: minmax(0, 1fr); }
+  .search { grid-column: auto; }
+  .filterActions { grid-template-columns: minmax(0, 1fr); }
+  .transactionTop { flex-direction: column; gap: 5px; }
+  .transactionTop > .amount { max-width: none; text-align: left; }
+  .reconciliation { grid-template-columns: minmax(0, 1fr); }
+  .reconciliation .status,
+  .reconciliation select,
+  .historyInfo,
+  .feedback { grid-column: auto; }
+  .reconciliation button { width: 100%; }
+}

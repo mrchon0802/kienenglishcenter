@@ -27,8 +27,16 @@
 .cardActions { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 10px; border-top: 1px solid var(--color-border); }
 .cardActions a { color: var(--color-primary); font-size: 12px; font-weight: 700; text-decoration: none; }
 @media (max-width: 700px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .desktopTable { display: none; }
   .mobileCards { display: grid; gap: 10px; }
   .toolbar { width: 100%; }
   .cardActions > * { min-height: 44px; }
+}
+
+@media (max-width: 380px) {
+  .stats { grid-template-columns: minmax(0, 1fr); }
+  .debtCard { padding: 12px; }
+  .cardActions { align-items: stretch; flex-direction: column; }
+  .cardActions > * { width: 100%; text-align: center; justify-content: center; }
 }

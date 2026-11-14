@@ -374,6 +374,21 @@ export function TuitionRevenueReport({
               </tbody>
             </table>
           </div>
+          <div className={styles.mobileSummaryList}>
+            {classRows.map((row) => (
+              <article className={styles.summaryCard} key={`mobile-${row.className}`}>
+                <div className={styles.summaryCardTop}>
+                  <strong>Lớp {row.className}</strong>
+                  <span>{row.count} giao dịch</span>
+                </div>
+                <div className={styles.summaryAmount}>
+                  <span>Thực thu</span>
+                  <strong>{formatVND(row.collected)}</strong>
+                </div>
+              </article>
+            ))}
+            {!classRows.length && <p className={styles.empty}>Chưa có dữ liệu.</p>}
+          </div>
         </Card>
 
         <Card title="Thu theo phương thức">
@@ -436,6 +451,24 @@ export function TuitionRevenueReport({
               )}
             </tbody>
           </table>
+        </div>
+        <div className={styles.mobileSummaryList}>
+          {monthlyRows.slice().reverse().map(([month, amount]) => {
+            const count = visibleTransactions.filter((item) => item.paidAt.startsWith(month)).length;
+            return (
+              <article className={styles.summaryCard} key={`mobile-${month}`}>
+                <div className={styles.summaryCardTop}>
+                  <strong>{month}</strong>
+                  <span>{count} giao dịch</span>
+                </div>
+                <div className={styles.summaryAmount}>
+                  <span>Thực thu</span>
+                  <strong>{formatVND(amount)}</strong>
+                </div>
+              </article>
+            );
+          })}
+          {!monthlyRows.length && <p className={styles.empty}>Chưa có dữ liệu.</p>}
         </div>
       </Card>
     </div>

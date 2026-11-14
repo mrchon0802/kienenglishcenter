@@ -58,3 +58,21 @@
   .overview { break-inside: avoid; }
   .riskItem { break-inside: avoid; }
 }
+
+@media (max-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .kpi { padding: 12px; }
+  .kpiLabel { font-size: 11px; line-height: 1.4; }
+  .kpiValue { margin-top: 6px; font-size: clamp(21px, 6vw, 25px); }
+  .kpiHint { font-size: 10px; line-height: 1.4; }
+  .riskItem { gap: 8px; padding: 11px; }
+  .riskMeta { line-height: 1.5; }
+  .sectionHead { align-items: flex-start; }
+}
+@media (max-width: 360px) {
+  .kpis { gap: 7px; }
+  .kpi { padding: 10px; }
+}

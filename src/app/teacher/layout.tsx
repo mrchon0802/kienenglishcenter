@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { getCurrentTeacher } from "@/lib/current-user";
+import { PortalMenu } from "@/components/layout/PortalMenu";
+import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import styles from "./layout.module.css";
 
 const NAV_ITEMS = [
@@ -16,11 +18,9 @@ const NAV_ITEMS = [
   { href: "/teacher/tasks", label: "Công việc" },
   { href: "/teacher/reports", label: "Báo cáo" },
   { href: "/teacher/profile", label: "Hồ sơ" },
-];
+] as const;
 
-export default function TeacherLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function TeacherLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <Suspense fallback={<div className={styles.main}>Đang tải Teacher Portal...</div>}>
       <TeacherLayoutContent>{children}</TeacherLayoutContent>
@@ -28,45 +28,26 @@ export default function TeacherLayout({
   );
 }
 
-async function TeacherLayoutContent({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+async function TeacherLayoutContent({ children }: Readonly<{ children: React.ReactNode }>) {
   await connection();
   const teacher = await getCurrentTeacher();
-  const initials = teacher?.fullName
-    .split(" ")
-    .slice(-2)
-    .map((part) => part[0])
-    .join("") ?? "GV";
+  const initials = teacher?.fullName.split(" ").slice(-2).map((part) => part[0]).join("") ?? "GV";
 
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link href="/teacher" className={styles.brand}>
-          <span className={styles.brandName}>Kien English Center</span>
-          <span className={styles.role}>TEACHER PORTAL</span>
-        </Link>
-
-        <nav className={styles.nav} aria-label="Điều hướng giáo viên">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={styles.navLink}
-              aria-current={item.href === "/teacher" ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className={styles.account}>
-          <span className={styles.avatar} aria-hidden="true">{initials}</span>
-          <span className={styles.accountName}>{teacher?.fullName ?? "Giáo viên"}</span>
-          <Link href="/admin" className={styles.switch}>Khu vực Admin</Link>
+        <div className={styles.brandGroup}>
+          <Link href="/teacher" className={styles.brand}>Kien English Center</Link>
+          <div className={styles.rolePicker}><RoleSwitcher currentRole="teacher" variant="header" /></div>
+        </div>
+        <div className={styles.headerActions}>
+          <div className={styles.account}>
+            <span className={styles.avatar} aria-hidden="true">{initials}</span>
+            <span className={styles.accountName}>{teacher?.fullName ?? "Giáo viên"}</span>
+          </div>
+          <PortalMenu role="teacher" items={NAV_ITEMS} />
         </div>
       </header>
-
       <main className={styles.main}>{children}</main>
     </div>
   );

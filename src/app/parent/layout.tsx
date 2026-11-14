@@ -2,11 +2,22 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { getCurrentStudent } from "@/lib/current-user";
+import { PortalMenu } from "@/components/layout/PortalMenu";
+import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import styles from "./layout.module.css";
 
-export default function ParentLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+const NAV_ITEMS = [
+  { href: "/parent", label: "Tổng quan" },
+  { href: "/parent/progress", label: "Tiến độ học tập" },
+  { href: "/parent/assessments", label: "Đánh giá" },
+  { href: "/parent/attendance", label: "Chuyên cần" },
+  { href: "/parent/schedule", label: "Lịch học" },
+  { href: "/parent/homework", label: "Bài tập" },
+  { href: "/parent/tuition", label: "Học phí" },
+  { href: "/parent/notifications", label: "Thông báo" },
+] as const;
+
+export default function ParentLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <Suspense fallback={<div>Đang tải Parent Portal...</div>}>
       <ParentLayoutContent>{children}</ParentLayoutContent>
@@ -14,56 +25,31 @@ export default function ParentLayout({
   );
 }
 
-async function ParentLayoutContent({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+async function ParentLayoutContent({ children }: Readonly<{ children: React.ReactNode }>) {
   await connection();
-
   const student = await getCurrentStudent();
-
-  const initials =
-    student?.fullName
-      .split(" ")
-      .slice(-2)
-      .map((part) => part[0])
-      .join("") ?? "PH";
+  const initials = student?.fullName.split(" ").slice(-2).map((part) => part[0]).join("") ?? "PH";
 
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <Link href="/parent" className={styles.brand}>
-          Kien English Center
-          <span>PHỤ HUYNH</span>
-        </Link>
-
-        <nav className={styles.nav} aria-label="Điều hướng phụ huynh">
-          <Link href="/parent">Tổng quan</Link>
-          <Link href="/parent/progress">Tiến độ</Link>
-          <Link href="/parent/assessments">Đánh giá</Link>
-          <Link href="/parent/attendance">Chuyên cần</Link>
-          <Link href="/parent/schedule">Lịch học</Link>
-          <Link href="/parent/homework">Bài tập</Link>
-          <Link href="/parent/tuition">Học phí</Link>
-          <Link href="/parent/notifications">Thông báo</Link>
-        </nav>
-
-        <div className={styles.account}>
-          <span className={styles.avatar} aria-hidden="true">
-            {initials}
-          </span>
-
-          <span className={styles.accountText}>
-            {student?.parentName || "Phụ huynh demo"}
-            <small>Đang xem: {student?.fullName ?? "Học sinh"}</small>
-          </span>
+        <div className={styles.brandGroup}>
+          <Link href="/parent" className={styles.brand}>Kien English Center</Link>
+          <div className={styles.rolePicker}><RoleSwitcher currentRole="parent" variant="header" /></div>
+        </div>
+        <div className={styles.headerActions}>
+          <div className={styles.account}>
+            <span className={styles.avatar} aria-hidden="true">{initials}</span>
+            <span className={styles.accountText}>
+              {student?.parentName || "Phụ huynh demo"}
+              <small>Đang xem: {student?.fullName ?? "Học sinh"}</small>
+            </span>
+          </div>
+          <PortalMenu role="parent" items={NAV_ITEMS} />
         </div>
       </header>
-
       <main className={styles.main}>{children}</main>
-
-      <footer className={styles.footer}>
-        Kien English Center · Cổng thông tin phụ huynh
-      </footer>
+      <footer className={styles.footer}>Kien English Center · Cổng thông tin phụ huynh</footer>
     </div>
   );
 }

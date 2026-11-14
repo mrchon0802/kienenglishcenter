@@ -10,6 +10,7 @@ import { getInvoiceViews } from "@/mocks/tuition";
 import { getAdminTuitionNotifications, getPaymentAgreements, syncTuitionReminderNotifications } from "@/mocks/tuition-notifications";
 import { getTuitionReminderSettings } from "@/mocks/tuition-reminder-settings";
 import { DebtManagementTable } from "./_components/DebtManagementTable";
+import styles from "./TuitionReminders.module.css";
 import { createPaymentAgreementAction, saveTuitionReminderSettingsAction, sendTuitionRemindersAction } from "./actions";
 
 export const metadata: Metadata = { title: "Nhắc học phí | Quản trị" };
@@ -25,7 +26,7 @@ async function ReminderContent() {
   const inputStyle = { padding: "9px 11px", border: "1px solid var(--color-border)", borderRadius: 8, width: "100%", background: "var(--color-surface)" };
   const labelStyle = { display: "grid", gap: 6, fontSize: 13, fontWeight: 600 as const };
   return (
-    <div style={{ display: "grid", gap: 20 }}>
+    <div className={styles.page}>
       <Card>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
           <div><h2 style={{ margin: 0 }}>Nhắc đóng học phí</h2><p style={{ color: "var(--color-muted)", marginBottom: 0 }}>Cấu hình lịch nhắc, theo dõi công nợ và ghi nhận lịch hẹn thanh toán.</p></div>
@@ -81,11 +82,11 @@ async function ReminderContent() {
       </Card>
 
       <Card title={`Lịch hẹn thanh toán (${agreements.length})`}>
-        {agreements.length ? <div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse" }}><thead><tr><th align="left">Hóa đơn</th><th align="left">Ngày hẹn</th><th align="right">Số tiền dự kiến</th><th align="left">Ghi chú</th><th align="left">Trạng thái</th></tr></thead><tbody>{agreements.map((item) => { const invoice = invoices.find((v) => v.id === item.invoiceId); return <tr key={item.id}><td>{invoice ? `${invoice.studentName} · ${monthLabel(invoice.month)}` : item.invoiceId}</td><td>{item.promisedDate}</td><td align="right">{formatVND(item.expectedAmount)}</td><td>{item.note || "—"}</td><td>{!invoice || invoice.remaining <= 0 ? "Đã thanh toán" : today < item.promisedDate ? "Đang chờ" : "Đến ngày hẹn"}</td></tr>; })}</tbody></table></div> : <p>Chưa có lịch hẹn thanh toán.</p>}
+        {agreements.length ? <div className={styles.agreementTable}><table><thead><tr><th align="left">Hóa đơn</th><th align="left">Ngày hẹn</th><th align="right">Số tiền dự kiến</th><th align="left">Ghi chú</th><th align="left">Trạng thái</th></tr></thead><tbody>{agreements.map((item) => { const invoice = invoices.find((v) => v.id === item.invoiceId); return <tr key={item.id}><td>{invoice ? `${invoice.studentName} · ${monthLabel(invoice.month)}` : item.invoiceId}</td><td>{item.promisedDate}</td><td align="right">{formatVND(item.expectedAmount)}</td><td>{item.note || "—"}</td><td>{!invoice || invoice.remaining <= 0 ? "Đã thanh toán" : today < item.promisedDate ? "Đang chờ" : "Đến ngày hẹn"}</td></tr>; })}</tbody></table></div> : <p>Chưa có lịch hẹn thanh toán.</p>}
       </Card>
 
       <Card title="Lịch sử thông báo gần đây">
-        {notices.length ? <div style={{ display: "grid", gap: 12 }}>{notices.slice(0, 40).map((item) => <article key={item.id} style={{ borderBottom: "1px solid var(--color-border)", paddingBottom: 10 }}><strong>{item.title}</strong><p style={{ margin: "4px 0", color: "var(--color-muted)" }}>{item.message}</p><small>{new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</small></article>)}</div> : <p>Chưa có thông báo học phí.</p>}
+        {notices.length ? <div className={styles.noticeList}>{notices.slice(0, 40).map((item) => <article className={styles.noticeItem} key={item.id}><strong>{item.title}</strong><p style={{ margin: "4px 0", color: "var(--color-muted)" }}>{item.message}</p><small>{new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(item.createdAt))}</small></article>)}</div> : <p>Chưa có thông báo học phí.</p>}
       </Card>
     </div>
   );

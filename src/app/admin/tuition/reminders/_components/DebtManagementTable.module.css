@@ -76,3 +76,34 @@
   .filters { grid-template-columns: minmax(0, 1fr); }
   .actions button { min-height: 44px; }
 }
+
+@media (max-width: 640px) {
+  .section { gap: 14px; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .metricCard { padding: 12px; gap: 5px; }
+  .metricValue { font-size: clamp(17px, 5vw, 21px); }
+  .toolbar { gap: 13px; }
+  .heading { align-items: flex-start; }
+  .title { font-size: 15px; }
+  .description { font-size: 12px; line-height: 1.5; }
+  .filters { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .filters .searchField { grid-column: 1 / -1; }
+  .filters input, .filters select { min-height: 43px; }
+  .actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .actions button { min-height: 43px; }
+  .tableWrapper { display: none; }
+  .mobileDebtCards { display: grid; gap: 9px; }
+  .mobileDebtCard { gap: 10px; padding: 12px; }
+  .mobileDebtTop { align-items: flex-start; }
+  .mobileDebtTop .amount { max-width: 42%; text-align: right; overflow-wrap: anywhere; }
+  .mobileDebtMeta { grid-template-columns: repeat(2, minmax(0, 1fr)); font-size: 11px; }
+  .mobileDebtAction { min-height: 44px; }
+}
+
+@media (max-width: 380px) {
+  .metrics, .filters { grid-template-columns: minmax(0, 1fr); }
+  .filters .searchField { grid-column: auto; }
+  .actions { grid-template-columns: minmax(0, 1fr); }
+  .mobileDebtTop { flex-direction: column; }
+  .mobileDebtTop .amount { max-width: none; text-align: left; }
+}

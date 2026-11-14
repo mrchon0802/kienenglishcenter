@@ -11,7 +11,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
   padding: 13px 0;
   border-top: 1px solid var(--color-divider);
@@ -22,10 +22,18 @@
   border-top: 0;
 }
 
-.row > div {
+.sessionInfo {
   display: grid;
   align-content: center;
-  gap: 4px;
+  gap: 5px;
+  min-width: 0;
+}
+
+.dateLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 8px;
   min-width: 0;
 }
 
@@ -38,27 +46,65 @@
   overflow-wrap: anywhere;
 }
 
-.meta {
+.meta,
+.attendance,
+.statusNote {
   margin: 0;
   color: var(--color-muted);
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   overflow-wrap: anywhere;
+}
+
+.attendance {
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.pending {
+  justify-self: start;
+}
+
+.cancelled .date,
+.cancelled .meta {
+  color: var(--color-muted);
+}
+
+.statusNote {
+  font-style: italic;
 }
 
 .row > :last-child {
   justify-self: end;
-  flex: 0 0 auto;
   white-space: nowrap;
 }
 
-@media (max-width: 380px) {
+.noAction {
+  color: var(--color-muted);
+  font-size: 11px;
+  text-align: right;
+}
+
+.empty {
+  margin: 0;
+  padding: 8px 0;
+  color: var(--color-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 480px) {
   .row {
     grid-template-columns: minmax(0, 1fr);
     gap: 8px;
+    padding: 12px 0;
   }
 
   .row > :last-child {
     justify-self: start;
+  }
+
+  .noAction {
+    text-align: left;
   }
 }

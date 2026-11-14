@@ -242,6 +242,17 @@ export function DebtReport({ today, invoices }: Props) {
             </tbody>
           </table>
         </div>
+        <div className={styles.mobileClassCards}>
+          {classRows.map((row) => (
+            <article className={styles.mobileClassCard} key={`mobile-${row.name}`}>
+              <strong>Lớp {row.name}</strong>
+              <div><span>Học sinh còn nợ</span><b>{row.students}</b></div>
+              <div><span>Số hóa đơn</span><b>{row.invoices}</b></div>
+              <div className={styles.mobileTotal}><span>Tổng công nợ</span><b>{formatVND(row.amount)}</b></div>
+            </article>
+          ))}
+          {!classRows.length && <p className={styles.empty}>Không có dữ liệu công nợ.</p>}
+        </div>
       </Card>
 
       <Card title="Chi tiết hóa đơn còn công nợ">
@@ -274,6 +285,28 @@ export function DebtReport({ today, invoices }: Props) {
               {!filtered.length && <tr><td colSpan={9} className={styles.empty}>Không tìm thấy hóa đơn còn công nợ.</td></tr>}
             </tbody>
           </table>
+        </div>
+        <div className={styles.mobileInvoiceCards}>
+          {filtered.map((row) => (
+            <article className={styles.mobileInvoiceCard} key={`mobile-${row.id}`}>
+              <div className={styles.mobileInvoiceHead}>
+                <div><strong>{row.studentName}</strong><small>{row.studentId} · Lớp {row.className}</small></div>
+                <span className={`${styles.ageBadge} ${row.overdueDays > 60 ? styles.critical : row.overdueDays > 0 ? styles.overdue : styles.notDue}`}>
+                  {row.overdueDays > 0 ? `${row.overdueDays} ngày` : "Chưa quá hạn"}
+                </span>
+              </div>
+              <div className={styles.mobileInvoiceMeta}>
+                <span>Kỳ {row.month}</span><span>Hạn {row.dueDate}</span>
+              </div>
+              <div className={styles.mobileInvoiceAmounts}>
+                <div><span>Học phí</span><b>{formatVND(row.amount)}</b></div>
+                <div><span>Đã thu</span><b>{formatVND(row.paid)}</b></div>
+                <div><span>Còn nợ</span><b>{formatVND(row.remaining)}</b></div>
+              </div>
+              <Link className={styles.detailLink} href={`/admin/tuition/invoices/${row.id}`}>Xem hóa đơn</Link>
+            </article>
+          ))}
+          {!filtered.length && <p className={styles.empty}>Không tìm thấy hóa đơn còn công nợ.</p>}
         </div>
         <p className={styles.note}>Công nợ được lấy trực tiếp từ số dư còn lại của từng hóa đơn sau khi trừ các khoản đã thanh toán. Một học sinh có thể xuất hiện ở nhiều hóa đơn.</p>
       </Card>

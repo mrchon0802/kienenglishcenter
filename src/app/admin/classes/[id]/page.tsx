@@ -65,14 +65,6 @@ async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
         }
       />
 
-      {course ? (
-        <Card title="Khóa học đang áp dụng">
-          <p><strong>{course.name}</strong> · {course.level}</p>
-          <p>{course.totalSessions} buổi · {course.durationWeeks} tuần · Học phí chuẩn {formatVND(course.standardFee)}</p>
-          <Button href={`/admin/courses/${course.id}`}>Xem khóa học</Button>
-        </Card>
-      ) : null}
-
       <div className={styles.overviewGrid}>
         <Card title="Giáo viên phụ trách">
           {teacher ? (
@@ -129,6 +121,14 @@ async function ClassDetail({ params }: { params: Promise<{ id: string }> }) {
           </div>
         </Card>
       </div>
+
+      {course ? (
+        <Card title="Khóa học đang áp dụng">
+          <p><strong>{course.name}</strong> · {course.level}</p>
+          <p>{course.totalSessions} buổi · {course.durationWeeks} tuần · Học phí chuẩn {formatVND(course.standardFee)}</p>
+          <Button href={`/admin/courses/${course.id}`}>Xem khóa học</Button>
+        </Card>
+      ) : null}
 
       <div className={styles.stats}>
         <StatCard label="Sĩ số" value={String(count)} hint={`Đang học Unit ${cls.currentUnit}`} />

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { RoleSwitcher } from "@/components/layout/RoleSwitcher";
 import styles from "./AdminSidebar.module.css";
 
 const NAV_ITEMS = [
@@ -111,13 +112,7 @@ export function AdminSidebar() {
           </ul>
         </nav>
         <div className={styles.modeSwitch}>
-          <Link
-            href="/teacher"
-            className={styles.modeLink}
-            onClick={() => setOpen(false)}
-          >
-            Chuyển sang Teacher ↗
-          </Link>
+          <RoleSwitcher currentRole="admin" />
         </div>
       </aside>
     </>

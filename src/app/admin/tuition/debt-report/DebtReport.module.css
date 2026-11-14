@@ -35,7 +35,7 @@
   min-height: 42px;
   padding: 8px 11px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   background: var(--color-surface);
   color: var(--color-ink);
   font: inherit;
@@ -61,7 +61,7 @@
   min-height: 42px;
   padding: 8px 14px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -96,7 +96,7 @@
   min-width: 0;
   padding: 16px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: 12px;
   background: var(--color-surface);
   text-align: left;
   cursor: pointer;
@@ -263,3 +263,133 @@
   .actions button, .actions a { width: 100%; min-height: 44px; }
   .stats, .bucketGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+.mobileClassCards,
+.mobileInvoiceCards {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .container { gap: 14px; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .filters { grid-template-columns: minmax(0, 1fr); gap: 11px; }
+  .filters input, .filters select { min-height: 44px; }
+  .actions { display: grid; grid-template-columns: 1fr; }
+  .actions button { width: 100%; min-height: 44px; }
+  .bucketGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .bucketCard { padding: 12px; gap: 7px; }
+  .bucketCard > strong { font-size: 15px; }
+  .bucketCard > small { line-height: 1.4; }
+  .tableWrap { display: none; }
+  .mobileClassCards,
+  .mobileInvoiceCards { display: grid; gap: 10px; }
+  .mobileClassCard,
+  .mobileInvoiceCard {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--color-divider);
+    border-radius: 14px;
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px rgb(20 55 48 / 4%);
+  }
+  .mobileClassCard > strong,
+  .mobileInvoiceHead strong { color: var(--color-ink); font-size: 14px; }
+  .mobileClassCard > div,
+  .mobileInvoiceAmounts > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+  .mobileClassCard b,
+  .mobileInvoiceAmounts b {
+    color: var(--color-ink);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+  .mobileClassCard .mobileTotal {
+    padding-top: 9px;
+    border-top: 1px solid var(--color-divider);
+  }
+  .mobileTotal b { color: #a16207; font-size: 14px; }
+  .mobileInvoiceHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .mobileInvoiceHead > div { display: grid; gap: 4px; min-width: 0; }
+  .mobileInvoiceHead strong { font-size: 14px; line-height: 1.4; }
+  .mobileInvoiceHead small {
+    color: var(--color-muted);
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .mobileInvoiceHead .ageBadge { flex: 0 0 auto; }
+  .mobileInvoiceMeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    color: var(--color-muted);
+    font-size: 11px;
+  }
+  .mobileInvoiceAmounts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 10px;
+    border: 1px solid var(--color-divider);
+    border-radius: 10px;
+    background: var(--color-background, #f7f9f8);
+  }
+  .mobileInvoiceAmounts > div {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    min-width: 0;
+  }
+  .mobileInvoiceAmounts > div:last-child {
+    grid-column: 1 / -1;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-divider);
+  }
+  .mobileInvoiceAmounts span {
+    color: var(--color-muted);
+    font-size: 10px;
+  }
+  .mobileInvoiceAmounts b {
+    font-size: 12px;
+    text-align: left;
+  }
+  .mobileInvoiceAmounts > div:last-child b {
+    color: #a16207;
+    font-size: 15px;
+    text-align: left;
+  }
+  .mobileInvoiceCards .detailLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-primary);
+    border-radius: 10px;
+    color: var(--color-primary);
+    font-size: 12px;
+    text-decoration: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats, .bucketGrid { grid-template-columns: minmax(0, 1fr); }
+  .mobileInvoiceHead { flex-direction: column; }
+  .mobileInvoiceHead .ageBadge { align-self: flex-start; }
+}
+

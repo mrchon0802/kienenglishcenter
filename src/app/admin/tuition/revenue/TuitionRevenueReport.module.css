@@ -281,3 +281,61 @@
   .controls button, .exportButton { width: 100%; min-height: 44px; }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* Mobile summary cards */
+.mobileSummaryList { display: none; }
+
+@media (max-width: 700px) {
+  .container { gap: 14px; }
+  .controls {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .controls input,
+  .controls select,
+  .exportButton {
+    min-height: 44px;
+    border-radius: 11px;
+  }
+  .stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .twoColumns { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .tableWrap { display: none; }
+  .mobileSummaryList { display: grid; gap: 9px; }
+  .summaryCard {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--color-divider);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+  .summaryCardTop,
+  .summaryAmount {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .summaryCardTop strong { color: var(--color-ink); font-size: 13px; }
+  .summaryCardTop span,
+  .summaryAmount span { color: var(--color-muted); font-size: 11px; }
+  .summaryAmount {
+    padding-top: 9px;
+    border-top: 1px solid var(--color-divider);
+  }
+  .summaryAmount strong {
+    color: var(--color-primary);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats { grid-template-columns: minmax(0, 1fr); }
+}

@@ -1,0 +1,191 @@
+.list {
+  min-width: 0;
+}
+
+.desktopTable {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 10px 12px;
+  color: var(--color-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 13px 12px;
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-ink);
+  font-size: 13px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.desktopName {
+  font-weight: 550;
+}
+
+.rank {
+  color: var(--color-muted);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.desktopName + .rank {
+  margin-left: 8px;
+}
+
+.debt {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.noDebt {
+  color: var(--color-muted);
+  font-size: 12px;
+}
+
+.mobileList {
+  display: none;
+}
+
+.empty {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .desktopTable {
+    display: none;
+  }
+
+  .mobileList {
+    display: grid;
+    gap: 10px;
+  }
+
+  .studentCard {
+    min-width: 0;
+    padding: 12px;
+    border: 1px solid var(--color-divider);
+    border-radius: 10px;
+    background: var(--color-surface);
+  }
+
+  .cardHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .identity {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .identity .rank {
+    flex: 0 0 auto;
+    padding-top: 2px;
+  }
+
+  .studentName {
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 650;
+    line-height: 1.4;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  .studentName:hover {
+    color: var(--color-primary);
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid var(--color-divider);
+  }
+
+  .metric {
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .metricLabel {
+    color: var(--color-muted);
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .metric strong {
+    color: var(--color-ink);
+    font-size: 12px;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  .metric .lowScore,
+  .metric .debtValue {
+    color: var(--color-warning-text, #9a5b00);
+  }
+
+  .metric .noDebt {
+    font-size: 11px;
+  }
+
+  .cardAction {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  .cardAction a {
+    min-height: 38px;
+  }
+}
+
+@media (max-width: 360px) {
+  .studentCard {
+    padding: 10px;
+  }
+
+  .metrics {
+    gap: 5px;
+  }
+
+  .metricLabel {
+    font-size: 9px;
+  }
+
+  .metric strong {
+    font-size: 11px;
+  }
+}

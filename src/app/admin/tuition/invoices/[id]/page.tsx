@@ -18,6 +18,7 @@ import { getInvoiceViewById, getPaymentsForInvoice } from "@/mocks/tuition";
 import { getAdminTuitionNotifications, getPaymentAgreements } from "@/mocks/tuition-notifications";
 import { DeletePaymentButton } from "../../_components/DeletePaymentButton";
 import { PaymentForm } from "../../_components/PaymentForm";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = { title: "Hóa đơn học phí | Quản trị" };
 
@@ -52,7 +53,7 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
         }
       />
 
-      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))" }}>
+      <div className={styles.stats}>
         <StatCard label="Học phí" value={formatVND(invoice.amount)} hint={STATUS_LABEL[invoice.status]} />
         <StatCard label="Đã đóng" value={formatVND(invoice.paid)} hint={`${payments.length} lần thanh toán`} />
         <StatCard label="Còn lại" value={formatVND(invoice.remaining)} hint={invoice.remaining > 0 ? "Cần thu" : "Đã đóng đủ"} tone={invoice.remaining > 0 ? "warning" : "default"} />
@@ -69,6 +70,7 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
       </Card>
 
       <Card title="Lịch sử thanh toán">
+        <div className={styles.desktopPayments}>
         {payments.length === 0 ? (
           <EmptyState title="Chưa có khoản thu nào" />
         ) : (
@@ -101,7 +103,26 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
             </tbody>
           </Table>
         )}
-        <p style={{ marginTop: 12, fontSize: 13, color: "var(--color-muted)" }}>
+        </div>
+        <div className={styles.mobilePayments}>
+          {payments.map((payment) => (
+            <article className={styles.paymentCard} key={`mobile-${payment.id}`}>
+              <div className={styles.paymentTop}>
+                <div>
+                  <strong>{formatVND(payment.amount)}</strong>
+                  <span>{formatDate(payment.paidAt)}</span>
+                </div>
+                <Badge>{METHOD_LABEL[payment.method]}</Badge>
+              </div>
+              {payment.note ? <p className={styles.paymentNote}>{payment.note}</p> : null}
+              <div className={styles.paymentActions}>
+                <DeletePaymentButton paymentId={payment.id} />
+              </div>
+            </article>
+          ))}
+          {payments.length === 0 ? <EmptyState title="Chưa có khoản thu nào" /> : null}
+        </div>
+        <p className={styles.note}>
           Nhập nhầm? Xóa khoản thu rồi ghi nhận lại. Xem công nợ của cả trung tâm ở{" "}
           <Link href="/admin/tuition/debts">tab Công nợ</Link>.
         </p>
@@ -111,9 +132,9 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
         {invoiceNotices.length === 0 ? (
           <EmptyState title="Chưa có lịch sử nhắc học phí" />
         ) : (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div className={styles.activityList}>
             {invoiceNotices.map((notice) => (
-              <article key={notice.id} style={{ padding: 14, border: "1px solid var(--color-border)", borderRadius: 10, display: "grid", gap: 8 }}>
+              <article key={notice.id} className={styles.activityCard}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                   <strong>{notice.title}</strong>
                   <Badge tone={notice.kind === "overdue" ? "amber" : "teal"}>
@@ -134,12 +155,12 @@ async function InvoiceContent({ params }: { params: Promise<{ id: string }> }) {
         {invoiceAgreements.length === 0 ? (
           <EmptyState title="Chưa có lịch hẹn thanh toán" />
         ) : (
-          <div style={{ display: "grid", gap: 12 }}>
+          <div className={styles.activityList}>
             {invoiceAgreements.map((agreement) => {
               const isPaid = invoice.remaining <= 0;
               const isWaiting = today < agreement.promisedDate;
               return (
-                <article key={agreement.id} style={{ padding: 14, border: "1px solid var(--color-border)", borderRadius: 10, display: "grid", gap: 8 }}>
+                <article key={agreement.id} className={styles.activityCard}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                     <strong>Hẹn ngày {formatDate(agreement.promisedDate)}</strong>
                     <Badge tone={isPaid ? "teal" : "amber"}>
